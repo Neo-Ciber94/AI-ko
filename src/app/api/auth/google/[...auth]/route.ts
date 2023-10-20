@@ -28,17 +28,22 @@ export async function POST(request: NextRequest) {
   }
 
   const authRequest = auth.handleRequest(request.method, { cookies, headers });
+
   // check if user is authenticated
   const session = await authRequest.validate();
+
   if (!session) {
     return new Response(null, {
       status: 401,
     });
   }
+
   // make sure to invalidate the current session!
   await auth.invalidateSession(session.sessionId);
+
   // delete session cookie
   authRequest.setSession(null);
+
   return new Response(null, {
     status: 302,
     headers: {
@@ -49,6 +54,7 @@ export async function POST(request: NextRequest) {
 
 async function handleLogin() {
   const [url, state] = await googleAuth.getAuthorizationUrl();
+
   // store state
   cookies().set("google_oauth_state", state, {
     httpOnly: true,
@@ -56,6 +62,7 @@ async function handleLogin() {
     path: "/",
     maxAge: 60 * 60,
   });
+
   return new Response(null, {
     status: 302,
     headers: {
@@ -69,12 +76,14 @@ async function handleCallback(request: NextRequest) {
   const url = new URL(request.url);
   const state = url.searchParams.get("state");
   const code = url.searchParams.get("code");
+
   // validate state
   if (!storedState || !state || storedState !== state || !code) {
     return new Response(null, {
       status: 400,
     });
   }
+
   try {
     const { getExistingUser, googleUser, createUser } =
       await googleAuth.validateCallback(code);
@@ -87,6 +96,7 @@ async function handleCallback(request: NextRequest) {
           username: googleUser.name,
         },
       });
+
       return user;
     };
 
@@ -95,11 +105,14 @@ async function handleCallback(request: NextRequest) {
       userId: user.userId,
       attributes: {},
     });
+
     const authRequest = auth.handleRequest(request.method, {
       cookies,
       headers,
     });
+
     authRequest.setSession(session);
+
     return new Response(null, {
       status: 302,
       headers: {
@@ -115,6 +128,7 @@ async function handleCallback(request: NextRequest) {
         status: 400,
       });
     }
+
     return new Response(null, {
       status: 500,
     });
