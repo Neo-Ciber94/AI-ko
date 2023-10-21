@@ -13,7 +13,6 @@ export default function Sidebar() {
   return (
     <>
       <aside
-        suppressHydrationWarning
         className={`bg-violet-800 text-white transition-all overflow-hidden duration-300 h-full shadow-xl sm:static fixed left-0 ${
           isSidebarOpen ? "w-[300px]" : "w-0"
         }`}
@@ -22,7 +21,6 @@ export default function Sidebar() {
       </aside>
 
       <button
-        suppressHydrationWarning
         className="absolute top-0 right-4 dark:text-white text-black"
         onClick={handleToggle}
       >
