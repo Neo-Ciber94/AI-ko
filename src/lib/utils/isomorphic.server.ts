@@ -4,4 +4,4 @@ export const appStore = createIsomorphicStore("aiChatbot", {
   sidebarOpen: true as boolean,
 });
 
-export type Store = ReturnType<typeof appStore>;
+export type AppStore = ReturnType<typeof appStore>;
