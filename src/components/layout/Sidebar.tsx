@@ -1,10 +1,10 @@
 "use client";
 
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
-import { useSidebar } from "../providers/SidebarContext";
 
 export default function Sidebar() {
-  const [ isSidebarOpen, setIsSidebarOpen ] = isomorphicClient.useIsomorphicStore('sidebarOpen');
+  const [isSidebarOpen, setIsSidebarOpen] =
+    isomorphicClient.useIsomorphicStore("sidebarOpen");
 
   const handleToggle = () => {
     setIsSidebarOpen((x) => !x);
