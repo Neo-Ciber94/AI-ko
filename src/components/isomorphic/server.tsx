@@ -5,7 +5,7 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   state: S
 ) {
   if (!prefix || !prefix.trim()) {
-    throw new Error("Isomorphic store cannot be empty or blank");
+    throw new Error("Isomorphic store prefix cannot be blank or empty");
   }
 
   return () => {
