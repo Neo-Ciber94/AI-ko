@@ -12,13 +12,13 @@ export default async function Home() {
   }
 
   return (
-    <>
+    <div>
       <h1>Profile</h1>
       <p>User id: {session.user.userId}</p>
       <p>User email: {session.user.username}</p>
       <Form action="/api/auth/google/logout">
         <input type="submit" value="Sign out" />
       </Form>
-    </>
+    </div>
   );
 }

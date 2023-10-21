@@ -90,7 +90,10 @@ async function handleCallback(request: NextRequest) {
 
     const getUser = async () => {
       const existingUser = await getExistingUser();
-      if (existingUser) return existingUser;
+      if (existingUser) {
+        return existingUser;
+      }
+
       const user = await createUser({
         attributes: {
           username: googleUser.name,
