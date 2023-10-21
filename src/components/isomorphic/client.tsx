@@ -27,7 +27,7 @@ type IsomorphicStoreProviderProps = {
   children: React.ReactNode;
 };
 
-export function IsomorphicStoreClientProvider({
+export function IsomorphicStoreProvider({
   children,
   ...rest
 }: IsomorphicStoreProviderProps) {
@@ -66,7 +66,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>() {
             };
           });
 
-          const cookieName = `${store.prefix}-${String(name)}`;
+          const cookieName = `${store.prefix}/${String(name)}`;
           setCookie(cookieName, JSON.stringify(value));
         },
 

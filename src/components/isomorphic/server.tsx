@@ -1,52 +1,36 @@
 import { cookies } from "next/headers";
-import { IsomorphicStoreClientProvider } from "./client";
 
 export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   prefix: string,
   state: S
 ) {
-  return {
-    prefix,
-    state,
-  };
-}
+  if (!prefix || !prefix.trim()) {
+    throw new Error("Isomorphic store cannot be empty or blank");
+  }
 
-export type IsomorphicStore = ReturnType<typeof createIsomorphicStore>;
+  return () => {
+    const cookieValues = Array.from(cookies());
+    const cookiePrefix = `${prefix}/`;
 
-type IsomorphicStoreProps = {
-  store: IsomorphicStore;
-  children: React.ReactNode;
-};
+    for (const [cookieName, cookie] of cookieValues) {
+      if (cookieName.startsWith(cookiePrefix)) {
+        const name = cookieName.slice(cookiePrefix.length);
 
-export function IsomorphicStoreProvider({
-  store,
-  children,
-}: IsomorphicStoreProps) {
-  const cookieValues = Array.from(cookies());
-  const state: JsonObject = store.state;
-  const prefix = `${store.prefix}-`;
-
-  for (const [cookieName, cookie] of cookieValues) {
-    if (cookieName.startsWith(prefix)) {
-      const name = cookieName.slice(prefix.length);
-      if (state[name] != null) {
         try {
-          state[name] = JSON.parse(cookie.value);
+          state[name as keyof typeof state] = JSON.parse(cookie.value);
         } catch {
           // ignore
         }
       }
     }
-  }
 
-  return (
-    <IsomorphicStoreClientProvider
-      store={{
-        prefix: store.prefix,
-        state,
-      }}
-    >
-      {children}
-    </IsomorphicStoreClientProvider>
-  );
+    return {
+      prefix,
+      state,
+    };
+  };
 }
+
+export type IsomorphicStore = ReturnType<
+  ReturnType<typeof createIsomorphicStore>
+>;

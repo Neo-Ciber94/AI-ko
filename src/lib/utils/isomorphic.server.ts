@@ -4,4 +4,4 @@ export const store = createIsomorphicStore("aiChatbot", {
   sidebarOpen: true as boolean,
 });
 
-export type Store = typeof store;
+export type Store = ReturnType<typeof store>;

@@ -7,8 +7,9 @@ import { auth } from "@/lib/auth/lucia";
 import Layout from "@/components/layout/Layout";
 import { SidebarProvider } from "@/components/providers/SidebarContext";
 import { COOKIE_SIDEBAR_OPEN } from "@/lib/common/constants";
-import { IsomorphicStoreProvider } from "@/components/isomorphic/server";
+
 import { store } from "@/lib/utils/isomorphic.server";
+import { IsomorphicStoreProvider } from "@/components/isomorphic/client";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +32,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <IsomorphicStoreProvider store={store}>
+          <IsomorphicStoreProvider store={store()}>
             <SidebarProvider isOpen={isSidebarOpen}>
               <Layout>{children}</Layout>
             </SidebarProvider>
