@@ -8,7 +8,7 @@ import Layout from "@/components/layout/Layout";
 import { SidebarProvider } from "@/components/providers/SidebarContext";
 import { COOKIE_SIDEBAR_OPEN } from "@/lib/common/constants";
 
-import { store } from "@/lib/utils/isomorphic.server";
+import { appStore } from "@/lib/utils/isomorphic.server";
 import { IsomorphicStoreProvider } from "@/components/isomorphic/client";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,7 +32,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <IsomorphicStoreProvider store={store()}>
+          <IsomorphicStoreProvider store={appStore()}>
             <SidebarProvider isOpen={isSidebarOpen}>
               <Layout>{children}</Layout>
             </SidebarProvider>

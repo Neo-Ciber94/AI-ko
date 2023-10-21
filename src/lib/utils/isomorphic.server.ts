@@ -1,7 +1,7 @@
 import { createIsomorphicStore } from "@/components/isomorphic/server";
 
-export const store = createIsomorphicStore("aiChatbot", {
+export const appStore = createIsomorphicStore("aiChatbot", {
   sidebarOpen: true as boolean,
 });
 
-export type Store = ReturnType<typeof store>;
+export type Store = ReturnType<typeof appStore>;

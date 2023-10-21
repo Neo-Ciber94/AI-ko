@@ -27,6 +27,9 @@ type IsomorphicStoreProviderProps = {
   children: React.ReactNode;
 };
 
+/**
+ * Initializes the isomorphic context to share state between client and server.
+ */
 export function IsomorphicStoreProvider({
   children,
   ...rest
@@ -40,8 +43,15 @@ export function IsomorphicStoreProvider({
   );
 }
 
+/**
+ * Creates a client to consume an isomorphic store.
+ */
 export function createIsomorphicClient<S extends IsomorphicStore>() {
   return {
+    /**
+     * Returns a consumer that updates the isomorphic store.
+     * @param name The name of the state value.
+     */
     useIsomorphicStore<K extends keyof S["state"]>(name: K) {
       type TValue = S["state"][K];
       type TKey = keyof typeof store.state;

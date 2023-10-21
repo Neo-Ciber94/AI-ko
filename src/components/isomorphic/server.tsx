@@ -1,5 +1,11 @@
 import { cookies } from "next/headers";
 
+/**
+ * Create a store that maintains state an state between the server and client.
+ * @param prefix The prefix used for the cookies.
+ * @param state The initial state.
+ * @returns A function that create the store server side.
+ */
 export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   prefix: string,
   state: S
@@ -31,6 +37,9 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   };
 }
 
+/**
+ * The isomorphic store type.
+ */
 export type IsomorphicStore = ReturnType<
   ReturnType<typeof createIsomorphicStore>
 >;
