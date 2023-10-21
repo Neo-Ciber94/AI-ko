@@ -12,7 +12,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="w-full text-right">
+    <div className="w-full text-center">
       <h1>Profile</h1>
       <p>User id: {session.user.userId}</p>
       <p>User email: {session.user.username}</p>

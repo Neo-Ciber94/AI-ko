@@ -22,12 +22,13 @@ export default async function RootLayout({
 }) {
   const authRequest = auth.handleRequest("GET", context);
   const session = await authRequest.validate();
+  const store = appStore();
 
   return (
-    <html lang="en">
+    <html lang="en" className={`${store.state.isDark ? "dark" : ""}`}>
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <IsomorphicStoreProvider store={appStore()}>
+          <IsomorphicStoreProvider store={store}>
             <Layout>{children}</Layout>
           </IsomorphicStoreProvider>
         </SessionProvider>

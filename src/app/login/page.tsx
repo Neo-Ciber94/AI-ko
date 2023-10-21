@@ -11,7 +11,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <div>
+    <div className="w-full text-center">
       <a href="/api/auth/google/login">Sign in with Google</a>
     </div>
   );

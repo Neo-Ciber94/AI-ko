@@ -1,7 +1,8 @@
 import { createIsomorphicStore } from "@/components/isomorphic/server";
 
 export const appStore = createIsomorphicStore("aiChatbot", {
-  sidebarOpen: true as boolean,
+  isSidebarOpen: true as boolean,
+  isDark: true as boolean,
 });
 
 export type AppStore = ReturnType<typeof appStore>;
