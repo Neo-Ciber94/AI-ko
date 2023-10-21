@@ -27,7 +27,7 @@ type IsomorphicStoreProviderProps = {
   children: React.ReactNode;
 };
 
-export function IsomorphicStoreProvider({
+export function IsomorphicStoreClientProvider({
   children,
   ...rest
 }: IsomorphicStoreProviderProps) {
@@ -42,36 +42,44 @@ export function IsomorphicStoreProvider({
 
 export function createIsomorphicClient<S extends IsomorphicStore>() {
   return {
-    useState<K extends keyof S["state"]>(name: K) {
-      type Value = S["state"][K];
+    useIsomorphicStore<K extends keyof S["state"]>(name: K) {
+      type TValue = S["state"][K];
+      type TKey = keyof typeof store.state;
 
       const { store, setStore } = useContext(isomorphicStoreContext);
 
       const setValue = useCallback(
-        (newValue: Value) => {
+        (newValue: SetStateAction<TValue>) => {
+          const prevValue = store.state[name as TKey];
+          const value =
+            newValue instanceof Function
+              ? newValue(prevValue as TValue)
+              : newValue;
+
           setStore((prev) => {
             return {
               ...prev,
               state: {
                 ...prev.state,
-                [name]: newValue,
+                [name]: value,
               },
             };
           });
 
           const cookieName = `${store.prefix}-${String(name)}`;
-          setCookie(cookieName, JSON.stringify(newValue));
+          setCookie(cookieName, JSON.stringify(value));
         },
 
-        [name, setStore, store.prefix]
+        [name, setStore, store.prefix, store.state]
       );
 
       const value = useMemo(() => {
-        const key = name as keyof typeof store;
-        return store[key];
+        const key = name as TKey;
+        return store.state[key]!;
       }, [name, store]);
 
-      return [value, setValue] as [Value, SetStateAction<Value>];
+      // prettier-ignore
+      return [value, setValue] as [TValue, (newValue: SetStateAction<TValue>) => void];
     },
   };
 }
