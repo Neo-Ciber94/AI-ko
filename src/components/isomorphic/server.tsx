@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
  */
 export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   prefix: string,
-  state: S
+  state: S,
 ) {
   if (!prefix || !prefix.trim()) {
     throw new Error("Isomorphic store prefix cannot be blank or empty");
@@ -42,10 +42,7 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
    * @param name The name of the value.
    * @param value The value.
    */
-  createStore.setValue = async <K extends keyof S["state"]>(
-    name: K,
-    value: S["state"][K]
-  ) => {
+  createStore.setValue = async <K extends keyof S>(name: K, value: S[K]) => {
     const key = `${prefix}/${String(name)}`;
     cookies().set(key, JSON.stringify(value));
   };
