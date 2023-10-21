@@ -13,16 +13,16 @@ export default function Sidebar() {
     <>
       <aside
         suppressHydrationWarning
-        className={`bg-violet-800 rounded-tr-xl rounded-br-xl
-            text-white transition-all overflow-hidden duration-300 ${
-              isSidebarOpen ? "w-[300px]" : "w-0"
-            }`}
+        className={`bg-violet-800 text-white transition-all overflow-hidden duration-300 h-full shadow-xl sm:static fixed left-0 ${
+          isSidebarOpen ? "w-[300px]" : "w-0"
+        }`}
       >
         <div className="p-4">Sidebar</div>
       </aside>
+
       <button
         suppressHydrationWarning
-        className="px-4 mb-auto"
+        className="absolute top-0 right-4 dark:text-white text-black"
         onClick={handleToggle}
       >
         {isSidebarOpen ? "Close" : "Open"}
