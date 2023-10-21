@@ -1,3 +1,4 @@
+import { setCookie } from "@/client/utils/functions";
 import { cookies } from "next/headers";
 
 /**
@@ -14,7 +15,7 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
     throw new Error("Isomorphic store prefix cannot be blank or empty");
   }
 
-  return () => {
+  const createStore = function () {
     const cookieValues = Array.from(cookies());
     const cookiePrefix = `${prefix}/`;
 
@@ -35,6 +36,21 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
       state,
     };
   };
+
+  /**
+   * Sets a value server-side. This should be used in an API handler.
+   * @param name The name of the value.
+   * @param value The value.
+   */
+  createStore.setValue = async <K extends keyof S["state"]>(
+    name: K,
+    value: S["state"][K]
+  ) => {
+    const key = `${prefix}/${String(name)}`;
+    cookies().set(key, JSON.stringify(value));
+  };
+
+  return createStore;
 }
 
 /**

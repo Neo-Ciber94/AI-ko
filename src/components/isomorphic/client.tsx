@@ -52,7 +52,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>() {
      * Returns a consumer that updates the isomorphic store.
      * @param name The name of the state value.
      */
-    useIsomorphicStore<K extends keyof S["state"]>(name: K) {
+    useValue<K extends keyof S["state"]>(name: K) {
       type TValue = S["state"][K];
       type TKey = keyof typeof store.state;
 
