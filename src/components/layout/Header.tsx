@@ -28,7 +28,7 @@ export default function Header({ showSidebarControls }: HeaderProps) {
 
   return (
     <header>
-      <div className="rainbow-border-right flex h-16 w-full flex-row items-center border-b bg-black px-2">
+      <div className="border-rainbow-right flex h-16 w-full flex-row items-center border-b bg-black px-2">
         <h1 className="bg-clip-text font-mono text-2xl font-bold text-white">
           AIChatbot
         </h1>
