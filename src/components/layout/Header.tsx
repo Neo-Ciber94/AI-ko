@@ -25,8 +25,11 @@ export default function Header() {
 
   return (
     <header className="flex h-12 w-full flex-row bg-indigo-800 px-2">
-      <div className="ml-auto flex flex-row items-center gap-4">
-        <button onClick={handleToggleDarkMode}>
+      <div className="ml-auto flex flex-row items-center gap-2">
+        <button
+          onClick={handleToggleDarkMode}
+          className="rounded-md p-2 hover:bg-indigo-950"
+        >
           {isDark ? (
             <SunIcon className="h-6 w-6 text-orange-400" />
           ) : (
@@ -35,13 +38,13 @@ export default function Header() {
         </button>
 
         <button
-          className="text-white"
+          className="rounded-md p-2 text-white hover:bg-indigo-950"
           onClick={handleToggleSidebar}
         >
           {isOpen ? (
-            <XMarkIcon className="h-8 w-8" />
+            <XMarkIcon className="h-6 w-6" />
           ) : (
-            <Bars3Icon className="h-8 w-8" />
+            <Bars3Icon className="h-6 w-6" />
           )}
         </button>
       </div>
