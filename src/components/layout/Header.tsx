@@ -35,7 +35,8 @@ export default function Header({ showSidebarControls }: HeaderProps) {
       <div className="ml-auto flex flex-row items-center gap-2">
         <button
           onClick={handleToggleDarkMode}
-          className="rounded-md p-2 hover:bg-indigo-950"
+          title="Toggle dark mode"
+          className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
         >
           {isDark ? (
             <SunIcon className="h-6 w-6 text-orange-400" />
@@ -46,7 +47,8 @@ export default function Header({ showSidebarControls }: HeaderProps) {
 
         {showSidebarControls && (
           <button
-            className="rounded-md p-2 text-white hover:bg-indigo-950"
+            title={`${isOpen ? "Close Sidebar" : "Expand Sidebar"}`}
+            className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
             onClick={handleToggleSidebar}
           >
             {isOpen ? (

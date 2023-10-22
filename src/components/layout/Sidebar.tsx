@@ -23,7 +23,8 @@ export default function Sidebar() {
             <div className="flex flex-row items-center justify-between text-white">
               <span>{session.user.username}</span>
               <button
-                className="rounded-md p-2 hover:bg-indigo-950"
+                title="Log out"
+                className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
                 onClick={logOut}
               >
                 <ArrowRightOnRectangleIcon className="h-6 w-6" />
