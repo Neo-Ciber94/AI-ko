@@ -17,7 +17,7 @@ shadow-md outline-none placeholder:text-white/50 focus:border-neutral-400/60 lg:
         }}
       ></textarea>
       <button className="-ml-8">
-        <PaperAirplaneIcon className="right-8 h-6 w-6 text-gray-400/60" />
+        <PaperAirplaneIcon className="right-8 h-5 w-5 text-gray-400/50" />
       </button>
     </div>
   );
