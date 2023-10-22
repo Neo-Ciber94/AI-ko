@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex h-12 w-full flex-row border-b-2 border-b-indigo-600 px-2">
+    <header className="flex h-12 w-full flex-row bg-indigo-800 px-2">
       <div className="ml-auto flex flex-row items-center gap-4">
         <button onClick={handleToggleDarkMode}>
           {isDark ? (
@@ -34,7 +34,10 @@ export default function Header() {
           )}
         </button>
 
-        <button className="text-indigo-600" onClick={handleToggleSidebar}>
+        <button
+          className="text-white"
+          onClick={handleToggleSidebar}
+        >
           {isOpen ? (
             <XMarkIcon className="h-8 w-8" />
           ) : (

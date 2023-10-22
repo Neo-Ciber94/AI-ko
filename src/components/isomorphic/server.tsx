@@ -1,53 +1,79 @@
-import { setCookie } from "@/client/utils/functions";
 import { cookies } from "next/headers";
+
+type IsomorphicState = {
+  [key: string]: JsonValue | (() => JsonValue);
+};
 
 /**
  * Create a store that maintains state an state between the server and client.
  * @param prefix The prefix used for the cookies.
- * @param state The initial state.
+ * @param initialState The initial state.
  * @returns A function that create the store server side.
  */
 export function createIsomorphicStore<S extends Record<string, JsonValue>>(
   prefix: string,
-  state: S,
+  initialState: S,
 ) {
   if (!prefix || !prefix.trim()) {
     throw new Error("Isomorphic store prefix cannot be blank or empty");
   }
 
-  const createStore = function () {
+  const store = function () {
     const cookieValues = Array.from(cookies());
     const cookiePrefix = `${prefix}/`;
 
     for (const [cookieName, cookie] of cookieValues) {
-      if (cookieName.startsWith(cookiePrefix)) {
-        const name = cookieName.slice(cookiePrefix.length);
+      if (!cookieName.startsWith(cookiePrefix)) {
+        continue;
+      }
 
-        try {
-          state[name as keyof typeof state] = JSON.parse(cookie.value);
-        } catch {
-          // ignore
-        }
+      const name = cookieName.slice(cookiePrefix.length);
+
+      try {
+        initialState[name as keyof typeof initialState] = JSON.parse(
+          cookie.value,
+        );
+      } catch {
+        // ignore
       }
     }
 
     return {
       prefix,
-      state,
+      state: initialState,
     };
   };
 
   /**
-   * Sets a value server-side. This should be used in an API handler.
+   * Sets an isomorphic value server-side. This should be used in an API handler.
    * @param name The name of the value.
    * @param value The value.
    */
-  createStore.setValue = async <K extends keyof S>(name: K, value: S[K]) => {
+  store.set = <K extends keyof S>(name: K, value: S[K]) => {
     const key = `${prefix}/${String(name)}`;
     cookies().set(key, JSON.stringify(value));
   };
 
-  return createStore;
+  /**
+   * Reads an isomorphic value server-side.
+   * @param name The name of the value.
+   */
+  store.get = <K extends keyof S>(name: K) => {
+    const key = `${prefix}/${String(name)}`;
+    const json = cookies().get(key);
+
+    if (!json) {
+      return initialState[name];
+    }
+
+    try {
+      return JSON.parse(json.value) as S[K];
+    } catch {
+      return initialState[name];
+    }
+  };
+
+  return store;
 }
 
 /**
@@ -56,3 +82,17 @@ export function createIsomorphicStore<S extends Record<string, JsonValue>>(
 export type IsomorphicStore = ReturnType<
   ReturnType<typeof createIsomorphicStore>
 >;
+
+/**
+ 
+const store = createIsomorphicStore("prefix", {
+  schema: z.object({
+    num: z.number(),
+    bool: z.boolean(),
+    text: z.string().min(10) 
+  }),
+  initialValue: {
+
+  }
+})
+ */
