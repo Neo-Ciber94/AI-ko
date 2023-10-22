@@ -3,22 +3,15 @@ import { auth } from "@/lib/auth/lucia";
 import * as context from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function HomePage() {
   const authRequest = auth.handleRequest("GET", context);
   const session = await authRequest.validate();
 
   if (!session) {
     redirect("/login");
+  } else {
+    redirect("/chat");
   }
 
-  return (
-    <div className="w-full text-center">
-      <h1>Profile</h1>
-      <p>User id: {session.user.userId}</p>
-      <p>User email: {session.user.username}</p>
-      <Form action="/api/auth/google/logout">
-        <input type="submit" value="Sign out" />
-      </Form>
-    </div>
-  );
+  return <></>;
 }

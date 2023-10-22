@@ -9,7 +9,11 @@ import {
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { useRouter } from "next/navigation";
 
-export default function Header() {
+type HeaderProps = {
+  showSidebarControls?: boolean;
+};
+
+export default function Header({ showSidebarControls }: HeaderProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = isomorphicClient.useValue("isSidebarOpen");
   const [isDark, setIsDark] = isomorphicClient.useValue("isDark");
@@ -24,7 +28,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex h-12 w-full flex-row bg-indigo-800 px-2">
+    <header className="flex h-16 w-full flex-row bg-indigo-800 px-2">
       <div className="ml-auto flex flex-row items-center gap-2">
         <button
           onClick={handleToggleDarkMode}
@@ -37,16 +41,18 @@ export default function Header() {
           )}
         </button>
 
-        <button
-          className="rounded-md p-2 text-white hover:bg-indigo-950"
-          onClick={handleToggleSidebar}
-        >
-          {isOpen ? (
-            <XMarkIcon className="h-6 w-6" />
-          ) : (
-            <Bars3Icon className="h-6 w-6" />
-          )}
-        </button>
+        {showSidebarControls && (
+          <button
+            className="rounded-md p-2 text-white hover:bg-indigo-950"
+            onClick={handleToggleSidebar}
+          >
+            {isOpen ? (
+              <XMarkIcon className="h-6 w-6" />
+            ) : (
+              <Bars3Icon className="h-6 w-6" />
+            )}
+          </button>
+        )}
       </div>
     </header>
   );

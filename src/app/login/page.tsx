@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth/lucia";
 import * as context from "next/headers";
 import { redirect } from "next/navigation";
+import Login from "./Login";
 
 export default async function LoginPage() {
   const authRequest = auth.handleRequest("GET", context);
@@ -11,8 +12,8 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="w-full text-center">
-      <a href="/api/auth/google/login">Sign in with Google</a>
+    <div className="flex h-full w-full flex-row justify-center px-4 pt-20">
+      <Login />
     </div>
   );
 }

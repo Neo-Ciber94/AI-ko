@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { auth } from "@/lib/auth/lucia";
-import Layout from "@/components/layout/Layout";
 
 import { appStore } from "@/lib/utils/isomorphic.server";
 import { IsomorphicStoreProvider } from "@/components/isomorphic/client";
@@ -29,7 +28,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider session={session}>
           <IsomorphicStoreProvider store={store}>
-            <Layout>{children}</Layout>
+            {children}
           </IsomorphicStoreProvider>
         </SessionProvider>
       </body>

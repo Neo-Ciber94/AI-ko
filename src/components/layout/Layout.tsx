@@ -1,12 +1,17 @@
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+type LayoutProps = {
+  showSidebar?: boolean;
+  children: React.ReactNode;
+};
+
+export default function Layout({ children, showSidebar }: LayoutProps) {
   return (
-    <main className="h-screen flex flex-row">
-      <Sidebar />
+    <main className="flex h-screen flex-row">
+      {showSidebar && <Sidebar />}
       <div className="flex flex-grow flex-col">
-        <Header />
+        <Header showSidebarControls={showSidebar} />
         {children}
       </div>
     </main>
