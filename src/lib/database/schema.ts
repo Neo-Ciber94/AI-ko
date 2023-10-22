@@ -1,15 +1,15 @@
-import { sqliteTable, text, blob } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, blob, integer } from "drizzle-orm/sqlite-core";
 
-export const user = sqliteTable("user", {
+export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
   username: text("username"),
 });
 
-export const userSession = sqliteTable("user_session", {
+export const userSessions = sqliteTable("user_session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => users.id),
   activeExpires: blob("active_expires", {
     mode: "bigint",
   }).notNull(),
@@ -18,10 +18,34 @@ export const userSession = sqliteTable("user_session", {
   }).notNull(),
 });
 
-export const userKey = sqliteTable("user_key", {
+export const userKeys = sqliteTable("user_key", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => users.id),
   hashedPassword: text("hashed_password"),
+});
+
+export const conversations = sqliteTable("conversation", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  title: text("title").notNull(),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+});
+
+export const conversationMessages = sqliteTable("conversation_message", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  sender: text("sender").notNull(),
+  message: text("message").notNull(),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
 });
