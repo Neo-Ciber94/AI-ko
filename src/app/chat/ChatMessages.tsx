@@ -14,7 +14,10 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
         return (
           <div key={idx} className="flex flex-row items-center gap-4 px-8">
             {message.sender === "system" && (
-              <div className="flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg bg-red-500 text-white">
+              <div
+                className="flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg border-2 border-red-500
+              bg-black text-white"
+              >
                 AI
               </div>
             )}
@@ -29,8 +32,11 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
             </div>
 
             {message.sender === "user" && (
-              <div className="flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg bg-blue-500 text-white">
-                ME
+              <div
+                className="flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg 
+                border-2 border-blue-500 bg-black text-white"
+              >
+                Me
               </div>
             )}
           </div>
