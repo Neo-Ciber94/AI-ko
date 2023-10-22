@@ -45,10 +45,10 @@ export default function Chat() {
 
       <div
         className={`fixed bottom-4 left-[calc(50%-16px)] w-[90%] -translate-x-1/2 transition-all duration-300 ${
-          isOpen ? "sm:ml-[150px] ml-0" : "ml-0"
+          isOpen ? "ml-0 sm:ml-[150px]" : "ml-0"
         }`}
       >
-        <ChatInput />
+        <ChatInput onSend={console.log} />
       </div>
     </div>
   );
