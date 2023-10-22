@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth/lucia";
 import { redirect } from "next/navigation";
 import * as context from "next/headers";
-import ChatInput from "./ChatInput";
+import Chat from "./Chat";
 
 export default async function ChatPage() {
   const authRequest = auth.handleRequest("GET", context);
@@ -12,9 +12,9 @@ export default async function ChatPage() {
   }
 
   return (
-    <div className="container mx-auto flex h-full w-full flex-col p-4">
+    <div className="container mx-auto flex h-full w-full flex-col">
       <div className="mt-auto flex w-full flex-row justify-center">
-        <ChatInput />
+        <Chat />
       </div>
     </div>
   );

@@ -27,37 +27,39 @@ export default function Header({ showSidebarControls }: HeaderProps) {
   };
 
   return (
-    <header className="rainbow-border-right flex h-16 w-full flex-row items-center border-b bg-black px-2">
-      <h1 className="bg-clip-text font-mono text-2xl font-bold text-white">
-        AIChatbot
-      </h1>
+    <header>
+      <div className="rainbow-border-right flex h-16 w-full flex-row items-center border-b bg-black px-2">
+        <h1 className="bg-clip-text font-mono text-2xl font-bold text-white">
+          AIChatbot
+        </h1>
 
-      <div className="ml-auto flex flex-row items-center gap-2">
-        <button
-          onClick={handleToggleDarkMode}
-          title="Toggle dark mode"
-          className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
-        >
-          {isDark ? (
-            <SunIcon className="h-6 w-6 text-orange-400" />
-          ) : (
-            <MoonIcon className="h-6 w-6 text-violet-400" />
-          )}
-        </button>
-
-        {showSidebarControls && (
+        <div className="ml-auto flex flex-row items-center gap-2">
           <button
-            title={`${isOpen ? "Close Sidebar" : "Expand Sidebar"}`}
+            onClick={handleToggleDarkMode}
+            title="Toggle dark mode"
             className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
-            onClick={handleToggleSidebar}
           >
-            {isOpen ? (
-              <XMarkIcon className="h-6 w-6" />
+            {isDark ? (
+              <SunIcon className="h-6 w-6 text-orange-400" />
             ) : (
-              <Bars3Icon className="h-6 w-6" />
+              <MoonIcon className="h-6 w-6 text-violet-400" />
             )}
           </button>
-        )}
+
+          {showSidebarControls && (
+            <button
+              title={`${isOpen ? "Close Sidebar" : "Expand Sidebar"}`}
+              className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
+              onClick={handleToggleSidebar}
+            >
+              {isOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );
