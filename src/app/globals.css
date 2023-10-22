@@ -2,7 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-300 text-black transition-colors duration-300 dark:bg-neutral-900 dark:text-white;
-}
+@layer base {
+  body {
+    @apply bg-gray-300 text-black transition-colors duration-300 dark:bg-neutral-900 dark:text-white;
+  }
 
+  body::-webkit-scrollbar {
+    @apply w-4;
+  }
+
+  body::-webkit-scrollbar-track {
+    @apply bg-neutral-600;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    @apply bg-neutral-950;
+    box-shadow: inset 2px 0px 1px rgb(20, 17, 21);
+  }
+}
