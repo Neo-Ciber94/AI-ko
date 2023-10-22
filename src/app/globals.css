@@ -19,6 +19,19 @@
     @apply bg-neutral-950;
     box-shadow: inset 2px 0px 1px rgb(20, 17, 21);
   }
+
+  .conversations-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .conversations-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .conversations-scrollbar::-webkit-scrollbar-thumb {
+    @apply group-hover:bg-neutral-600 bg-transparent;
+    box-shadow: none;
+  }
 }
 
 .chat-bubble-system {
