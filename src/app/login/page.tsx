@@ -1,11 +1,9 @@
-import { auth } from "@/lib/auth/lucia";
-import * as context from "next/headers";
 import { redirect } from "next/navigation";
 import Login from "./Login";
+import { getSession } from "@/lib/auth/utils";
 
 export default async function LoginPage() {
-  const authRequest = auth.handleRequest("GET", context);
-  const session = await authRequest.validate();
+  const session = await getSession();
 
   if (session) {
     redirect("/");

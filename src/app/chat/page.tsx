@@ -1,11 +1,9 @@
-import { auth } from "@/lib/auth/lucia";
 import { redirect } from "next/navigation";
-import * as context from "next/headers";
 import Chat from "./Chat";
+import { getSession } from "@/lib/auth/utils";
 
 export default async function ChatPage() {
-  const authRequest = auth.handleRequest("GET", context);
-  const session = await authRequest.validate();
+  const session = await getSession();
 
   if (!session) {
     redirect("/login");

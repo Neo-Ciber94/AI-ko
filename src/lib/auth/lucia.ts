@@ -1,7 +1,7 @@
 import { betterSqlite3 } from "@lucia-auth/adapter-sqlite";
 import { lucia } from "lucia";
 import { nextjs_future } from "lucia/middleware";
-import { sqliteDatabase } from "../database/db";
+import { sqliteDatabase } from "../database";
 import { google } from "@lucia-auth/oauth/providers";
 import { env } from "../env";
 
