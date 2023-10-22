@@ -7,16 +7,56 @@
     @apply bg-gray-300 text-black transition-colors duration-300 dark:bg-neutral-900 dark:text-white;
   }
 
-  body::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     @apply w-4;
   }
 
-  body::-webkit-scrollbar-track {
+  ::-webkit-scrollbar-track {
     @apply bg-neutral-600;
   }
 
-  body::-webkit-scrollbar-thumb {
+  ::-webkit-scrollbar-thumb {
     @apply bg-neutral-950;
     box-shadow: inset 2px 0px 1px rgb(20, 17, 21);
   }
+}
+
+.chat-bubble-system {
+  position: relative;
+  border-radius: 0.4em;
+  @apply bg-black text-white;
+}
+
+.chat-bubble-system:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 13px solid transparent;
+  border-left: 0;
+  margin-top: -13px;
+  margin-left: -12px;
+  @apply border-r-black;
+}
+
+.chat-bubble-user {
+  position: relative;
+  border-radius: 0.4em;
+  @apply bg-white dark:bg-neutral-800 text-black dark:text-white;
+}
+
+.chat-bubble-user:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 13px solid transparent;
+  border-right: 0;
+  margin-top: -13px;
+  margin-right: -12px;
+  @apply dark:border-l-neutral-800 border-l-white;
 }

@@ -12,7 +12,7 @@ export default async function ChatPage() {
   }
 
   return (
-    <div className="container mx-auto flex h-full w-full flex-col">
+    <div className="flex h-full w-full flex-col overflow-y-auto">
       <div className="mt-auto flex w-full flex-row justify-center">
         <Chat />
       </div>

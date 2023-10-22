@@ -49,7 +49,7 @@ export default function Header({ showSidebarControls }: HeaderProps) {
           {showSidebarControls && (
             <button
               title={`${isOpen ? "Close Sidebar" : "Expand Sidebar"}`}
-              className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
+              className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900 text-white"
               onClick={handleToggleSidebar}
             >
               {isOpen ? (

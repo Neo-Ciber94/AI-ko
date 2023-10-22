@@ -44,10 +44,9 @@ export default function Chat() {
       <ChatMessages messages={messages} />
 
       <div
-        className="fixed bottom-4 left-1/2 w-full -translate-x-1/2 transition-all duration-300"
-        style={{
-          marginLeft: isOpen ? "150px" : "0px",
-        }}
+        className={`fixed bottom-4 left-[calc(50%-16px)] w-[90%] -translate-x-1/2 transition-all duration-300 ${
+          isOpen ? "sm:ml-[150px] ml-0" : "ml-0"
+        }`}
       >
         <ChatInput />
       </div>
