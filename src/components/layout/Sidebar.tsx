@@ -10,7 +10,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 z-10 h-full overflow-hidden whitespace-nowrap border-transparent bg-black
+      className={`fixed left-0 z-20 h-full overflow-hidden whitespace-nowrap border-transparent bg-black
         text-white shadow-xl shadow-black/50 transition-all duration-300 sm:static ${
           isOpen ? "rainbow-border-bottom w-10/12 border-r sm:w-[300px]" : "w-0"
         }`}
