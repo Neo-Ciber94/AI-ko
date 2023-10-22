@@ -35,7 +35,7 @@ export default function ChatInput({ onSend }: ChatInputProps) {
         placeholder="Send Message"
         rows={1}
         value={text}
-        className="w-full resize-none overflow-hidden rounded-lg border border-neutral-400 bg-black py-4 pl-4 pr-10 text-white
+        className="w-full resize-none overflow-hidden rounded-lg border border-gray-400/30 bg-black py-4 pl-4 pr-10 text-white
          shadow-lg outline-none placeholder:text-white/50 focus:border-neutral-400/60 dark:border-neutral-400/30 lg:w-[700px]"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
