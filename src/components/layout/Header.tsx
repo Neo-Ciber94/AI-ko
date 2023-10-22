@@ -24,7 +24,6 @@ export default function Header({ showSidebarControls }: HeaderProps) {
 
   const handleToggleDarkMode = () => {
     setIsDark((x) => !x);
-    router.refresh();
   };
 
   return (
