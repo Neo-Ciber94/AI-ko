@@ -24,23 +24,25 @@ export function SessionProvider({ session, children }: SessionProviderProps) {
   );
 }
 
+export async function logOut() {
+  const res = await fetch("/api/auth/google/logout", {
+    method: "POST",
+    redirect: "manual",
+  });
+
+  if (res.status === 0) {
+    window.location.href = `${window.location.origin}/login`;
+  }
+}
+
+export function signIn() {
+  window.location.href = `${window.location.origin}/api/auth/google/login`;
+}
+
 export function useSession() {
-  const router = useRouter();
   const { session } = useContext(sessionContext);
-
-  const logOut = useCallback(async () => {
-    const res = await fetch("/api/auth/google/logout", {
-      method: "POST",
-      redirect: "manual",
-    });
-
-    if (res.status === 0) {
-      router.refresh();
-    }
-  }, [router]);
 
   return {
     session,
-    logOut,
   };
 }
