@@ -44,9 +44,25 @@ export function IsomorphicStoreProvider({
 }
 
 /**
- * Creates a client to consume an isomorphic store.
+ * Options to create a isomorphic client store.
  */
-export function createIsomorphicClient<S extends IsomorphicStore>() {
+type CreateIsomorphicClientOptions<S extends IsomorphicStore> = {
+  /**
+   * Called each time the store state changes on the client.
+   * @param newState The new state.
+   */
+  onChange?: (newState: S["state"]) => void;
+};
+
+/**
+ * Creates a client to consume an isomorphic store.
+ * @param options Options to pass to the store.
+ */
+export function createIsomorphicClient<S extends IsomorphicStore>(
+  options?: CreateIsomorphicClientOptions<S>,
+) {
+  const { onChange } = options || {};
+
   return {
     /**
      * Returns a consumer that updates the isomorphic store.
@@ -67,12 +83,18 @@ export function createIsomorphicClient<S extends IsomorphicStore>() {
               : newValue;
 
           setStore((prev) => {
+            const newState = {
+              ...prev.state,
+              [name]: value,
+            };
+
+            if (onChange) {
+              onChange({ ...newState });
+            }
+
             return {
               ...prev,
-              state: {
-                ...prev.state,
-                [name]: value,
-              },
+              state: newState,
             };
           });
 
@@ -80,7 +102,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>() {
           setCookie(cookieName, JSON.stringify(value));
         },
 
-        [name, setStore, store.prefix, store.state]
+        [name, setStore, store.prefix, store.state],
       );
 
       const value = useMemo(() => {
