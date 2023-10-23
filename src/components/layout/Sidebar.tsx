@@ -6,8 +6,9 @@ import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
 import { createConversation } from "./actions.server";
 import { useAction } from "next-safe-action/hook";
+import ChatConversations from "./ChatConversations";
 
-export default function Sidebar({ children }: { children?: React.ReactNode }) {
+export default function Sidebar() {
   const { session } = useSession();
   const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
   const { execute, status } = useAction(createConversation);
@@ -44,7 +45,7 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
               </button>
             </div>
 
-            {children}
+            <ChatConversations />
 
             {session && (
               <div className="mt-auto border-t border-t-violet-600 pt-4">
