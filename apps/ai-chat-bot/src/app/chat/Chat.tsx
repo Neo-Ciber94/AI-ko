@@ -40,6 +40,9 @@ export default function Chat({
       <div
         id="chat-messages"
         className="relative h-full w-full overflow-y-auto"
+        style={{
+          overflowAnchor: "none",
+        }}
       >
         {messages.length === 0 ? (
           <div

@@ -1,0 +1,45 @@
+{
+  "name": "ai-chat-bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push:sqlite",
+    "db:ui": "drizzle-kit studio --host 127.0.0.1",
+    "db:migrate": "tsx migrate.ts",
+    "db:generate": "drizzle-kit generate:sqlite"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.0.18",
+    "@lucia-auth/adapter-sqlite": "^2.0.1",
+    "@lucia-auth/oauth": "^3.3.1",
+    "better-sqlite3": "^9.0.0",
+    "drizzle-orm": "^0.28.6",
+    "lucia": "^2.7.1",
+    "next": "13.5.6",
+    "next-safe-action": "^4.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-icons": "^4.11.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "drizzle-kit": "^0.19.13",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.6",
+    "postcss": "^8",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.6",
+    "tailwindcss": "^3",
+    "tsx": "^3.14.0",
+    "typescript": "^5"
+  }
+}

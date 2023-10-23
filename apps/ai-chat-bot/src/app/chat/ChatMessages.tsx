@@ -43,7 +43,12 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
         );
       })}
 
-      <div className="h-20 px-4"></div>
+      <div
+        className="h-40 px-4"
+        style={{
+          overflowAnchor: "auto",
+        }}
+      ></div>
     </div>
   );
 }
