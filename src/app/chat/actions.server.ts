@@ -2,11 +2,7 @@
 
 import { getRequiredSession } from "@/lib/auth/utils";
 import { db } from "@/lib/database";
-import {
-  conversationMessages,
-  conversations,
-  users,
-} from "@/lib/database/schema";
+import { conversationMessages, conversations } from "@/lib/database/schema";
 import { InferSelectModel, and, asc, eq } from "drizzle-orm";
 
 export type ConversationMessage = InferSelectModel<typeof conversationMessages>;

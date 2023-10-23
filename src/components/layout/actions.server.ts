@@ -24,7 +24,7 @@ export const createConversation = action(z.undefined(), async () => {
   const result = await db
     .insert(conversations)
     .values({
-      title: "New Chat",
+      title: "New Chat " + crypto.randomUUID(),
       userId: session.user.userId,
     })
     .returning();
