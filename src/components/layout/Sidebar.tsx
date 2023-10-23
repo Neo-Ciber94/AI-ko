@@ -4,20 +4,15 @@ import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { logOut, useSession } from "../providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
-import { useEffect } from "react";
-import { createConversation, getConversations } from "./actions.server";
+import { createConversation } from "./actions.server";
 import { useAction } from "next-safe-action/hook";
-import Spinner from "../Spinner";
-import Link from "next/link";
 
-export default function Sidebar() {
+export default function Sidebar({ children }: { children?: React.ReactNode }) {
   const { session } = useSession();
   const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
   const { execute, status } = useAction(createConversation);
 
-  const handleCreateNewConversation = () => {
-    execute(undefined);
-  };
+  const handleCreateNewConversation = () => execute(undefined);
 
   return (
     <aside className="relative z-20 h-full">
@@ -44,7 +39,7 @@ export default function Sidebar() {
             </button>
           </div>
 
-          <Conversations />
+          {children}
 
           {session && (
             <div className="mt-auto border-t border-t-violet-600 pt-4">
@@ -63,40 +58,5 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
-  );
-}
-
-function Conversations() {
-  const { execute, status, result } = useAction(getConversations);
-  const conversations = result.data;
-
-  useEffect(() => execute(undefined), [execute]);
-
-  return (
-    <>
-      {status === "executing" ? (
-        <div className="absolute right-[calc(50%-20px)] top-[calc(50%-70px)]">
-          <Spinner />
-        </div>
-      ) : (
-        <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-hidden py-2 pr-1 hover:overflow-y-auto">
-          {conversations &&
-            conversations.map((conversation, idx) => {
-              return (
-                <Link
-                  key={idx}
-                  href={`/chat/${conversation.id}`}
-                  className="shadow-inset flex flex-row items-center rounded-md p-4
-                   text-left text-sm shadow-white/20 hover:bg-neutral-900"
-                >
-                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                    {conversation.title}
-                  </span>
-                </Link>
-              );
-            })}
-        </div>
-      )}
-    </>
   );
 }

@@ -24,7 +24,7 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
             <div
               className={`w-full px-4 py-8 ${
                 message.sender === "user"
-                  ? " chat-bubble-user"
+                  ? "chat-bubble-user"
                   : "chat-bubble-system"
               }`}
             >
