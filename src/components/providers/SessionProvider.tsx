@@ -1,7 +1,6 @@
 "use client";
 import { Session } from "lucia";
-import { useRouter } from "next/navigation";
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useContext } from "react";
 
 type SessionContext = {
   session: Session | null;

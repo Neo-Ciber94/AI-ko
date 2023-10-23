@@ -1,24 +1,21 @@
 "use client";
 
-import { deleteConversation, getConversations } from "./actions.server";
+import { deleteConversation } from "./actions.server";
 import Link from "next/link";
 import { useAction } from "next-safe-action/hook";
 import Spinner from "../Spinner";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { useConversations } from "../providers/ConversationsProvider";
 
 export default function ChatConversations() {
   const { conversationId } = useParams<{ conversationId: string }>();
-  const { execute, status, result } = useAction(getConversations);
   const deleteConversationAction = useAction(deleteConversation);
-  const conversations = result.data || [];
-
-  useEffect(() => execute(undefined), [execute]);
+  const conversations = useConversations();
 
   return (
     <>
-      {status === "executing" ? (
+      {false ? (
         <div className="flex h-full w-full flex-row items-center justify-center p-4">
           <Spinner />
         </div>
@@ -47,8 +44,9 @@ export default function ChatConversations() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    deleteConversationAction.execute({ conversationId });
-                    execute(undefined);
+                    deleteConversationAction.execute({
+                      conversationId: conversation.id,
+                    });
                   }}
                 >
                   <TrashIcon className="h-5 w-5 opacity-80" />

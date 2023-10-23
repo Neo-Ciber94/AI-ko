@@ -1,9 +1,17 @@
 import Layout from "@/components/layout/Layout";
+import { getConversations } from "@/components/layout/actions.server";
+import { ConversationsProvider } from "@/components/providers/ConversationsProvider";
 
-export default function PageLayout({
+export default async function PageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <Layout showSidebar>{children}</Layout>;
+  const conversations = await getConversations();
+
+  return (
+    <ConversationsProvider conversations={conversations}>
+      <Layout showSidebar>{children}</Layout>
+    </ConversationsProvider>
+  );
 }
