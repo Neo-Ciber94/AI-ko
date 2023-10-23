@@ -1,18 +1,18 @@
-export interface Message {
-  sender: "user" | "system";
-  text: string;
-}
+import { ConversationMessage } from "./actions.server";
 
 type ChatMessagesProps = {
-  messages: Message[];
+  messages: ConversationMessage[];
 };
 
 export default function ChatMessages({ messages }: ChatMessagesProps) {
   return (
     <div className="flex flex-col gap-4 pt-4">
-      {messages.map((message, idx) => {
+      {messages.map((message) => {
         return (
-          <div key={idx} className="flex flex-row items-center gap-4 px-8">
+          <div
+            key={message.id}
+            className="flex flex-row items-center gap-4 px-8"
+          >
             {message.sender === "system" && (
               <div
                 className="flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg border-2 border-red-500
@@ -28,7 +28,7 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                   : "chat-bubble-system"
               }`}
             >
-              {message.text}
+              {message.message}
             </div>
 
             {message.sender === "user" && (

@@ -13,7 +13,7 @@ export type Conversation = InferSelectModel<typeof conversations>;
 export const getConversations = action(z.undefined(), async () => {
   const session = await getRequiredSession();
   const result = await db.query.conversations.findMany({
-    where: eq(users.id, session.user.userId),
+    where: eq(conversations.userId, session.user.userId),
   });
   return result;
 });

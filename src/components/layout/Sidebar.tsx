@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { createConversation, getConversations } from "./actions.server";
 import { useAction } from "next-safe-action/hook";
 import Spinner from "../Spinner";
+import Link from "next/link";
 
 export default function Sidebar() {
   const { session } = useSession();
@@ -26,7 +27,7 @@ export default function Sidebar() {
           isOpen ? "border-rainbow-bottom w-10/12 border-r sm:w-[300px]" : "w-0"
         }`}
       >
-        <div className="group relative flex h-full flex-col p-4">
+        <div className="group relative flex h-full flex-col px-2 py-4">
           <div className="flex flex-row border-b border-b-red-500">
             <button
               disabled={status === "executing"}
@@ -66,38 +67,36 @@ export default function Sidebar() {
 }
 
 function Conversations() {
-  const {
-    execute,
-    status,
-    result: { data: conversations },
-  } = useAction(getConversations);
+  const { execute, status, result } = useAction(getConversations);
+  const conversations = result.data;
 
   useEffect(() => execute(undefined), [execute]);
 
   return (
     <>
-      {status === "executing" && (
+      {status === "executing" ? (
         <div className="absolute right-[calc(50%-20px)] top-[calc(50%-70px)]">
           <Spinner />
         </div>
-      )}
-
-      <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-scroll py-2 pr-2 hover:overflow-y-auto">
-        {conversations &&
-          conversations.map((conversation, idx) => {
-            return (
-              <button
-                key={idx}
-                className="shadow-inset flex flex-row items-center rounded-md p-4
+      ) : (
+        <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-hidden py-2 pr-1 hover:overflow-y-auto">
+          {conversations &&
+            conversations.map((conversation, idx) => {
+              return (
+                <Link
+                  key={idx}
+                  href={`/chat/${conversation.id}`}
+                  className="shadow-inset flex flex-row items-center rounded-md p-4
                    text-left text-sm shadow-white/20 hover:bg-neutral-900"
-              >
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                  {conversation.title}
-                </span>
-              </button>
-            );
-          })}
-      </div>
+                >
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {conversation.title}
+                  </span>
+                </Link>
+              );
+            })}
+        </div>
+      )}
     </>
   );
 }

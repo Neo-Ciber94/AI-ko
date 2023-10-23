@@ -21,7 +21,7 @@
   }
 
   .conversations-scrollbar::-webkit-scrollbar {
-    @apply w-2;
+    @apply w-1;
   }
 
   .conversations-scrollbar::-webkit-scrollbar-track {
