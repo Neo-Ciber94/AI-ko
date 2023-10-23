@@ -4,7 +4,7 @@ import { sendConversationMessage } from "@/components/layout/actions.server";
 import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
 import { type ConversationMessage } from "./actions.server";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Chat({
@@ -12,6 +12,7 @@ export default function Chat({
 }: {
   messages: ConversationMessage[];
 }) {
+  const router = useRouter();
   const { conversationId } = useParams<{ conversationId: string }>();
 
   const scrollToLastMessage = () => {
@@ -28,6 +29,7 @@ export default function Chat({
       message,
     });
 
+    router.refresh();
     scrollToLastMessage();
   };
 
