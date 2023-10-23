@@ -36,21 +36,26 @@ export default function Chat({
   useEffect(() => scrollToLastMessage(), []);
 
   return (
-    <div className="relative h-full w-full">
-      {messages.length === 0 ? (
-        <div
-          className="flex h-full flex-grow flex-row items-center justify-center font-mono text-5xl 
+    <>
+      <div
+        id="chat-messages"
+        className="relative h-full w-full overflow-y-auto"
+      >
+        {messages.length === 0 ? (
+          <div
+            className="flex h-full flex-grow flex-row items-center justify-center font-mono text-5xl 
           font-bold text-gray-400 dark:text-gray-300/50"
-        >
-          AIChatbot
-        </div>
-      ) : (
-        <ChatMessages messages={messages} />
-      )}
+          >
+            AIChatbot
+          </div>
+        ) : (
+          <ChatMessages messages={messages} />
+        )}
+      </div>
 
       <div className={`absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2`}>
         <ChatInput onSend={handleChat} />
       </div>
-    </div>
+    </>
   );
 }
