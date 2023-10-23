@@ -26,6 +26,9 @@ dependencies:
   next:
     specifier: 13.5.6
     version: 13.5.6(react-dom@18.2.0)(react@18.2.0)
+  next-safe-action:
+    specifier: ^4.0.1
+    version: 4.0.1(next@13.5.6)(react@18.2.0)(zod@3.22.4)
   react:
     specifier: ^18
     version: 18.2.0
@@ -2457,6 +2460,19 @@ packages:
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
+
+  /next-safe-action@4.0.1(next@13.5.6)(react@18.2.0)(zod@3.22.4):
+    resolution: {integrity: sha512-qaZtNJxnkvE9AVQN8sW/OEuYk38gOFMwH4QEYBww/MWM0fVkRMPoHUQK43oSRVdqCDj49wqJrrcyDH9hgv+JrA==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      next: '>= 13.4.2'
+      react: '>= 18.2.0'
+      zod: '>= 3.0.0'
+    dependencies:
+      next: 13.5.6(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      zod: 3.22.4
+    dev: false
 
   /next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}

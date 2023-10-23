@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import Chat from "./Chat";
 import { getSession } from "@/lib/auth/utils";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 export default async function ChatPage() {
   const session = await getSession();
@@ -10,10 +10,14 @@ export default async function ChatPage() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto">
-      <div className="mt-auto flex w-full flex-row justify-center">
-        <Chat />
-      </div>
+    <div className="flex h-full flex-row items-center justify-center p-4">
+      <p
+        className="mt-5 flex flex-row items-center gap-2 text-center
+          font-mono text-2xl font-bold text-gray-500 opacity-60 dark:opacity-30"
+      >
+        <ExclamationTriangleIcon className="w-1h-12 h-12" />
+        <span>AIChatbot may provide incorrect information</span>
+      </p>
     </div>
   );
 }

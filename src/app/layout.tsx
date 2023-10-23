@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth/lucia";
 
 import { appStore } from "@/lib/utils/isomorphic.server";
 import { IsomorphicStoreProvider } from "@/components/isomorphic/client";
+import { getSession } from "@/lib/auth/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +20,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authRequest = auth.handleRequest("GET", context);
-  const session = await authRequest.validate();
+  const session = await getSession();
   const store = appStore();
 
   return (

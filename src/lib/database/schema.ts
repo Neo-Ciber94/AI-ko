@@ -43,6 +43,7 @@ export const conversationMessages = sqliteTable("conversation_message", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  conversationId: text("conversation_id").notNull(),
   sender: text("sender").notNull(),
   message: text("message").notNull(),
   createdAt: integer("created_at")
