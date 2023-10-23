@@ -14,7 +14,10 @@ export type ConversationMessage = InferSelectModel<typeof conversationMessages>;
 export async function getConversationMessages(conversationId: string) {
   const session = await getRequiredSession();
   const conversation = await db.query.conversations.findFirst({
-    where: eq(conversations.id, conversationId),
+    where: and(
+      eq(conversations.id, conversationId),
+      eq(conversations.userId, session.user.userId),
+    ),
   });
 
   if (conversation == null) {
@@ -22,10 +25,7 @@ export async function getConversationMessages(conversationId: string) {
   }
 
   const messages = await db.query.conversationMessages.findMany({
-    where: and(
-      eq(users.id, session.user.userId),
-      eq(conversationMessages.conversationId, conversationId),
-    ),
+    where: eq(conversationMessages.conversationId, conversation.id),
     orderBy: [asc(conversationMessages.createdAt)],
   });
 

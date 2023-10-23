@@ -1,27 +1,38 @@
 "use client";
 
-import { isomorphicClient } from "@/lib/utils/isomorphic.client";
+import { sendConversationMessage } from "@/components/layout/actions.server";
 import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
 import { type ConversationMessage } from "./actions.server";
+import { useParams, useRouter } from "next/navigation";
 
 export default function Chat({
   messages,
 }: {
   messages: ConversationMessage[];
 }) {
-  const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
+  const router = useRouter();
+  const { conversationId } = useParams<{ conversationId: string }>();
+  const handleChat = async (message: string) => {
+    await sendConversationMessage({
+      conversationId,
+      message,
+    });
+
+    router.refresh();
+    const chatMessagesElement = document.querySelector("#chat-messages");
+
+    if (chatMessagesElement) {
+      chatMessagesElement.scrollTo({ top: chatMessagesElement.scrollHeight });
+    }
+  };
 
   return (
     <div className="relative w-full">
       <ChatMessages messages={messages} />
 
-      <div
-        className={`fixed bottom-4 left-[calc(50%-16px)] w-[90%] -translate-x-1/2 transition-all duration-300 ${
-          isOpen ? "ml-0 sm:ml-[150px]" : "ml-0"
-        }`}
-      >
-        <ChatInput onSend={console.log} />
+      <div className={`absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2`}>
+        <ChatInput onSend={handleChat} />
       </div>
     </div>
   );

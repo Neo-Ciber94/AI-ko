@@ -1,4 +1,4 @@
-import { ChatConversations } from "./ChatConversations";
+import ChatConversations from "./ChatConversations";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 

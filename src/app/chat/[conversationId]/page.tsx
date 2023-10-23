@@ -18,7 +18,10 @@ export default async function ChatConversationPage({
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto">
+    <div
+      id="chat-messages"
+      className="flex h-full w-full flex-col overflow-y-auto"
+    >
       <div className="mt-auto flex w-full flex-row justify-center">
         <Chat messages={messages} />
       </div>
