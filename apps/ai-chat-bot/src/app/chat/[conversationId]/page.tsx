@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Chat from "../Chat";
 import { getConversationMessages } from "../actions.server";
 
@@ -14,7 +14,7 @@ export default async function ChatConversationPage({
   const messages = await getConversationMessages(conversationId);
 
   if (messages == null) {
-    notFound();
+    redirect("/chat");
   }
 
   return (
