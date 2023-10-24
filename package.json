@@ -10,13 +10,12 @@
     "pnpm": ">=8.0.0"
   },
   "scripts": {
-    "dev": "lerna run dev",
-    "build": "lerna run build",
-    "start": "lerna run start",
-    "prod": "lerna run build && lerna run start"
+    "dev": "pnpm --filter=\"ai-chat-bot\" dev",
+    "build": "pnpm --filter=\"ai-chat-bot\" build",
+    "start": "pnpm --filter=\"ai-chat-bot\" start",
+    "prod": "pnpm run build && pnpm run start"
   },
   "devDependencies": {
-    "lerna": "^7.4.1",
     "rimraf": "^5.0.5"
   }
 }
