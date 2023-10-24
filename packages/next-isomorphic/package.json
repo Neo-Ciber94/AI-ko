@@ -1,12 +1,42 @@
 {
   "name": "next-isomorphic",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "Provides a system to share state between server and client using cookies",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "author": "Freddy L.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "eslint": "eslint ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "nextjs",
+    "isomorphic",
+    "cookie",
+    "react"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "next": "13.5.6",
+    "react": "^18"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "eslint": "^8.52.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./server": {
+      "import": "./dist/server.js",
+      "default": "./dist/server.js"
+    },
+    "./client": {
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
+    }
+  }
 }
