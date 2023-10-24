@@ -15,14 +15,6 @@ export default function Chat({
   const router = useRouter();
   const { conversationId } = useParams<{ conversationId: string }>();
 
-  const scrollToLastMessage = () => {
-    const chatMessagesElement = document.querySelector("#chat-messages");
-
-    if (chatMessagesElement) {
-      chatMessagesElement.scrollTo({ top: chatMessagesElement.scrollHeight });
-    }
-  };
-
   const handleChat = async (message: string) => {
     await sendConversationMessage({
       conversationId,
@@ -30,19 +22,20 @@ export default function Chat({
     });
 
     router.refresh();
-    scrollToLastMessage();
   };
 
-  useEffect(() => scrollToLastMessage(), []);
+  useEffect(() => {
+    const chatMessagesElement = document.querySelector("#chat-messages");
+    if (chatMessagesElement) {
+      chatMessagesElement.scrollTo({ top: chatMessagesElement.scrollHeight });
+    }
+  }, []);
 
   return (
     <>
       <div
         id="chat-messages"
         className="relative h-full w-full overflow-y-auto"
-        style={{
-          overflowAnchor: "none",
-        }}
       >
         {messages.length === 0 ? (
           <div

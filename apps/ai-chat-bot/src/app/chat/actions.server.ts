@@ -3,7 +3,7 @@
 import { getRequiredSession } from "@/lib/auth/utils";
 import { db } from "@/lib/database";
 import { conversationMessages, conversations } from "@/lib/database/schema";
-import { InferSelectModel, and, asc, eq } from "drizzle-orm";
+import { type InferSelectModel, and, eq, desc } from "drizzle-orm";
 
 export type ConversationMessage = InferSelectModel<typeof conversationMessages>;
 
@@ -22,7 +22,7 @@ export async function getConversationMessages(conversationId: string) {
 
   const messages = await db.query.conversationMessages.findMany({
     where: eq(conversationMessages.conversationId, conversation.id),
-    orderBy: [asc(conversationMessages.createdAt)],
+    orderBy: [desc(conversationMessages.createdAt)],
   });
 
   return messages;

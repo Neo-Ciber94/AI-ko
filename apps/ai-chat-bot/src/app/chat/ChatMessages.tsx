@@ -1,4 +1,4 @@
-import { ConversationMessage } from "./actions.server";
+import { type ConversationMessage } from "./actions.server";
 
 type ChatMessagesProps = {
   messages: ConversationMessage[];
@@ -6,7 +6,9 @@ type ChatMessagesProps = {
 
 export default function ChatMessages({ messages }: ChatMessagesProps) {
   return (
-    <div className="flex flex-col gap-4 pt-4">
+    <div className="flex flex-col-reverse gap-4 pt-4">
+      <div className="h-40 px-4"></div>
+
       {messages.map((message) => {
         return (
           <div
@@ -42,13 +44,6 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
           </div>
         );
       })}
-
-      <div
-        className="h-40 px-4"
-        style={{
-          overflowAnchor: "auto",
-        }}
-      ></div>
     </div>
   );
 }
