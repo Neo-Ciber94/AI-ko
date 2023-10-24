@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
-import { InferSelectModel, and, eq } from "drizzle-orm";
+import { type InferSelectModel, and, eq } from "drizzle-orm";
 import { conversationMessages, conversations } from "@/lib/database/schema";
 import { action } from "@/lib/action";
 import { z } from "zod";

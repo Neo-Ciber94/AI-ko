@@ -5,7 +5,7 @@ import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
 import { type ConversationMessage } from "./actions.server";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Chat({
   messages,
@@ -13,7 +13,15 @@ export default function Chat({
   messages: ConversationMessage[];
 }) {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { conversationId } = useParams<{ conversationId: string }>();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight });
+    }
+  }, []);
 
   const handleChat = async (message: string) => {
     await sendConversationMessage({
@@ -24,17 +32,10 @@ export default function Chat({
     router.refresh();
   };
 
-  useEffect(() => {
-    const chatMessagesElement = document.querySelector("#chat-messages");
-    if (chatMessagesElement) {
-      chatMessagesElement.scrollTo({ top: chatMessagesElement.scrollHeight });
-    }
-  }, []);
-
   return (
     <>
       <div
-        id="chat-messages"
+        ref={containerRef}
         className="relative h-full w-full overflow-y-auto"
       >
         {messages.length === 0 ? (
