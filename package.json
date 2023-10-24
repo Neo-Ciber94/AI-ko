@@ -6,16 +6,17 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=18"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "lerna": "^7.3.1"
+    "node": ">=18",
+    "pnpm": ">=8.0.0"
   },
   "scripts": {
     "dev": "lerna run dev",
     "build": "lerna run build",
     "start": "lerna run start",
     "prod": "lerna run build && lerna run start"
+  },
+  "devDependencies": {
+    "lerna": "^7.4.1",
+    "rimraf": "^5.0.5"
   }
 }
