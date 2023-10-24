@@ -1,4 +1,4 @@
-import { createIsomorphicStore } from "@/components/isomorphic/server";
+import { createIsomorphicStore } from "next-isomorphic/server";
 
 export const appStore = createIsomorphicStore("aiChatbot", {
   isSidebarOpen: true as boolean,

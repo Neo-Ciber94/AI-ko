@@ -51,7 +51,7 @@ type CreateIsomorphicClientOptions<S extends IsomorphicStore> = {
    * Called each time the store state changes on the client.
    * @param newState The new state.
    */
-  onChange?: (newState: S["state"]) => void;
+  onChange?: (changes: { newState: S["state"]; prevState: S["state"] }) => void;
 };
 
 /**
@@ -76,7 +76,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
 
       const setValue = useCallback(
         (newValue: SetStateAction<TValue>) => {
-          const prevValue = store.state[name as TKey];
+          const prevValue = store.state[name as TKey] as S["state"];
           const value =
             newValue instanceof Function
               ? newValue(prevValue as TValue)
@@ -89,7 +89,10 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
             };
 
             if (onChange) {
-              onChange({ ...newState });
+              onChange({
+                newState: { ...newState },
+                prevState: { ...prevValue },
+              });
             }
 
             return {
