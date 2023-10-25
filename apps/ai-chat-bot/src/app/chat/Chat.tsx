@@ -26,7 +26,7 @@ export default function Chat({
   const handleChat = async (message: string) => {
     await sendConversationMessage({
       conversationId,
-      message,
+      content: message,
     });
 
     router.refresh();

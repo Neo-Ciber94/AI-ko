@@ -26,6 +26,7 @@ export const createConversation = action(z.undefined(), async () => {
     .values({
       title: "New Chat " + crypto.randomUUID(),
       userId: session.user.userId,
+      model: "gpt-3.5-turbo",
     })
     .returning();
 
@@ -55,16 +56,16 @@ export const deleteConversation = action(
 
 export const sendConversationMessage = async ({
   conversationId,
-  message,
+  content,
 }: {
   conversationId: string;
-  message: string;
+  content: string;
 }) => {
   await getRequiredSession(); // ensure session
 
   await db.insert(conversationMessages).values({
-    sender: "user",
+    role: "user",
     conversationId,
-    message,
+    content,
   });
 };
