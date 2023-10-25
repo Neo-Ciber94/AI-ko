@@ -33,6 +33,7 @@ export const conversations = sqliteTable("conversation", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
+  model: text("model").notNull(),
   title: text("title").notNull(),
   createdAt: integer("created_at")
     .notNull()
@@ -44,8 +45,8 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   conversationId: text("conversation_id").notNull(),
-  sender: text("sender").notNull(),
-  message: text("message").notNull(),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),

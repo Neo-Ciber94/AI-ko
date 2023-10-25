@@ -6,6 +6,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   DATABASE_AUTH_TOKEN: z.string(),
   DATABASE_URL: z.string(),
+  OPENAI_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

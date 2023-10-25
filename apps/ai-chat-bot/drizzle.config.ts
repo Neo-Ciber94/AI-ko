@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { env } from "../ai-chat-bot/src/lib/env";
 import type { Config } from "drizzle-kit";
 
