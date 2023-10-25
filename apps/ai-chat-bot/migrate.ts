@@ -1,9 +1,15 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import Database from "better-sqlite3";
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
+import { env } from "@/lib/env";
+import { createClient } from "@libsql/client";
 
-const sqlite = new Database("./data/my_data.db");
-const db = drizzle(sqlite);
+export const tursoDbClient = createClient({
+  url: env.DATABASE_URL,
+  authToken: env.DATABASE_AUTH_TOKEN,
+});
+
+const db = drizzle(tursoDbClient);
 
 // this will automatically run needed migrations on the database
-migrate(db, { migrationsFolder: "./drizzle" });
+migrate(db, { migrationsFolder: "./drizzle" }).catch(console.error);

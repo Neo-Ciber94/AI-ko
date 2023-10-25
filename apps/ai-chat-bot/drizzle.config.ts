@@ -1,10 +1,11 @@
+import { env } from "../ai-chat-bot/src/lib/env";
 import type { Config } from "drizzle-kit";
 
 export default {
   schema: "./src/lib/database/schema.ts",
-  driver: "better-sqlite",
+  driver: "libsql",
   out: "./drizzle",
   dbCredentials: {
-    url: "./data/my_data.db",
+    url: env.DATABASE_URL,
   },
 } satisfies Config;

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1697774872634,
-      "tag": "0000_curious_wrecker",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1698014818141,
-      "tag": "0001_woozy_avengers",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1698020059553,
-      "tag": "0002_careful_ulik",
+      "when": 1698192285193,
+      "tag": "0000_cynical_namor",
       "breakpoints": true
     }
   ]

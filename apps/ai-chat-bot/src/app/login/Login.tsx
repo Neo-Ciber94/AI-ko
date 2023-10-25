@@ -3,12 +3,14 @@ import { FcGoogle } from "react-icons/fc";
 export default function Login() {
   return (
     <div
-      className="flex w-full flex-col gap-2 rounded-lg border h-fit
+      className="flex h-fit w-full flex-col gap-2 rounded-lg border
     border-gray-400/40 px-4 pb-8 pt-4 shadow-lg dark:border-neutral-500 xs:w-[400px]"
     >
       <div className="mb-2">
         <h1 className="text-xl font-bold">Login</h1>
-        <p className="text-xs text-gray-500/80 dark:text-gray-400/70">To continue to the AIChatbot</p>
+        <p className="text-xs text-gray-500/80 dark:text-gray-400/70">
+          To continue to the AIChatbot
+        </p>
       </div>
       <a
         href="/api/auth/google/login"

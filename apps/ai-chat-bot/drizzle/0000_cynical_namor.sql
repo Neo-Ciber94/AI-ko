@@ -1,6 +1,17 @@
-CREATE TABLE `user` (
+CREATE TABLE `conversation_message` (
 	`id` text PRIMARY KEY NOT NULL,
-	`username` text
+	`conversation_id` text NOT NULL,
+	`sender` text NOT NULL,
+	`message` text NOT NULL,
+	`created_at` integer NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `conversation` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`title` text NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `user_key` (
@@ -16,4 +27,9 @@ CREATE TABLE `user_session` (
 	`active_expires` blob NOT NULL,
 	`idle_expires` blob NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `user` (
+	`id` text PRIMARY KEY NOT NULL,
+	`username` text
 );

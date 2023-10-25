@@ -1,14 +1,6 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/utils";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
-export default async function ChatPage() {
-  const session = await getSession();
-
-  if (!session) {
-    redirect("/login");
-  }
-
+export default function ChatPage() {
   return (
     <div className="flex h-full flex-row items-center justify-center p-4">
       <p

@@ -1,12 +1,12 @@
-import { betterSqlite3 } from "@lucia-auth/adapter-sqlite";
+import { libsql } from "@lucia-auth/adapter-sqlite";
 import { lucia } from "lucia";
 import { nextjs_future } from "lucia/middleware";
-import { sqliteDatabase } from "../database";
+import { tursoDbClient } from "../database";
 import { google } from "@lucia-auth/oauth/providers";
 import { env } from "../env";
 
 export const auth = lucia({
-  adapter: betterSqlite3(sqliteDatabase, {
+  adapter: libsql(tursoDbClient, {
     user: "user",
     session: "user_session",
     key: "user_key",
