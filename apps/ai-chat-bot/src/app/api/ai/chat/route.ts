@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
       role: x.role,
     }));
 
-    console.log({ messages });
     const response = await openai.chat.completions.create({
       stream: true,
       model: data.model,
