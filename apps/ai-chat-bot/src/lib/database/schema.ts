@@ -1,4 +1,10 @@
-import { sqliteTable, text, blob, integer } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  blob,
+  integer,
+  customType,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -40,12 +46,18 @@ export const conversations = sqliteTable("conversation", {
     .$defaultFn(() => Date.now()),
 });
 
+const roleColumn = customType<{ data: "user" | "system" }>({
+  dataType() {
+    return "text";
+  },
+});
+
 export const conversationMessages = sqliteTable("conversation_message", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   conversationId: text("conversation_id").notNull(),
-  role: text("role").notNull(),
+  role: roleColumn("role").notNull(),
   content: text("content").notNull(),
   createdAt: integer("created_at")
     .notNull()

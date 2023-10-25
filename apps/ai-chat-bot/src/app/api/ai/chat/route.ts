@@ -14,6 +14,7 @@ const openai = new OpenAI({
 const input = z.object({
   messages: z.array(
     z.object({
+      id: z.string(),
       content: z.string(),
       role: z.enum(["user", "system"]),
     }),
@@ -21,16 +22,24 @@ const input = z.object({
   model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
 });
 
+export type ChatInput = z.infer<typeof input>;
+
 export async function POST(req: NextRequest) {
   const result = input.safeParse(await req.json());
 
   if (result.success) {
     const { data } = result;
 
+    const messages = data.messages.map((x) => ({
+      content: x.content,
+      role: x.role,
+    }));
+
+    console.log({ messages });
     const response = await openai.chat.completions.create({
       stream: true,
       model: data.model,
-      messages: data.messages,
+      messages,
     });
 
     return OpenAIStream(response);

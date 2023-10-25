@@ -1,14 +1,12 @@
 import { type ConversationMessage } from "./actions.server";
 
 type ChatMessagesProps = {
-  messages: ConversationMessage[];
+  messages: Omit<ConversationMessage, "conversationId" | "createdAt">[];
 };
 
 export default function ChatMessages({ messages }: ChatMessagesProps) {
   return (
-    <div className="flex flex-col-reverse gap-4 pt-4">
-      <div className="h-40 px-4"></div>
-
+    <div className="flex flex-col gap-4 pt-4">
       {messages.map((message) => {
         return (
           <div
@@ -44,6 +42,8 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
           </div>
         );
       })}
+
+      <div className="h-40 px-4"></div>
     </div>
   );
 }
