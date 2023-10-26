@@ -24,9 +24,7 @@ export default function Sidebar({
       {isOpen && (
         <div
           className="visible fixed z-10 h-full w-full bg-black/40 sm:invisible"
-          onClick={() => {
-            setIsOpen(false);
-          }}
+          onClick={() => setIsOpen(false)}
         ></div>
       )}
 
