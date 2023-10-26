@@ -43,6 +43,45 @@ export default function ChatMessages(props: ChatMessagesProps) {
   );
 }
 
+function MessageContent({ message }: { message: Message }) {
+  // we don't format user code
+  if (message.role === "user") {
+    return (
+      <pre
+        className={
+          "chat-bubble-user w-full whitespace-pre-wrap break-all px-4 py-8"
+        }
+      >
+        {message.content}
+      </pre>
+    );
+  }
+
+  return (
+    <div
+      className={
+        "chat-bubble-system w-full whitespace-pre-wrap break-all px-4 py-8"
+      }
+      dangerouslySetInnerHTML={{
+        __html: message.content,
+      }}
+    ></div>
+  );
+}
+
+function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
+  return (
+    <div
+      className={`flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg 
+      border-2 bg-black text-white ${
+        role === "user" ? "border-blue-500" : "border-red-500"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
 function formatMessages(messages: Message[]) {
   type MarkdownIt = ReturnType<typeof markdownIt>;
 
@@ -107,43 +146,4 @@ function formatMessages(messages: Message[]) {
       content: formattedContent,
     };
   });
-}
-
-function MessageContent({ message }: { message: Message }) {
-  // we don't format user code
-  if (message.role === "user") {
-    return (
-      <pre
-        className={
-          "chat-bubble-user w-full whitespace-pre-wrap break-all px-4 py-8"
-        }
-      >
-        {message.content}
-      </pre>
-    );
-  }
-
-  return (
-    <div
-      className={
-        "chat-bubble-system w-full whitespace-pre-wrap break-all px-4 py-8"
-      }
-      dangerouslySetInnerHTML={{
-        __html: message.content,
-      }}
-    ></div>
-  );
-}
-
-function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
-  return (
-    <div
-      className={`flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg 
-      border-2 bg-black text-white ${
-        role === "user" ? "border-blue-500" : "border-red-500"
-      }`}
-    >
-      {children}
-    </div>
-  );
 }
