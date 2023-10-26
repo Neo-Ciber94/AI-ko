@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 // app.d.ts
 
 /// <reference types="lucia" />
@@ -8,4 +10,3 @@ declare namespace Lucia {
   };
   type DatabaseSessionAttributes = {};
 }
-
