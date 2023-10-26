@@ -29,7 +29,7 @@ export default function ChatMessages(props: ChatMessagesProps) {
         return (
           <div
             key={message.id}
-            className="flex flex-row items-center gap-4 px-8"
+            className="flex flex-row items-center gap-4 px-8 text-xs sm:text-base"
           >
             {role === "system" && <Avatar role={role}>AI</Avatar>}
             <MessageContent message={message} />
@@ -59,9 +59,7 @@ function MessageContent({ message }: { message: Message }) {
 
   return (
     <div
-      className={
-        "chat-bubble-system w-full whitespace-pre-wrap break-all px-4 py-8"
-      }
+      className={"chat-bubble-system w-full px-4 py-8"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
