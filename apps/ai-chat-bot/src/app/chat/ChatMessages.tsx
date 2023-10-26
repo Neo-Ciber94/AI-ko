@@ -1,5 +1,5 @@
 import "highlight.js/styles/github-dark.min.css";
-import { type ConversationMessage } from "@/lib/actions/conversation-messages";
+import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 

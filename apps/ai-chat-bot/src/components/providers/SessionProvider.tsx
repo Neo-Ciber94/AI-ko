@@ -1,5 +1,5 @@
 "use client";
-import { Session } from "lucia";
+import { type Session } from "lucia";
 import { createContext, useContext } from "react";
 
 type SessionContext = {

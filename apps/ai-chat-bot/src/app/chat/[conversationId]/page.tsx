@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Chat from "../Chat";
-import { getConversationMessages } from "@/lib/actions/conversation-messages";
+import { getConversationMessages } from "@/lib/actions/conversationMessages";
 
 type Params = {
   conversationId: string;
