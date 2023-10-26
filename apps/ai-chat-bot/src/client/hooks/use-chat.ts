@@ -1,5 +1,8 @@
 import { type ChatInput } from "@/app/api/ai/chat/route";
-import { HEADER_SYSTEM_MESSAGE_ID } from "@/lib/common/constants";
+import {
+  HEADER_SYSTEM_MESSAGE_ID,
+  HEADER_USER_MESSAGE_ID,
+} from "@/lib/common/constants";
 import { useCallback, useRef, useState } from "react";
 
 type ChatMessage = ChatInput["messages"][number];
@@ -27,6 +30,7 @@ export function useChat(opts: UseChatOptions) {
 
   const chat = useCallback(
     async (message: string) => {
+      console.log("chat!");
       setIsLoading(true);
 
       try {
@@ -71,7 +75,7 @@ export function useChat(opts: UseChatOptions) {
           res.headers.get(HEADER_SYSTEM_MESSAGE_ID) || crypto.randomUUID();
 
         const userMessageId =
-          res.headers.get(HEADER_SYSTEM_MESSAGE_ID) || crypto.randomUUID();
+          res.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
 
         // Assign user message id, to last message
         setMessages((prev) => {
@@ -89,7 +93,7 @@ export function useChat(opts: UseChatOptions) {
         // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
-          const text = decoder.decode(value);
+          const chunk = decoder.decode(value);
 
           if (isReadingRef.current) {
             setMessages((prev) => {
@@ -100,14 +104,14 @@ export function useChat(opts: UseChatOptions) {
                 return prev;
               }
 
-              lastMessage.content += text;
+              lastMessage.content += chunk;
               return msgs;
             });
           } else {
             isReadingRef.current = true;
             setMessages((prev) => [
               ...prev,
-              { id: systemMessageId, role: "system", content: text },
+              { id: systemMessageId, role: "system", content: chunk },
             ]);
           }
 

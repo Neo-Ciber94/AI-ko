@@ -88,7 +88,9 @@ function formatMessages(messages: Message[]) {
   };
 
   return messages.map((msg) => {
-    const formattedContent = md.render(msg.content);
+    const formattedContent =
+      msg.role === "system" ? md.render(msg.content) : msg.content;
+
     return {
       ...msg,
       content: formattedContent,
@@ -97,11 +99,18 @@ function formatMessages(messages: Message[]) {
 }
 
 function MessageContent({ message }: { message: Message }) {
+  // we don't format user code
+  if (message.role === "user") {
+    return (
+      <pre className={"chat-bubble-user w-full whitespace-pre-wrap px-4 py-8"}>
+        {message.content}
+      </pre>
+    );
+  }
+
   return (
     <div
-      className={`w-full px-4 py-8 ${
-        message.role === "user" ? "chat-bubble-user" : "chat-bubble-system"
-      }`}
+      className={"chat-bubble-system w-full px-4 py-8"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
