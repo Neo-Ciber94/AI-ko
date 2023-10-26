@@ -7,9 +7,9 @@ import { useCallback, useRef, useState } from "react";
 
 type ChatMessage = ChatInput["messages"][number];
 
-type ChatInputWithoutLastMessage = Omit<ChatInput, "newMessage">;
+type ChatInputWithoutNewMessage = Omit<ChatInput, "newMessage">;
 
-type UseChatOptions = ChatInputWithoutLastMessage & {
+type UseChatOptions = ChatInputWithoutNewMessage & {
   endpoint?: string;
   conversationId: string;
   onError?: (err: unknown) => void;
@@ -25,7 +25,6 @@ export function useChat(opts: UseChatOptions) {
   } = opts || {};
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
-  const isReadingRef = useRef(false);
   const onErrorRef = useRef(onError);
 
   const chat = useCallback(
@@ -34,16 +33,17 @@ export function useChat(opts: UseChatOptions) {
       setIsLoading(true);
 
       try {
-        const newMessage: ChatMessage = {
-          id: `temp_${crypto.randomUUID()}`, // temporal id
-          content: message,
-          role: "user",
-        };
-
         const prevMessages = messages;
 
         // Optimistically add the new message to the queue
-        setMessages((msgs) => [...msgs, newMessage]);
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            id: `temp_${crypto.randomUUID()}`, // temporal id
+            content: message,
+            role: "user",
+          },
+        ]);
 
         const res = await fetch(endpoint, {
           method: "POST",
@@ -55,7 +55,7 @@ export function useChat(opts: UseChatOptions) {
             conversationId,
             messages: prevMessages,
             newMessage: { content: message },
-          }),
+          } satisfies ChatInput),
         });
 
         if (!res) {
@@ -69,6 +69,8 @@ export function useChat(opts: UseChatOptions) {
           throw new Error("Unable to read response from server");
         }
 
+        let isReading = false;
+        let content = "";
         const decoder = new TextDecoder();
 
         const systemMessageId =
@@ -79,15 +81,14 @@ export function useChat(opts: UseChatOptions) {
 
         // Assign user message id, to last message
         setMessages((prev) => {
-          const lastMessage = prev.at(-1);
+          const msgs = prev.slice();
+          const lastMessage = msgs.pop(); // remove the message with the temp id and assign the actual id
 
-          if (lastMessage && lastMessage.id.startsWith("temp_")) {
-            const msgs = prev.slice();
-            lastMessage.id = userMessageId;
-            return msgs;
+          if (lastMessage) {
+            msgs.push({ ...lastMessage, id: userMessageId });
           }
 
-          return prev;
+          return msgs;
         });
 
         // eslint-disable-next-line no-constant-condition
@@ -95,24 +96,21 @@ export function useChat(opts: UseChatOptions) {
           const { done, value } = await reader.read();
           const chunk = decoder.decode(value);
 
-          if (isReadingRef.current) {
+          content += chunk;
+
+          if (isReading) {
             setMessages((prev) => {
               const msgs = prev.slice();
-              const lastMessage = msgs.at(-1);
-
-              if (!lastMessage) {
-                return prev;
-              }
-
-              lastMessage.content += chunk;
+              const last = msgs.pop()!;
+              msgs.push({ ...last, content });
               return msgs;
             });
           } else {
-            isReadingRef.current = true;
             setMessages((prev) => [
               ...prev,
-              { id: systemMessageId, role: "system", content: chunk },
+              { id: systemMessageId, role: "system", content },
             ]);
+            isReading = true;
           }
 
           if (done) {
@@ -123,10 +121,7 @@ export function useChat(opts: UseChatOptions) {
         if (onErrorRef.current) {
           onErrorRef.current(err);
         }
-
-        // TODO: Rollback to previous message?
       } finally {
-        isReadingRef.current = false;
         setIsLoading(false);
       }
     },
