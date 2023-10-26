@@ -7,14 +7,12 @@ import {
 } from "@heroicons/react/24/solid";
 
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
-import { useRouter } from "next/navigation";
 
 type HeaderProps = {
   showSidebarControls?: boolean;
 };
 
 export default function Header({ showSidebarControls }: HeaderProps) {
-  const router = useRouter();
   const [isOpen, setIsOpen] = isomorphicClient.useValue("isSidebarOpen");
   const [isDark, setIsDark] = isomorphicClient.useValue("isDark");
 
@@ -37,7 +35,7 @@ export default function Header({ showSidebarControls }: HeaderProps) {
           <button
             onClick={handleToggleDarkMode}
             title="Toggle dark mode"
-            className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
+            className="rounded-md p-3 shadow-white/40 shadow-inset hover:bg-neutral-900"
           >
             {isDark ? (
               <SunIcon className="h-6 w-6 text-orange-400" />
@@ -49,7 +47,7 @@ export default function Header({ showSidebarControls }: HeaderProps) {
           {showSidebarControls && (
             <button
               title={`${isOpen ? "Close Sidebar" : "Expand Sidebar"}`}
-              className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900 text-white"
+              className="rounded-md p-3 text-white shadow-white/40 shadow-inset hover:bg-neutral-900"
               onClick={handleToggleSidebar}
             >
               {isOpen ? (

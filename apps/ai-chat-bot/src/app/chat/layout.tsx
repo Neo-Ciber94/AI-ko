@@ -1,5 +1,5 @@
-import Layout from "@/components/layout/Layout";
-import { ConversationsProvider } from "@/components/providers/ConversationsProvider";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { getConversations } from "@/lib/actions/conversations";
 
 export default async function PageLayout({
@@ -10,8 +10,12 @@ export default async function PageLayout({
   const conversations = await getConversations();
 
   return (
-    <ConversationsProvider conversations={conversations}>
-      <Layout showSidebar>{children}</Layout>
-    </ConversationsProvider>
+    <main className="flex h-screen flex-row overflow-hidden">
+      <Sidebar conversations={conversations} />
+      <div className="relative flex flex-grow flex-col">
+        <Header showSidebarControls />
+        {children}
+      </div>
+    </main>
   );
 }

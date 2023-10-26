@@ -4,13 +4,19 @@ import Link from "next/link";
 import { useAction } from "next-safe-action/hook";
 import { useParams } from "next/navigation";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { useConversations } from "../providers/ConversationsProvider";
-import { deleteConversation } from "@/lib/actions/conversations";
 
-export default function ChatConversations() {
+import {
+  type Conversation,
+  deleteConversation,
+} from "@/lib/actions/conversations";
+
+export default function ChatConversations({
+  conversations,
+}: {
+  conversations: Conversation[];
+}) {
   const { conversationId } = useParams<{ conversationId: string }>();
   const deleteConversationAction = useAction(deleteConversation);
-  const conversations = useConversations();
 
   return (
     <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">

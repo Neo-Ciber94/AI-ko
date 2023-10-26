@@ -1,14 +1,21 @@
 "use client";
 
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
-import { logOut, useSession } from "../providers/SessionProvider";
+import { logOut, useSession } from "./providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
 import { useAction } from "next-safe-action/hook";
 import ChatConversations from "./ChatConversations";
-import { createConversation } from "@/lib/actions/conversations";
+import {
+  type Conversation,
+  createConversation,
+} from "@/lib/actions/conversations";
 
-export default function Sidebar() {
+export default function Sidebar({
+  conversations,
+}: {
+  conversations: Conversation[];
+}) {
   const { session } = useSession();
   const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
   const { execute, status } = useAction(createConversation);
@@ -45,7 +52,7 @@ export default function Sidebar() {
               </button>
             </div>
 
-            <ChatConversations />
+            <ChatConversations conversations={conversations} />
 
             {session && (
               <div className="mt-auto border-t border-t-violet-600 pt-4">
@@ -53,7 +60,7 @@ export default function Sidebar() {
                   <span>{session.user.username}</span>
                   <button
                     title="Log out"
-                    className="shadow-inset rounded-md p-3 shadow-white/40 hover:bg-neutral-900"
+                    className="rounded-md p-3 shadow-white/40 shadow-inset hover:bg-neutral-900"
                     onClick={logOut}
                   >
                     <ArrowRightOnRectangleIcon className="h-6 w-6" />
