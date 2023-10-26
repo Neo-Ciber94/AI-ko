@@ -8,7 +8,7 @@
   }
 
   ::-webkit-scrollbar {
-    @apply w-4;
+    @apply w-2;
   }
 
   ::-webkit-scrollbar-track {
@@ -31,47 +31,5 @@
   .conversations-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-transparent group-hover:bg-neutral-600;
     box-shadow: none;
-  }
-}
-
-@layer components {
-  .chat-bubble-system {
-    position: relative;
-    border-radius: 0.4em;
-    @apply bg-black text-white;
-  }
-
-  .chat-bubble-system:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 0;
-    height: 0;
-    border: 13px solid transparent;
-    border-left: 0;
-    margin-top: -13px;
-    margin-left: -12px;
-    @apply border-r-black;
-  }
-
-  .chat-bubble-user {
-    position: relative;
-    border-radius: 0.4em;
-    @apply bg-white text-black dark:bg-neutral-800 dark:text-white;
-  }
-
-  .chat-bubble-user:after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 50%;
-    width: 0;
-    height: 0;
-    border: 13px solid transparent;
-    border-right: 0;
-    margin-top: -13px;
-    margin-right: -12px;
-    @apply border-l-white dark:border-l-neutral-800;
   }
 }

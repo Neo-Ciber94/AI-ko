@@ -29,11 +29,23 @@ export default function ChatMessages(props: ChatMessagesProps) {
         return (
           <div
             key={message.id}
-            className="flex flex-row items-center gap-4 px-8 text-xs sm:text-base"
+            className={
+              "flex flex-row items-center gap-4 px-2 text-xs sm:px-8 sm:text-base"
+            }
           >
-            {role === "system" && <Avatar role={role}>AI</Avatar>}
-            <MessageContent message={message} />
-            {role === "user" && <Avatar role={role}>Me</Avatar>}
+            <div
+              className={`w-full rounded-lg p-2 ${
+                role === "user"
+                  ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
+                  : "bg-black text-white"
+              }`}
+            >
+              <div className="flex w-full flex-row justify-end">
+                {role === "system" && <Avatar role={role}>AI</Avatar>}
+                {role === "user" && <Avatar role={role}>Me</Avatar>}
+              </div>
+              <MessageContent message={message} />
+            </div>
           </div>
         );
       })}
@@ -47,11 +59,7 @@ function MessageContent({ message }: { message: Message }) {
   // we don't format user code
   if (message.role === "user") {
     return (
-      <pre
-        className={
-          "chat-bubble-user w-full whitespace-pre-wrap break-all px-4 py-8"
-        }
-      >
+      <pre className={"w-full whitespace-pre-wrap break-all p-2 sm:p-4"}>
         {message.content}
       </pre>
     );
@@ -59,7 +67,7 @@ function MessageContent({ message }: { message: Message }) {
 
   return (
     <div
-      className={"chat-bubble-system w-full px-4 py-8"}
+      className={"w-full px-4 py-8"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
@@ -70,7 +78,7 @@ function MessageContent({ message }: { message: Message }) {
 function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
   return (
     <div
-      className={`flex h-10 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg 
+      className={`flex h-10 w-16 flex-shrink-0 flex-row items-center justify-center rounded-lg 
       border-2 bg-black text-white ${
         role === "user" ? "border-blue-500" : "border-red-500"
       }`}
