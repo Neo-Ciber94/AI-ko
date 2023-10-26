@@ -57,20 +57,22 @@ function formatMessages(messages: Message[]) {
           }).value;
 
           return `<div class="my-4 flex flex-col">
-              <div class="flex flex-row">
-                  <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit">
-                    ${lang}
-                  </span>
-              </div>
-              <pre class="hljs p-4 rounded-lg whitespace-pre-wrap break-all"><code>${highlighted}</code></pre>
-          </div>`;
+                <div class="flex flex-row">
+                    <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit">
+                      ${lang}
+                    </span>
+                </div>
+                <pre class="hljs p-4 rounded-lg whitespace-pre-wrap break-all"><code>${highlighted}</code></pre>
+            </div>`;
         } catch {
           //
         }
       }
 
       const html = md.utils.escapeHtml(str);
-      return `<pre class="hljs p-4 rounded-lg my-4 whitespace-pre-wrap break-all"><code>${html}</code></pre>`;
+      return `<pre class="hljs p-4 rounded-lg my-4 whitespace-pre-wrap break-all">
+          <code>${html}</code>
+      </pre>`;
     },
   });
 
