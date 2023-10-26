@@ -12,9 +12,12 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { conversationId } = useParams<{ conversationId: string }>();
   const { chat, isLoading, messages } = useChat({
+    conversationId,
     messages: props.messages,
     model: "gpt-3.5-turbo",
-    conversationId,
+    onError(err) {
+      console.error(err);
+    },
   });
 
   const scrollToBottom = () => {
@@ -33,7 +36,6 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
   return (
     <>
       <div
-        id="chat-messages"
         ref={containerRef}
         className="relative h-full w-full overflow-y-auto"
       >

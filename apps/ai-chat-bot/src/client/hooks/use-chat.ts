@@ -4,16 +4,26 @@ import { useCallback, useRef, useState } from "react";
 
 type ChatMessage = ChatInput["messages"][number];
 
-type UseChatOptions = ChatInput & {
+type ChatInputWithoutLastMessage = Omit<ChatInput, "newMessage">;
+
+type UseChatOptions = ChatInputWithoutLastMessage & {
   endpoint?: string;
   conversationId: string;
+  onError?: (err: unknown) => void;
 };
 
 export function useChat(opts: UseChatOptions) {
-  const { endpoint = "/api/ai/chat", ...rest } = opts || {};
-  const [messages, setMessages] = useState<ChatMessage[]>(rest.messages);
+  const {
+    endpoint = "/api/ai/chat",
+    onError,
+    model,
+    conversationId,
+    messages: initialMessages,
+  } = opts || {};
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const isReadingRef = useRef(false);
+  const onErrorRef = useRef(onError);
 
   const chat = useCallback(
     async (message: string) => {
@@ -26,6 +36,9 @@ export function useChat(opts: UseChatOptions) {
           role: "user",
         };
 
+        const prevMessages = messages;
+
+        // Optimistically add the new message to the queue
         setMessages((msgs) => [...msgs, newMessage]);
 
         const res = await fetch(endpoint, {
@@ -34,10 +47,17 @@ export function useChat(opts: UseChatOptions) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: rest.model,
-            messages: [...messages, newMessage],
+            model,
+            conversationId,
+            messages: prevMessages,
+            newMessage: { content: message },
           }),
         });
+
+        if (!res) {
+          const msg = await getResponseError(res);
+          throw new Error(msg ?? "Something went wrong");
+        }
 
         const reader = res.body?.getReader();
 
@@ -96,16 +116,36 @@ export function useChat(opts: UseChatOptions) {
           }
         }
       } catch (err) {
-        console.error(err);
+        if (onErrorRef.current) {
+          onErrorRef.current(err);
+        }
 
-        // TODO: Return to previous message?
+        // TODO: Rollback to previous message?
       } finally {
         isReadingRef.current = false;
         setIsLoading(false);
       }
     },
-    [endpoint, messages, rest.model],
+    [conversationId, endpoint, messages, model],
   );
 
   return { chat, messages, isLoading };
+}
+
+async function getResponseError(res: Response) {
+  if (res.headers.get("Content-Type") === "application/json") {
+    const json = await res.json();
+
+    if (typeof json.message === "string") {
+      return json.message;
+    }
+
+    return null;
+  }
+
+  if (res.headers.get("Content-Type") === "text/plain") {
+    return res.text();
+  }
+
+  return null;
 }

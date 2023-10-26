@@ -32,6 +32,12 @@ export const userKeys = sqliteTable("user_key", {
   hashedPassword: text("hashed_password"),
 });
 
+const modelColumn = customType<{ data: "gpt-3.5-turbo" | "gpt-4" }>({
+  dataType() {
+    return "text";
+  },
+});
+
 export const conversations = sqliteTable("conversation", {
   id: text("id")
     .primaryKey()
@@ -39,7 +45,7 @@ export const conversations = sqliteTable("conversation", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
-  model: text("model").notNull(),
+  model: modelColumn("model").notNull(),
   title: text("title").notNull(),
   createdAt: integer("created_at")
     .notNull()

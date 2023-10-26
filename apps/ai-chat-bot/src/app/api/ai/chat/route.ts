@@ -6,6 +6,11 @@ import z from "zod";
 export const runtime = "edge";
 
 const input = z.object({
+  conversationId: z.string(),
+  model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
+  newMessage: z.object({
+    content: z.string(),
+  }),
   messages: z.array(
     z.object({
       id: z.string(),
@@ -13,8 +18,6 @@ const input = z.object({
       role: z.enum(["user", "system"]),
     }),
   ),
-  conversationId: z.string(),
-  model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
 });
 
 export type ChatInput = z.infer<typeof input>;
@@ -24,7 +27,8 @@ export async function POST(req: NextRequest) {
 
   if (result.success) {
     const { data } = result;
-    return chatCompletion(data);
+    const response = await chatCompletion(data);
+    return response;
   } else {
     const message = result.error.message;
     return json({ message }, { status: 400 });
