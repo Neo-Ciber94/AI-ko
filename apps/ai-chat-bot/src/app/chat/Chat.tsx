@@ -21,12 +21,6 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
     },
   });
 
-  // useEffect(() => {
-  //   console.log({
-  //     last: messages.at(-1),
-  //   });
-  // }, [messages]);
-
   const scrollToBottom = () => {
     const container = containerRef.current;
     if (container) {

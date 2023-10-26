@@ -62,7 +62,7 @@ function formatMessages(messages: Message[]) {
                     ${lang}
                   </span>
               </div>
-              <pre class="hljs p-4 rounded-lg"><code>${highlighted}</code></pre>
+              <pre class="hljs p-4 rounded-lg whitespace-pre-wrap break-all"><code>${highlighted}</code></pre>
           </div>`;
         } catch {
           //
@@ -70,7 +70,7 @@ function formatMessages(messages: Message[]) {
       }
 
       const html = md.utils.escapeHtml(str);
-      return `<pre class="hljs p-4 rounded-lg my-4"><code>${html}</code></pre>`;
+      return `<pre class="hljs p-4 rounded-lg my-4 whitespace-pre-wrap break-all"><code>${html}</code></pre>`;
     },
   });
 
@@ -111,7 +111,11 @@ function MessageContent({ message }: { message: Message }) {
   // we don't format user code
   if (message.role === "user") {
     return (
-      <pre className={"chat-bubble-user w-full whitespace-pre-wrap px-4 py-8"}>
+      <pre
+        className={
+          "chat-bubble-user w-full whitespace-pre-wrap break-all px-4 py-8"
+        }
+      >
         {message.content}
       </pre>
     );
@@ -119,7 +123,9 @@ function MessageContent({ message }: { message: Message }) {
 
   return (
     <div
-      className={"chat-bubble-system w-full px-4 py-8"}
+      className={
+        "chat-bubble-system w-full whitespace-pre-wrap break-all px-4 py-8"
+      }
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
