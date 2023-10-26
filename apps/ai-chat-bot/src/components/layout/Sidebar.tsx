@@ -4,9 +4,9 @@ import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { logOut, useSession } from "../providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
-import { createConversation } from "./actions.server";
 import { useAction } from "next-safe-action/hook";
 import ChatConversations from "./ChatConversations";
+import { createConversation } from "@/lib/actions/conversations";
 
 export default function Sidebar() {
   const { session } = useSession();

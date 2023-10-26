@@ -4,7 +4,7 @@ import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
 import { type InferSelectModel, and, eq } from "drizzle-orm";
 import { conversationMessages, conversations } from "@/lib/database/schema";
-import { action } from "@/lib/action";
+import { action } from "@/lib/actions";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 

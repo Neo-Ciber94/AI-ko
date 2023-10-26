@@ -1,6 +1,6 @@
 import Layout from "@/components/layout/Layout";
-import { getConversations } from "@/components/layout/actions.server";
 import { ConversationsProvider } from "@/components/providers/ConversationsProvider";
+import { getConversations } from "@/lib/actions/conversations";
 
 export default async function PageLayout({
   children,

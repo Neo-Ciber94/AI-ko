@@ -1,11 +1,11 @@
 "use client";
 
-import { deleteConversation } from "./actions.server";
 import Link from "next/link";
 import { useAction } from "next-safe-action/hook";
 import { useParams } from "next/navigation";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useConversations } from "../providers/ConversationsProvider";
+import { deleteConversation } from "@/lib/actions/conversations";
 
 export default function ChatConversations() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -19,8 +19,8 @@ export default function ChatConversations() {
           <Link
             key={idx}
             href={`/chat/${conversation.id}`}
-            className={`shadow-inset flex flex-row items-center justify-between rounded-md p-4
-                  text-left text-sm shadow-white/20 hover:bg-neutral-900
+            className={`flex flex-row items-center justify-between rounded-md p-4 text-left
+                  text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
                   ${
                     conversationId === conversation.id
                       ? "bg-neutral-900"

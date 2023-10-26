@@ -2,10 +2,11 @@
 
 import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
-import { type ConversationMessage } from "./actions.server";
+
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useChat } from "@/client/hooks/use-chat";
+import { type ConversationMessage } from "@/lib/actions/conversation-messages";
 
 export default function Chat(props: { messages: ConversationMessage[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
