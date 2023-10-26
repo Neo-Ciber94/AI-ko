@@ -17,13 +17,18 @@ export default function Sidebar({
   conversations: Conversation[];
 }) {
   const { session } = useSession();
-  const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
+  const [isOpen, setIsOpen] = isomorphicClient.useValue("isSidebarOpen");
 
   return (
     <>
-      {/* {isOpen && (
-        <div className="fixed z-10 hidden h-full w-full bg-black/40 sm:hidden"></div>
-      )} */}
+      {isOpen && (
+        <div
+          className="visible fixed z-10 h-full w-full bg-black/40 sm:invisible"
+          onClick={() => {
+            setIsOpen(false);
+          }}
+        ></div>
+      )}
 
       <aside className="relative z-20 h-full">
         <div
