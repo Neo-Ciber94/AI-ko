@@ -6,7 +6,10 @@ import hljs from "highlight.js";
 // @ts-expect-error no types
 import hljsZig from "highlightjs-zig";
 hljs.registerLanguage("zig", hljsZig);
-hljs.initHighlightingOnLoad();
+
+if (typeof window !== "undefined") {
+  hljs.initHighlightingOnLoad();
+}
 
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
 type Role = Message["role"];
