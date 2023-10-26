@@ -68,9 +68,6 @@ importers:
       next-isomorphic:
         specifier: workspace:*
         version: link:../../packages/next-isomorphic
-      next-safe-action:
-        specifier: ^4.0.1
-        version: 4.0.3(next@14.0.0)(react@18.2.0)(zod@3.22.4)
       openai:
         specifier: ^4.13.0
         version: 4.13.0
@@ -3188,19 +3185,6 @@ packages:
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
-
-  /next-safe-action@4.0.3(next@14.0.0)(react@18.2.0)(zod@3.22.4):
-    resolution: {integrity: sha512-gY4B/f2ijRcg5yGxGVfjePj7efm0WAbaRDks7+Rg+A4oKrL5/Mtzgy/hMZvO2w/Y7a7YXMPcsuzz6gj+MGfMgA==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      next: '>= 13.4.2'
-      react: '>= 18.2.0'
-      zod: '>= 3.0.0'
-    dependencies:
-      next: 14.0.0(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      zod: 3.22.4
-    dev: false
 
   /next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}

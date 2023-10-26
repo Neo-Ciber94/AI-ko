@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useAction } from "next-safe-action/hook";
 import { useParams } from "next/navigation";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
