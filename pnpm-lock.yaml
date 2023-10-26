@@ -53,6 +53,9 @@ importers:
       highlight.js:
         specifier: ^11.9.0
         version: 11.9.0
+      highlightjs-zig:
+        specifier: ^1.0.2
+        version: 1.0.2
       lucia:
         specifier: ^2.7.1
         version: 2.7.2
@@ -2597,6 +2600,10 @@ packages:
   /highlight.js@11.9.0:
     resolution: {integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==}
     engines: {node: '>=12.0.0'}
+    dev: false
+
+  /highlightjs-zig@1.0.2:
+    resolution: {integrity: sha512-ZPSQfyiUMmux685sTNzTXuvXAXH6Gqzc+WSRzhYiknCRELjma1FOdTJ/zs8L9KutmX+YOtdlkmS+NypOxInpqA==}
     dev: false
 
   /human-signals@2.1.0:

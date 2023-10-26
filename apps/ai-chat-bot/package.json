@@ -18,6 +18,7 @@
     "@types/markdown-it": "^13.0.5",
     "drizzle-orm": "^0.28.6",
     "highlight.js": "^11.9.0",
+    "highlightjs-zig": "^1.0.2",
     "lucia": "^2.7.1",
     "markdown-it": "^13.0.2",
     "next": "14.0.0",

@@ -3,6 +3,11 @@ import { type ConversationMessage } from "@/lib/actions/conversation-messages";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
+// @ts-expect-error no types
+import hljsZig from "highlightjs-zig";
+hljs.registerLanguage("zig", hljsZig);
+hljs.initHighlightingOnLoad();
+
 type MarkdownIt = ReturnType<typeof markdownIt>;
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
 type Role = Message["role"];
