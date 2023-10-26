@@ -9,6 +9,7 @@ import {
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
   username: text("username"),
+  isAuthorized: integer("is_authorized").default(0),
 });
 
 export const userSessions = sqliteTable("user_session", {

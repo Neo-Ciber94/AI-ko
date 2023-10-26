@@ -15,6 +15,13 @@
       "when": 1698195779596,
       "tag": "0001_complex_peter_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1698362684328,
+      "tag": "0002_glorious_diamondback",
+      "breakpoints": true
     }
   ]
 }
