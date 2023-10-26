@@ -71,8 +71,8 @@ function formatMessages(messages: Message[]) {
 
       const html = md.utils.escapeHtml(str);
       return `<pre class="hljs p-4 rounded-lg my-4 whitespace-pre-wrap break-all">
-          <code>${html}</code>
-      </pre>`;
+                <code>${html}</code>
+            </pre>`;
     },
   });
 
