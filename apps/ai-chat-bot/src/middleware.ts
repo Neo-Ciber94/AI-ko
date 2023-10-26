@@ -15,6 +15,16 @@ export default async function middleware(req: NextRequest) {
     return redirectTo(req, "/login");
   }
 
+  // Is user is not unauthorized redirect to `/unauthorized`
+  if (pathname !== "/unauthorized" && !session.user.isAuthorized) {
+    return redirectTo(req, "/unauthorized");
+  }
+
+  // If is authorized redirect from `/unauthorized`
+  if (pathname === "/unauthorized" && session.user.isAuthorized) {
+    return redirectTo(req, "/chat");
+  }
+
   return NextResponse.next();
 }
 

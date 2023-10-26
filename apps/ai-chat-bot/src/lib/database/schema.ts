@@ -6,10 +6,25 @@ import {
   customType,
 } from "drizzle-orm/sqlite-core";
 
+const booleanType = customType<{
+  data: boolean;
+  driverData: number;
+}>({
+  dataType() {
+    return "integer";
+  },
+  toDriver(value) {
+    return value ? 1 : 0;
+  },
+  fromDriver(value) {
+    return value === 1;
+  },
+});
+
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
   username: text("username"),
-  isAuthorized: integer("is_authorized").default(0),
+  isAuthorized: booleanType("is_authorized").default(false),
 });
 
 export const userSessions = sqliteTable("user_session", {

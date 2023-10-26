@@ -7,12 +7,18 @@ import {
 } from "@heroicons/react/24/solid";
 
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
+import { logOut } from "./providers/SessionProvider";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 type HeaderProps = {
   showSidebarControls?: boolean;
+  showLogout?: boolean;
 };
 
-export default function Header({ showSidebarControls }: HeaderProps) {
+export default function Header({
+  showLogout,
+  showSidebarControls,
+}: HeaderProps) {
   const [isOpen, setIsOpen] = isomorphicClient.useValue("isSidebarOpen");
   const [isDark, setIsDark] = isomorphicClient.useValue("isDark");
 
@@ -32,6 +38,16 @@ export default function Header({ showSidebarControls }: HeaderProps) {
         </h1>
 
         <div className="ml-auto flex flex-row items-center gap-2">
+          {showLogout && (
+            <button
+              onClick={logOut}
+              title="Log out"
+              className="rounded-md p-3 shadow-white/40 shadow-inset hover:bg-neutral-900"
+            >
+              <ArrowRightOnRectangleIcon className="h-6 w-6 text-white" />
+            </button>
+          )}
+
           <button
             onClick={handleToggleDarkMode}
             title="Toggle dark mode"

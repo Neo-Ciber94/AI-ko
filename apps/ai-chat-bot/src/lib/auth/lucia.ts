@@ -21,6 +21,7 @@ export const auth = lucia({
   getUserAttributes(databaseUser) {
     return {
       username: databaseUser.username,
+      isAuthorized: databaseUser.is_authorized === 1,
     };
   },
 });
