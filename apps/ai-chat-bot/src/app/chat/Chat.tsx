@@ -24,14 +24,16 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
   const scrollToBottom = () => {
     const container = containerRef.current;
     if (container) {
-      container.scrollTo({ top: container.scrollHeight });
+      container.scrollTo({
+        top: container.scrollHeight,
+      });
     }
   };
 
   useEffect(() => {
     scrollToBottom();
     setLoaded(true);
-  }, []);
+  }, [messages]);
 
   const handleChat = async (message: string) => {
     await chat(message);
