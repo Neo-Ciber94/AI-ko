@@ -19,7 +19,7 @@ export const getConversations = async () => {
   return result;
 };
 
-export const createConversation = action(z.undefined(), async () => {
+export async function createConversation() {
   const session = await getRequiredSession();
   const result = await db
     .insert(conversations)
@@ -32,7 +32,7 @@ export const createConversation = action(z.undefined(), async () => {
 
   revalidatePath("/chat", "layout");
   return result[0]!;
-});
+}
 
 export const deleteConversation = action(
   z.object({

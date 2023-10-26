@@ -4,12 +4,12 @@ import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { logOut, useSession } from "./providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
-import { useAction } from "next-safe-action/hook";
 import ChatConversations from "./ChatConversations";
 import {
   type Conversation,
   createConversation,
 } from "@/lib/actions/conversations";
+import { useFormStatus } from "react-dom";
 
 export default function Sidebar({
   conversations,
@@ -18,9 +18,6 @@ export default function Sidebar({
 }) {
   const { session } = useSession();
   const [isOpen] = isomorphicClient.useValue("isSidebarOpen");
-  const { execute, status } = useAction(createConversation);
-
-  const handleCreateNewConversation = () => execute(undefined);
 
   return (
     <>
@@ -37,19 +34,9 @@ export default function Sidebar({
         >
           <div className="group relative flex h-full flex-col px-2 py-4">
             <div className="flex flex-row border-b border-b-red-500">
-              <button
-                disabled={status === "executing"}
-                onClick={handleCreateNewConversation}
-                className="mb-2 flex w-full flex-row items-center gap-3 rounded-lg px-4 py-2 text-base hover:bg-neutral-900 disabled:cursor-wait"
-              >
-                <ChatBubbleOvalLeftEllipsisIcon
-                  className="h-8 w-8"
-                  style={{
-                    transform: `rotateY(180deg)`,
-                  }}
-                />
-                <span>New Conversation</span>
-              </button>
+              <form action={createConversation}>
+                <SubmitButton />
+              </form>
             </div>
 
             <ChatConversations conversations={conversations} />
@@ -72,5 +59,25 @@ export default function Sidebar({
         </div>
       </aside>
     </>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      disabled={pending}
+      type="submit"
+      className="mb-2 flex w-full flex-row items-center gap-3 rounded-lg px-4 py-2 text-base hover:bg-neutral-900 disabled:cursor-wait"
+    >
+      <ChatBubbleOvalLeftEllipsisIcon
+        className="h-8 w-8"
+        style={{
+          transform: `rotateY(180deg)`,
+        }}
+      />
+      <span>New Conversation</span>
+    </button>
   );
 }
