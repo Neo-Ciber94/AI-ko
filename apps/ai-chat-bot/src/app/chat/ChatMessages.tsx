@@ -8,7 +8,6 @@ import hljsZig from "highlightjs-zig";
 hljs.registerLanguage("zig", hljsZig);
 hljs.initHighlightingOnLoad();
 
-type MarkdownIt = ReturnType<typeof markdownIt>;
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
 type Role = Message["role"];
 
@@ -42,6 +41,8 @@ export default function ChatMessages(props: ChatMessagesProps) {
 }
 
 function formatMessages(messages: Message[]) {
+  type MarkdownIt = ReturnType<typeof markdownIt>;
+
   const md: MarkdownIt = markdownIt({
     langPrefix: "```",
     highlight: (str, lang) => {
@@ -53,12 +54,12 @@ function formatMessages(messages: Message[]) {
           }).value;
 
           return `<div class="my-4 flex flex-col">
-          <div class="flex flex-row">
-          <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit">
-            ${lang}
-          </span>
-          </div>
-            <pre class="hljs p-4 rounded-lg"><code>${highlighted}</code></pre>
+              <div class="flex flex-row">
+                  <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit">
+                    ${lang}
+                  </span>
+              </div>
+              <pre class="hljs p-4 rounded-lg"><code>${highlighted}</code></pre>
           </div>`;
         } catch {
           //
