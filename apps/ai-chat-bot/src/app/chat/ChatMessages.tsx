@@ -67,7 +67,7 @@ function MessageContent({ message }: { message: Message }) {
 
   return (
     <div
-      className={"w-full px-4 py-8"}
+      className={"w-full px-4 py-4 sm:py-8"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
@@ -78,8 +78,8 @@ function MessageContent({ message }: { message: Message }) {
 function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
   return (
     <div
-      className={`flex h-10 w-16 flex-shrink-0 flex-row items-center justify-center rounded-lg 
-      border-2 bg-black text-white ${
+      className={`flex h-8 w-10 flex-shrink-0 flex-row items-center justify-center rounded-lg border-2 bg-black 
+      text-xs text-white sm:h-10 sm:w-16 sm:text-base ${
         role === "user" ? "border-blue-500" : "border-red-500"
       }`}
     >
