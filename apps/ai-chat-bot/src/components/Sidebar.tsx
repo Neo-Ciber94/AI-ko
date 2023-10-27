@@ -82,7 +82,7 @@ function SubmitButton() {
         }}
       />
       <span>New Conversation</span>
-      <LoadingSpinner size={18} />
+      {pending && <LoadingSpinner size={18} />}
     </button>
   );
 }
