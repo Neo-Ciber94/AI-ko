@@ -24,8 +24,8 @@ export default function ChatConversations({
           <Link
             key={idx}
             href={`/chat/${conversation.id}`}
-            className={`flex flex-row items-center justify-between rounded-md p-4 text-left
-                  text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
+            className={`group flex flex-row items-center justify-between rounded-md p-4
+                  text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
                   ${
                     conversationId === conversation.id
                       ? "bg-neutral-900"
@@ -38,7 +38,7 @@ export default function ChatConversations({
 
             <button
               title="Delete Conversation"
-              className="hover:text-red-500"
+              className="hidden hover:text-red-500 group-hover:block"
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();

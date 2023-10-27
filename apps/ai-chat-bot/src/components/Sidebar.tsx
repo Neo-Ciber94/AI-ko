@@ -35,7 +35,7 @@ export default function Sidebar({
           isOpen ? "border-rainbow-bottom w-10/12 border-r sm:w-[300px]" : "w-0"
         }`}
         >
-          <div className="group relative flex h-full flex-col px-2 py-4">
+          <div className="relative flex h-full flex-col px-2 py-4">
             <div className="flex flex-row border-b border-b-red-500">
               <form action={createConversation}>
                 <SubmitButton />
