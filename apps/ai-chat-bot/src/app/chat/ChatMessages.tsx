@@ -67,7 +67,7 @@ function MessageContent({ message }: { message: Message }) {
     return (
       <pre
         suppressHydrationWarning
-        className={"w-full whitespace-pre-wrap break-all p-2 sm:p-4"}
+        className={"w-full whitespace-pre-wrap break-all p-2"}
       >
         {message.content}
       </pre>
@@ -77,7 +77,7 @@ function MessageContent({ message }: { message: Message }) {
   return (
     <div
       suppressHydrationWarning
-      className={"w-full px-4 py-4 sm:py-8"}
+      className={"w-full p-2"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
