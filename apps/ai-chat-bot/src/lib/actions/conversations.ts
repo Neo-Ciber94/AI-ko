@@ -5,6 +5,7 @@ import { getRequiredSession } from "@/lib/auth/utils";
 import { type InferSelectModel, and, eq } from "drizzle-orm";
 import { conversationMessages, conversations } from "@/lib/database/schema";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export type Conversation = InferSelectModel<typeof conversations>;
 
@@ -28,8 +29,9 @@ export async function createConversation() {
     })
     .returning();
 
+  const conversation = result[0]!;
   revalidatePath("/chat", "layout");
-  return result[0]!;
+  redirect(`/chat/${conversation.id}`);
 }
 
 export async function updateConversation({
