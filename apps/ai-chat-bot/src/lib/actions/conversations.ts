@@ -4,8 +4,6 @@ import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
 import { type InferSelectModel, and, eq } from "drizzle-orm";
 import { conversationMessages, conversations } from "@/lib/database/schema";
-import { action } from "@/lib/actions";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
 export type Conversation = InferSelectModel<typeof conversations>;
@@ -34,25 +32,24 @@ export async function createConversation() {
   return result[0]!;
 }
 
-export const deleteConversation = action(
-  z.object({
-    conversationId: z.string(),
-  }),
-  async ({ conversationId }) => {
-    const session = await getRequiredSession();
+export async function deleteConversation({
+  conversationId,
+}: {
+  conversationId: string;
+}) {
+  const session = await getRequiredSession();
 
-    await db
-      .delete(conversations)
-      .where(
-        and(
-          eq(conversations.id, conversationId),
-          eq(conversations.userId, session.user.userId),
-        ),
-      );
+  await db
+    .delete(conversations)
+    .where(
+      and(
+        eq(conversations.id, conversationId),
+        eq(conversations.userId, session.user.userId),
+      ),
+    );
 
-    revalidatePath("/chat", "layout");
-  },
-);
+  revalidatePath("/chat", "layout");
+}
 
 export const sendConversationMessage = async ({
   conversationId,

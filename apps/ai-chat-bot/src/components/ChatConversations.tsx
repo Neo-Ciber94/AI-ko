@@ -15,7 +15,7 @@ export default function ChatConversations({
   conversations: Conversation[];
 }) {
   const { conversationId } = useParams<{ conversationId: string }>();
-  const deleteConversationAction = useAction(deleteConversation);
+  // const deleteConversationAction = useAction(deleteConversation);
 
   return (
     <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
@@ -39,12 +39,10 @@ export default function ChatConversations({
             <button
               title="Delete Conversation"
               className="hover:text-red-500"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                deleteConversationAction.execute({
-                  conversationId: conversation.id,
-                });
+                await deleteConversation({ conversationId: conversation.id });
               }}
             >
               <TrashIcon className="h-5 w-5 opacity-80" />
