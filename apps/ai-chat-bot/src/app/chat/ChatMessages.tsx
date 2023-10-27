@@ -1,4 +1,3 @@
-"use client";
 import "highlight.js/styles/github-dark.min.css";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import markdownIt from "markdown-it";
