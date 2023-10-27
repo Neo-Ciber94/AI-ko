@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   sqliteTable,
   text,
@@ -87,3 +88,17 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .notNull()
     .$defaultFn(() => Date.now()),
 });
+
+export const conversationRelations = relations(conversations, ({ many }) => ({
+  conversationMessages: many(conversationMessages),
+}));
+
+export const conversationMessagesRelations = relations(
+  conversationMessages,
+  ({ one }) => ({
+    conversation: one(conversations, {
+      fields: [conversationMessages.conversationId],
+      references: [conversations.id],
+    }),
+  }),
+);

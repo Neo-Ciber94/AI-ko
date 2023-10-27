@@ -3,10 +3,11 @@
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
 import { type InferSelectModel, and, eq } from "drizzle-orm";
-import { conversationMessages, conversations } from "@/lib/database/schema";
+import { conversations } from "@/lib/database/schema";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
+import { DEFAULT_CONVERSATION_TITLE } from "../common/constants";
 
 export type Conversation = InferSelectModel<typeof conversations>;
 
@@ -24,7 +25,7 @@ export async function createConversation() {
   const result = await db
     .insert(conversations)
     .values({
-      title: "New Chat " + crypto.randomUUID(),
+      title: `${DEFAULT_CONVERSATION_TITLE} ${crypto.randomUUID()}`,
       userId: session.user.userId,
       model: "gpt-3.5-turbo",
     })
@@ -35,7 +36,7 @@ export async function createConversation() {
   redirect(`/chat/${conversation.id}`);
 }
 
-export async function updateConversation({
+export async function updateConversationTitle({
   conversationId,
   title,
 }: {
@@ -87,10 +88,20 @@ export async function generateConversationTitle({
       eq(conversations.id, conversationId),
       eq(conversations.userId, session.user.userId),
     ),
-    with: {},
+    with: {
+      conversationMessages: true,
+    },
   });
 
   if (conversation == null) {
+    notFound();
+  }
+
+  const lastAssistantMessage = conversation.conversationMessages
+    .filter((x) => x.role === "assistant")
+    .pop();
+
+  if (lastAssistantMessage == null) {
     notFound();
   }
 
@@ -99,27 +110,24 @@ export async function generateConversationTitle({
     messages: [
       {
         role: "user",
-        content: `Generate a short and concise title for a conversation with the given content: \n`,
+        content: `Generate a short and concise single line title that summarizes a conversation with this content: \n\n${lastAssistantMessage.content}`,
       },
     ],
   });
 
-  console.log(openAiResponse);
+  const generatedTitle = openAiResponse.choices[0]?.message.content;
+  const newTitle = generatedTitle
+    ? removeQuotesFromString(generatedTitle)
+    : conversation.title;
+
+  await db
+    .update(conversations)
+    .set({ title: newTitle })
+    .where(eq(conversations.id, conversation.id));
+
+  revalidatePath("/chat", "layout");
 }
 
-// TODO: Delete
-export async function sendConversationMessage({
-  conversationId,
-  content,
-}: {
-  conversationId: string;
-  content: string;
-}) {
-  await getRequiredSession(); // ensure session
-
-  await db.insert(conversationMessages).values({
-    role: "user",
-    conversationId,
-    content,
-  });
+function removeQuotesFromString(input: string) {
+  return input.replace(/^['"]|['"]$/g, "");
 }

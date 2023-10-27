@@ -12,9 +12,11 @@ import {
 import {
   type Conversation,
   deleteConversation,
-  updateConversation,
+  updateConversationTitle,
+  generateConversationTitle,
 } from "@/lib/actions/conversations";
 import React, { useState } from "react";
+import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 export default function ChatConversations({
   conversations,
@@ -35,6 +37,7 @@ export default function ChatConversations({
         return (
           <Link
             key={idx}
+            title={conversation.title}
             href={`/chat/${conversation.id}`}
             className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
                   text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
@@ -67,13 +70,30 @@ export default function ChatConversations({
             )}
 
             <div className="flex flex-row items-center gap-2">
+              <button
+                type="submit"
+                title="Generate"
+                className={`text-white/60 hover:text-white ${
+                  isCurrentConversation ? "block" : "hidden group-hover:block"
+                } `}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  await generateConversationTitle({
+                    conversationId: conversation.id,
+                  });
+                }}
+              >
+                <ArrowPathIcon className="h-5 w-5" />
+              </button>
+
               {editing && editing.conversationId === conversation.id ? (
                 <SaveButton
                   isCurrentConversation={isCurrentConversation}
                   onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    await updateConversation({
+                    await updateConversationTitle({
                       conversationId: editing.conversationId,
                       title: editing.title,
                     });
@@ -110,9 +130,12 @@ export default function ChatConversations({
                   onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    await deleteConversation({
-                      conversationId: conversation.id,
-                    });
+
+                    if (confirm("Delete conversation?")) {
+                      await deleteConversation({
+                        conversationId: conversation.id,
+                      });
+                    }
                   }}
                 />
               )}
