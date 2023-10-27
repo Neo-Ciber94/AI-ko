@@ -7,11 +7,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
-import toast from "react-hot-toast";
+import { useToast } from "@/client/hooks/use-toast";
 
 export default function Chat(props: { messages: ConversationMessage[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
+  const toast = useToast();
   const { conversationId } = useParams<{ conversationId: string }>();
   const { chat, isLoading, messages } = useChat({
     conversationId,
@@ -21,12 +22,7 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
       const message =
         err instanceof Error ? err.message : "Something went wrong";
       console.error(err);
-      toast.error(message, {
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
-      });
+      toast.error(message);
     },
   });
 

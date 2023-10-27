@@ -17,12 +17,14 @@ import {
 } from "@/lib/actions/conversations";
 import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import { useToast } from "@/client/hooks/use-toast";
 
 export default function ChatConversations({
   conversations,
 }: {
   conversations: Conversation[];
 }) {
+  const toast = useToast();
   const { conversationId } = useParams<{ conversationId: string }>();
   const [editing, setEditing] = useState<{
     conversationId: string;
@@ -79,9 +81,13 @@ export default function ChatConversations({
                 onClick={async (e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  await generateConversationTitle({
+                  const result = await generateConversationTitle({
                     conversationId: conversation.id,
                   });
+
+                  if (result.type === "error") {
+                    toast.error(result.error);
+                  }
                 }}
               >
                 <ArrowPathIcon className="h-5 w-5" />

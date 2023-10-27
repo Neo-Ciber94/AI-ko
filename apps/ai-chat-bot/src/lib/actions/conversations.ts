@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
 import { DEFAULT_CONVERSATION_TITLE } from "../common/constants";
+import { type Result } from "../types";
 
 export type Conversation = InferSelectModel<typeof conversations>;
 
@@ -81,7 +82,7 @@ export async function generateConversationTitle({
   conversationId,
 }: {
   conversationId: string;
-}) {
+}): Promise<Result<undefined, string>> {
   const session = await getRequiredSession();
   const conversation = await db.query.conversations.findFirst({
     where: and(
@@ -102,7 +103,10 @@ export async function generateConversationTitle({
     .pop();
 
   if (lastAssistantMessage == null) {
-    notFound();
+    return {
+      type: "error",
+      error: "Failed to generate message",
+    };
   }
 
   const openAiResponse = await openaiInstance.chat.completions.create({
@@ -126,6 +130,7 @@ export async function generateConversationTitle({
     .where(eq(conversations.id, conversation.id));
 
   revalidatePath("/chat", "layout");
+  return { type: "success" };
 }
 
 function removeQuotesFromString(input: string) {
