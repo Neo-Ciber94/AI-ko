@@ -90,7 +90,7 @@ export default function ChatConversations({
                   }
                 }}
               >
-                <ArrowPathIcon className="h-5 w-5" />
+                <ArrowPathIcon className="h-4 w-4" />
               </button>
 
               {editing && editing.conversationId === conversation.id ? (
@@ -168,7 +168,7 @@ function SaveButton({
       } `}
       onClick={onClick}
     >
-      <CheckIcon className="h-5 w-5 opacity-80" />
+      <CheckIcon className="h-4 w-4 opacity-80" />
     </button>
   );
 }
@@ -188,7 +188,7 @@ function EditButton({
       } `}
       onClick={onClick}
     >
-      <PencilSquareIcon className="h-5 w-5 opacity-80" />
+      <PencilSquareIcon className="h-4 w-4 opacity-80" />
     </button>
   );
 }
@@ -208,7 +208,7 @@ function CancelButton({
       } `}
       onClick={onClick}
     >
-      <XMarkIcon className="h-5 w-5 opacity-80" />
+      <XMarkIcon className="h-4 w-4 opacity-80" />
     </button>
   );
 }
@@ -228,7 +228,7 @@ function DeleteButton({
       } `}
       onClick={onClick}
     >
-      <TrashIcon className="h-5 w-5 opacity-80" />
+      <TrashIcon className="h-4 w-4 opacity-80" />
     </button>
   );
 }
