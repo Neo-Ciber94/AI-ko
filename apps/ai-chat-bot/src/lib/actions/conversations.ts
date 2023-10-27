@@ -32,6 +32,28 @@ export async function createConversation() {
   return result[0]!;
 }
 
+export async function updateConversation({
+  conversationId,
+  title,
+}: {
+  conversationId: string;
+  title: string;
+}) {
+  const session = await getRequiredSession();
+
+  await db
+    .update(conversations)
+    .set({ title })
+    .where(
+      and(
+        eq(conversations.id, conversationId),
+        eq(conversations.userId, session.user.userId),
+      ),
+    );
+
+  revalidatePath("/chat", "layout");
+}
+
 export async function deleteConversation({
   conversationId,
 }: {
