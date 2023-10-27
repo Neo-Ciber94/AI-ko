@@ -5,7 +5,8 @@ import { getRequiredSession } from "@/lib/auth/utils";
 import { type InferSelectModel, and, eq } from "drizzle-orm";
 import { conversationMessages, conversations } from "@/lib/database/schema";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { openaiInstance } from "../ai";
 
 export type Conversation = InferSelectModel<typeof conversations>;
 
@@ -75,14 +76,45 @@ export async function deleteConversation({
   revalidatePath("/chat", "layout");
 }
 
+export async function generateConversationTitle({
+  conversationId,
+}: {
+  conversationId: string;
+}) {
+  const session = await getRequiredSession();
+  const conversation = await db.query.conversations.findFirst({
+    where: and(
+      eq(conversations.id, conversationId),
+      eq(conversations.userId, session.user.userId),
+    ),
+    with: {},
+  });
+
+  if (conversation == null) {
+    notFound();
+  }
+
+  const openAiResponse = await openaiInstance.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "user",
+        content: `Generate a short and concise title for a conversation with the given content: \n`,
+      },
+    ],
+  });
+
+  console.log(openAiResponse);
+}
+
 // TODO: Delete
-export const sendConversationMessage = async ({
+export async function sendConversationMessage({
   conversationId,
   content,
 }: {
   conversationId: string;
   content: string;
-}) => {
+}) {
   await getRequiredSession(); // ensure session
 
   await db.insert(conversationMessages).values({
@@ -90,4 +122,4 @@ export const sendConversationMessage = async ({
     conversationId,
     content,
   });
-};
+}

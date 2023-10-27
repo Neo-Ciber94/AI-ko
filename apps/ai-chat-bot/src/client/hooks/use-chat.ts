@@ -1,6 +1,6 @@
 import { type ChatInput } from "@/app/api/ai/chat/route";
 import {
-  HEADER_SYSTEM_MESSAGE_ID,
+  HEADER_ASSISTANT_MESSAGE_ID,
   HEADER_USER_MESSAGE_ID,
 } from "@/lib/common/constants";
 import { useCallback, useRef, useState } from "react";
@@ -73,8 +73,8 @@ export function useChat(opts: UseChatOptions) {
         let content = "";
         const decoder = new TextDecoder();
 
-        const systemMessageId =
-          res.headers.get(HEADER_SYSTEM_MESSAGE_ID) || crypto.randomUUID();
+        const assistantMessageId =
+          res.headers.get(HEADER_ASSISTANT_MESSAGE_ID) || crypto.randomUUID();
 
         const userMessageId =
           res.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
@@ -108,7 +108,7 @@ export function useChat(opts: UseChatOptions) {
           } else {
             setMessages((prev) => [
               ...prev,
-              { id: systemMessageId, role: "system", content },
+              { id: assistantMessageId, role: "assistant", content },
             ]);
             isReading = true;
           }

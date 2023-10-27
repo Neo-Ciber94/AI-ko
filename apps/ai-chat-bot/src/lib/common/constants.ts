@@ -1,2 +1,2 @@
-export const HEADER_SYSTEM_MESSAGE_ID = "System-Message-Id";
-export const HEADER_USER_MESSAGE_ID = "System-Message-Id";
+export const HEADER_ASSISTANT_MESSAGE_ID = "Assistant-Message-Id";
+export const HEADER_USER_MESSAGE_ID = "User-Message-Id";

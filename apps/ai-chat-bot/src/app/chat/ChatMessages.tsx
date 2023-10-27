@@ -47,7 +47,7 @@ export default function ChatMessages(props: ChatMessagesProps) {
               }`}
             >
               <div className="flex w-full flex-row justify-end">
-                {role === "system" && <Avatar role={role}>AI</Avatar>}
+                {role === "assistant" && <Avatar role={role}>AI</Avatar>}
                 {role === "user" && <Avatar role={role}>Me</Avatar>}
               </div>
               <MessageContent message={message} />
@@ -155,7 +155,7 @@ function formatMessages(messages: Message[]) {
 
   return messages.map((msg) => {
     const formattedContent =
-      msg.role === "system" ? md.render(msg.content) : msg.content;
+      msg.role === "assistant" ? md.render(msg.content) : msg.content;
 
     return {
       ...msg,

@@ -2,17 +2,12 @@ import { type InferSelectModel } from "drizzle-orm";
 import { conversationMessages } from "../database/schema";
 import { type Stream } from "openai/streaming.mjs";
 import { type ChatCompletionChunk } from "openai/resources/index.mjs";
-import { env } from "../env";
-import OpenAI from "openai";
 import { db } from "../database";
 import {
-  HEADER_SYSTEM_MESSAGE_ID,
+  HEADER_ASSISTANT_MESSAGE_ID,
   HEADER_USER_MESSAGE_ID,
 } from "../common/constants";
-
-const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-});
+import { openaiInstance } from ".";
 
 type Message = Pick<
   InferSelectModel<typeof conversationMessages>,
@@ -39,7 +34,7 @@ export async function chatCompletion(input: ChatCompletionInput) {
     });
 
   const userMessageId = crypto.randomUUID();
-  const systemMessageId = crypto.randomUUID();
+  const assistantMessageId = crypto.randomUUID();
 
   // Save the new user message to the db
   await db
@@ -52,7 +47,7 @@ export async function chatCompletion(input: ChatCompletionInput) {
     })
     .returning();
 
-  const openAIStream = await openai.chat.completions.create({
+  const openAIStream = await openaiInstance.chat.completions.create({
     stream: true,
     model: input.model,
     messages,
@@ -61,20 +56,18 @@ export async function chatCompletion(input: ChatCompletionInput) {
   const response = createResponseStream({
     openAIStream,
     async onDone(aiMessage) {
-      console.log({ aiMessage });
-
       // Save the AI message to the db
       await db.insert(conversationMessages).values({
-        id: systemMessageId,
+        id: assistantMessageId,
         content: aiMessage,
         conversationId: input.conversationId,
-        role: "system",
+        role: "assistant",
       });
     },
   });
 
   // Set ids in the headers
-  response.headers.set(HEADER_SYSTEM_MESSAGE_ID, systemMessageId);
+  response.headers.set(HEADER_ASSISTANT_MESSAGE_ID, assistantMessageId);
   response.headers.set(HEADER_USER_MESSAGE_ID, userMessageId);
   return response;
 }
