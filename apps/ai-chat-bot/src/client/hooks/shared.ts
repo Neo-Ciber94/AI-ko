@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
 type ValueOrFunction<T> = T | (() => T);
 
@@ -10,6 +10,7 @@ export function createShared<T>(initialValue: ValueOrFunction<T>) {
   const notifyListeners = (value: SetStateAction<T>) => {
     listeners.forEach((listener) => {
       const newValue = value instanceof Function ? value(currentValue) : value;
+      currentValue = newValue;
       listener(newValue);
     });
   };
