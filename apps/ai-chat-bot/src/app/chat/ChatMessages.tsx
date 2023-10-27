@@ -3,6 +3,10 @@ import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
+hljs.configure({
+  ignoreUnescapedHTML: true,
+});
+
 // @ts-expect-error no types
 import hljsZig from "highlightjs-zig";
 hljs.registerLanguage("zig", hljsZig);
@@ -11,9 +15,6 @@ if (typeof window !== "undefined") {
   hljs.highlightAll();
 
   // FIXME: Not entirely sure if this is safe
-  hljs.configure({
-    ignoreUnescapedHTML: true,
-  });
 }
 
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
