@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 import { auth, googleAuth } from "@/lib/auth/lucia";
 import { OAuthRequestError } from "@lucia-auth/oauth";
@@ -97,6 +97,7 @@ async function handleCallback(request: NextRequest) {
       const user = await createUser({
         attributes: {
           username: googleUser.name,
+          is_authorized: 0,
         },
       });
 
