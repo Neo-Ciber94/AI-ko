@@ -10,6 +10,7 @@ import {
   createConversation,
 } from "@/lib/actions/conversations";
 import { useFormStatus } from "react-dom";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function Sidebar({
   conversations,
@@ -81,6 +82,7 @@ function SubmitButton() {
         }}
       />
       <span>New Conversation</span>
+      <LoadingSpinner size={18} />
     </button>
   );
 }
