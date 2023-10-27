@@ -68,7 +68,7 @@ export const conversations = sqliteTable("conversation", {
     .$defaultFn(() => Date.now()),
 });
 
-const roleColumn = customType<{ data: "user" | "system" }>({
+const roleColumn = customType<{ data: "user" | "assistant" }>({
   dataType() {
     return "text";
   },
@@ -78,7 +78,9 @@ export const conversationMessages = sqliteTable("conversation_message", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  conversationId: text("conversation_id").notNull(),
+  conversationId: text("conversation_id")
+    .notNull()
+    .references(() => conversations.id),
   role: roleColumn("role").notNull(),
   content: text("content").notNull(),
   createdAt: integer("created_at")
