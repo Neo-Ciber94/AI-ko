@@ -36,7 +36,7 @@ export default function ChatMessages(props: ChatMessagesProps) {
           <div
             key={message.id}
             className={
-              "flex flex-row items-center gap-4 px-2 text-xs sm:px-8 sm:text-base"
+              "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
             }
           >
             <div
