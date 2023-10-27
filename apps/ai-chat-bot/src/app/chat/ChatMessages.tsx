@@ -1,3 +1,4 @@
+"use client";
 import "highlight.js/styles/github-dark.min.css";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import markdownIt from "markdown-it";
@@ -9,6 +10,11 @@ hljs.registerLanguage("zig", hljsZig);
 
 if (typeof window !== "undefined") {
   hljs.highlightAll();
+
+  // FIXME: Not entirely sure if this is safe
+  hljs.configure({
+    ignoreUnescapedHTML: true,
+  });
 }
 
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
@@ -59,7 +65,10 @@ function MessageContent({ message }: { message: Message }) {
   // we don't format user code
   if (message.role === "user") {
     return (
-      <pre className={"w-full whitespace-pre-wrap break-all p-2 sm:p-4"}>
+      <pre
+        suppressHydrationWarning
+        className={"w-full whitespace-pre-wrap break-all p-2 sm:p-4"}
+      >
         {message.content}
       </pre>
     );
@@ -67,6 +76,7 @@ function MessageContent({ message }: { message: Message }) {
 
   return (
     <div
+      suppressHydrationWarning
       className={"w-full px-4 py-4 sm:py-8"}
       dangerouslySetInnerHTML={{
         __html: message.content,
