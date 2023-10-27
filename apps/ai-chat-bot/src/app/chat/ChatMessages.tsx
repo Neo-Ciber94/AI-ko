@@ -8,7 +8,7 @@ import hljsZig from "highlightjs-zig";
 hljs.registerLanguage("zig", hljsZig);
 
 if (typeof window !== "undefined") {
-  hljs.initHighlightingOnLoad();
+  hljs.highlightAll();
 }
 
 type Message = Pick<ConversationMessage, "id" | "content" | "role">;
