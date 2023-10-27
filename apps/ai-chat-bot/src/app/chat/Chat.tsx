@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
+import toast from "react-hot-toast";
 
 export default function Chat(props: { messages: ConversationMessage[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,15 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
     messages: props.messages,
     model: "gpt-3.5-turbo",
     onError(err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
       console.error(err);
+      toast.error(message, {
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      });
     },
   });
 

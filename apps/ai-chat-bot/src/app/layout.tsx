@@ -5,6 +5,7 @@ import { SessionProvider } from "@/components/providers/SessionProvider";
 import { appStore } from "@/lib/utils/isomorphic.server";
 import { getSession } from "@/lib/auth/utils";
 import { IsomorphicStoreProvider } from "next-isomorphic/client";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
             {children}
           </IsomorphicStoreProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );
