@@ -72,26 +72,28 @@ export default function ChatConversations({
             )}
 
             <div className="flex flex-row items-center gap-2">
-              <button
-                type="submit"
-                title="Generate"
-                className={`text-white/60 hover:text-white ${
-                  isCurrentConversation ? "block" : "hidden group-hover:block"
-                } `}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const result = await generateConversationTitle({
-                    conversationId: conversation.id,
-                  });
+              {editing == null && (
+                <button
+                  type="submit"
+                  title="Generate"
+                  className={`text-white/60 hover:text-white ${
+                    isCurrentConversation ? "block" : "hidden group-hover:block"
+                  } `}
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const result = await generateConversationTitle({
+                      conversationId: conversation.id,
+                    });
 
-                  if (result.type === "error") {
-                    toast.error(result.error);
-                  }
-                }}
-              >
-                <ArrowPathIcon className="h-4 w-4" />
-              </button>
+                    if (result.type === "error") {
+                      toast.error(result.error);
+                    }
+                  }}
+                >
+                  <ArrowPathIcon className="h-4 w-4" />
+                </button>
+              )}
 
               {editing && editing.conversationId === conversation.id ? (
                 <SaveButton
