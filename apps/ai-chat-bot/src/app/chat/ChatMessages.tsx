@@ -3,13 +3,14 @@ import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
+// @ts-expect-error no types
+import hljsZig from "highlightjs-zig";
+
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
   ignoreUnescapedHTML: true,
 });
 
-// @ts-expect-error no types
-import hljsZig from "highlightjs-zig";
 hljs.registerLanguage("zig", hljsZig);
 
 if (typeof window !== "undefined") {
