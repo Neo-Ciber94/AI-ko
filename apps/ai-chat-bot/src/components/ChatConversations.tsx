@@ -18,6 +18,7 @@ import {
 import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
+import TypeWriter from "./TypeWriter";
 
 export default function ChatConversations({
   conversations,
@@ -64,11 +65,16 @@ export default function ChatConversations({
                 }}
               />
             ) : (
-              <span
+              // <span
+              //   className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
+              // >
+              //   {conversation.title}
+              // </span>
+
+              <TypeWriter
+                text={conversation.title}
                 className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
-              >
-                {conversation.title}
-              </span>
+              />
             )}
 
             <div className="flex flex-row items-center gap-2">
