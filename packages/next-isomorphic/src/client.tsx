@@ -127,7 +127,8 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
         /**
          * Returns a consumer that updates a value in the isomorphic store.
          */
-        useValue: createUseValueHook(key as never),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        useValue: createUseValueHook(key as any),
       };
     },
   });
