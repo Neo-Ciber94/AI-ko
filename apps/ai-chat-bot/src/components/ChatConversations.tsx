@@ -19,6 +19,7 @@ import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
+import { useConversationTitleUpdate } from "@/client/hooks/shared/use-conversation-title-update";
 
 export default function ChatConversations({
   conversations,
@@ -26,6 +27,8 @@ export default function ChatConversations({
   conversations: Conversation[];
 }) {
   const toast = useToast();
+  const [updatedConversation, setUpdatedConversation] =
+    useConversationTitleUpdate();
   const { conversationId } = useParams<{ conversationId: string }>();
   const [editing, setEditing] = useState<{
     conversationId: string;
@@ -64,17 +67,21 @@ export default function ChatConversations({
                   });
                 }}
               />
-            ) : (
-              // <span
-              //   className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
-              // >
-              //   {conversation.title}
-              // </span>
-
+            ) : updatedConversation &&
+              updatedConversation.conversationId === conversation.id ? (
               <TypeWriter
-                text={conversation.title}
+                text={updatedConversation.title}
                 className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
+                onDone={() => {
+                  setUpdatedConversation(undefined);
+                }}
               />
+            ) : (
+              <span
+                className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
+              >
+                {conversation.title}
+              </span>
             )}
 
             <div className="flex flex-row items-center gap-2">
@@ -94,6 +101,11 @@ export default function ChatConversations({
 
                     if (result.type === "error") {
                       toast.error(result.error);
+                    } else {
+                      setUpdatedConversation({
+                        conversationId: conversation.id,
+                        title: conversation.title,
+                      });
                     }
                   }}
                 >
