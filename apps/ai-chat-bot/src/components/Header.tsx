@@ -19,8 +19,8 @@ export default function Header({
   showLogout,
   showSidebarControls,
 }: HeaderProps) {
-  const [isOpen, setIsOpen] = isomorphicClient.useValue("isSidebarOpen");
-  const [isDark, setIsDark] = isomorphicClient.useValue("isDark");
+  const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
+  const [isDark, setIsDark] = isomorphicClient.isDark.useValue();
 
   const handleToggleSidebar = () => {
     setIsOpen((x) => !x);

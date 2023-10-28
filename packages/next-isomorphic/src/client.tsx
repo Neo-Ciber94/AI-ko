@@ -54,67 +54,81 @@ type CreateIsomorphicClientOptions<S extends IsomorphicStore> = {
   onChange?: (changes: { newState: S["state"]; prevState: S["state"] }) => void;
 };
 
+type CreateIsomorphicClient<S extends IsomorphicStore> = {
+  [K in keyof S["state"]]: {
+    useValue: () => [
+      S["state"][K],
+      (newValue: SetStateAction<S["state"][K]>) => void,
+    ];
+  };
+};
+
 /**
  * Creates a client to consume an isomorphic store.
  * @param options Options to pass to the store.
  */
 export function createIsomorphicClient<S extends IsomorphicStore>(
   options?: CreateIsomorphicClientOptions<S>,
-) {
+): CreateIsomorphicClient<S> {
   const { onChange } = options || {};
 
-  return {
-    /**
-     * Returns a consumer that updates the isomorphic store.
-     * @param name The name of the state value.
-     */
-    useValue<K extends keyof S["state"]>(name: K) {
-      type TValue = S["state"][K];
-      type TKey = keyof typeof store.state;
+  function createUseValueHook<K extends keyof S["state"]>(name: K) {
+    type TValue = S["state"][K];
+    type TKey = keyof typeof store.state;
 
-      const { store, setStore } = useContext(isomorphicStoreContext);
+    const { store, setStore } = useContext(isomorphicStoreContext);
 
-      const setValue = useCallback(
-        (newValue: SetStateAction<TValue>) => {
-          const prevValue = store.state[name as TKey] as S["state"];
-          const value =
-            newValue instanceof Function
-              ? newValue(prevValue as TValue)
-              : newValue;
+    const setValue = useCallback(
+      (newValue: SetStateAction<TValue>) => {
+        const prevValue = store.state[name as TKey] as S["state"];
+        const value =
+          newValue instanceof Function
+            ? newValue(prevValue as TValue)
+            : newValue;
 
-          setStore((prev) => {
-            const newState = {
-              ...prev.state,
-              [name]: value,
-            };
+        setStore((prev) => {
+          const newState = {
+            ...prev.state,
+            [name]: value,
+          };
 
-            if (onChange) {
-              onChange({
-                newState: { ...newState },
-                prevState: { ...prevValue },
-              });
-            }
+          if (onChange) {
+            onChange({
+              newState: { ...newState },
+              prevState: { ...prevValue },
+            });
+          }
 
-            return {
-              ...prev,
-              state: newState,
-            };
-          });
+          return {
+            ...prev,
+            state: newState,
+          };
+        });
 
-          const cookieName = `${store.prefix}/${String(name)}`;
-          setCookie(cookieName, JSON.stringify(value));
-        },
+        const cookieName = `${store.prefix}/${String(name)}`;
+        setCookie(cookieName, JSON.stringify(value));
+      },
 
-        [name, setStore, store.prefix, store.state],
-      );
+      [name, setStore, store.prefix, store.state],
+    );
 
-      const value = useMemo(() => {
-        const key = name as TKey;
-        return store.state[key]!;
-      }, [name, store]);
+    const value = useMemo(() => {
+      const key = name as TKey;
+      return store.state[key]!;
+    }, [name, store]);
 
-      // prettier-ignore
-      return [value, setValue] as [TValue, (newValue: SetStateAction<TValue>) => void];
+    // prettier-ignore
+    return [value, setValue] as [TValue, (newValue: SetStateAction<TValue>) => void];
+  }
+
+  return new Proxy({} as CreateIsomorphicClient<S>, {
+    get(_, key) {
+      return {
+        /**
+         * Returns a consumer that updates a value in the isomorphic store.
+         */
+        useValue: createUseValueHook(key as never),
+      };
     },
-  };
+  });
 }

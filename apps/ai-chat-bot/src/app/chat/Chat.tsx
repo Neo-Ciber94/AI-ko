@@ -70,3 +70,20 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
     </>
   );
 }
+
+/*
+const events = createEvents<{
+  changeConversationTitle: { conversationId: string, title: string}
+}>()
+
+export const eventListener = createListener<typeof events>();
+
+<EventProvider events={events}>
+{children}
+</EventProvider>
+
+
+function MyComponent() {
+  const { event } = eventListener.changeConversationTitle.useSubscription();
+}
+*/
