@@ -19,17 +19,12 @@ import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
-import { useConversationTitleUpdate } from "@/client/hooks/shared/use-conversation-title-update";
 
 export default function ChatConversations({
   conversations,
 }: {
   conversations: Conversation[];
 }) {
-  const toast = useToast();
-  const [updatedConversation, setUpdatedConversation] =
-    useConversationTitleUpdate();
-  const { conversationId } = useParams<{ conversationId: string }>();
   const [editing, setEditing] = useState<{
     conversationId: string;
     title: string;
@@ -37,139 +32,150 @@ export default function ChatConversations({
 
   return (
     <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
-      {conversations.map((conversation, idx) => {
-        const isCurrentConversation = conversationId === conversation.id;
-
+      {conversations.map((conversation) => {
         return (
-          <Link
-            key={idx}
-            title={conversation.title}
-            href={`/chat/${conversation.id}`}
-            className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
-                  text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
-                  ${
-                    isCurrentConversation
-                      ? "bg-neutral-900"
-                      : "hover:bg-neutral-900"
-                  }`}
-          >
-            {editing && editing.conversationId === conversation.id ? (
-              <input
-                autoFocus
-                className={
-                  "w-full overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none"
-                }
-                value={editing.title}
-                onChange={(e) => {
-                  setEditing({
-                    conversationId: conversation.id,
-                    title: e.target.value,
-                  });
-                }}
-              />
-            ) : updatedConversation &&
-              updatedConversation.conversationId === conversation.id ? (
-              <TypeWriter
-                text={updatedConversation.title}
-                className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
-                onDone={() => {
-                  setUpdatedConversation(undefined);
-                }}
-              />
-            ) : (
-              <span
-                className={`w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
-              >
-                {conversation.title}
-              </span>
-            )}
-
-            <div className="flex flex-row items-center gap-2">
-              {editing == null && (
-                <button
-                  type="submit"
-                  title="Generate"
-                  className={`text-white/60 hover:text-white ${
-                    isCurrentConversation ? "block" : "hidden group-hover:block"
-                  } `}
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const result = await generateConversationTitle({
-                      conversationId: conversation.id,
-                    });
-
-                    if (result.type === "error") {
-                      toast.error(result.error);
-                    } else {
-                      setUpdatedConversation({
-                        conversationId: conversation.id,
-                        title: conversation.title,
-                      });
-                    }
-                  }}
-                >
-                  <ArrowPathIcon className="h-4 w-4" />
-                </button>
-              )}
-
-              {editing && editing.conversationId === conversation.id ? (
-                <SaveButton
-                  isCurrentConversation={isCurrentConversation}
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    await updateConversationTitle({
-                      conversationId: editing.conversationId,
-                      title: editing.title,
-                    });
-
-                    setEditing(undefined);
-                  }}
-                />
-              ) : (
-                <EditButton
-                  isCurrentConversation={isCurrentConversation}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setEditing({
-                      conversationId: conversation.id,
-                      title: conversation.title,
-                    });
-                  }}
-                />
-              )}
-
-              {editing && editing.conversationId === conversation.id ? (
-                <CancelButton
-                  isCurrentConversation={isCurrentConversation}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setEditing(undefined);
-                  }}
-                />
-              ) : (
-                <DeleteButton
-                  isCurrentConversation={isCurrentConversation}
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (confirm("Delete conversation?")) {
-                      await deleteConversation({
-                        conversationId: conversation.id,
-                      });
-                    }
-                  }}
-                />
-              )}
-            </div>
-          </Link>
+          <ChatConversation
+            key={conversation.id}
+            conversation={conversation}
+            setEditing={setEditing}
+            editing={editing}
+          />
         );
       })}
     </div>
+  );
+}
+
+type Editing = {
+  conversationId: string;
+  title: string;
+};
+
+function ChatConversation({
+  conversation,
+  editing,
+  setEditing,
+}: {
+  conversation: Conversation;
+  editing?: Editing;
+  setEditing: (editing: Editing | undefined) => void;
+}) {
+  const toast = useToast();
+  const { conversationId } = useParams<{ conversationId: string }>();
+  const [title, setTitle] = useState(conversation.title);
+  const isCurrentConversation = conversationId === conversation.id;
+
+  return (
+    <Link
+      title={title}
+      href={`/chat/${conversation.id}`}
+      className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
+        text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
+        ${isCurrentConversation ? "bg-neutral-900" : "hover:bg-neutral-900"}`}
+    >
+      {editing && editing.conversationId === conversation.id ? (
+        <input
+          autoFocus
+          className={
+            "h-5 w-full overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none"
+          }
+          value={editing.title}
+          onChange={(e) => {
+            setEditing({
+              conversationId: conversation.id,
+              title: e.target.value,
+            });
+          }}
+        />
+      ) : (
+        <TypeWriter
+          text={title}
+          className={`h-5 w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
+          startCompleted
+        />
+      )}
+
+      <div className="flex flex-row items-center gap-2">
+        {editing == null && (
+          <button
+            type="submit"
+            title="Generate"
+            className={`text-white/60 hover:text-white ${
+              isCurrentConversation ? "block" : "hidden group-hover:block"
+            } `}
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const result = await generateConversationTitle({
+                conversationId: conversation.id,
+              });
+
+              if (result.type === "error") {
+                toast.error(result.error);
+              } else {
+                setTitle(result.value.conversationTitle);
+              }
+            }}
+          >
+            <ArrowPathIcon className="h-4 w-4" />
+          </button>
+        )}
+
+        {editing && editing.conversationId === conversation.id ? (
+          <SaveButton
+            isCurrentConversation={isCurrentConversation}
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              await updateConversationTitle({
+                conversationId: editing.conversationId,
+                title: editing.title,
+              });
+
+              setEditing(undefined);
+              setTitle(editing.title);
+            }}
+          />
+        ) : (
+          <EditButton
+            isCurrentConversation={isCurrentConversation}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setEditing({
+                conversationId: conversation.id,
+                title: conversation.title,
+              });
+            }}
+          />
+        )}
+
+        {editing && editing.conversationId === conversation.id ? (
+          <CancelButton
+            isCurrentConversation={isCurrentConversation}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setEditing(undefined);
+            }}
+          />
+        ) : (
+          <DeleteButton
+            isCurrentConversation={isCurrentConversation}
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              if (confirm("Delete conversation?")) {
+                await deleteConversation({
+                  conversationId: conversation.id,
+                });
+              }
+            }}
+          />
+        )}
+      </div>
+    </Link>
   );
 }
 

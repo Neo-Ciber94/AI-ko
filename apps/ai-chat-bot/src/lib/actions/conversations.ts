@@ -48,7 +48,7 @@ export async function updateConversationTitle({
 
   await db
     .update(conversations)
-    .set({ title })
+    .set({ title: title.trim() })
     .where(
       and(
         eq(conversations.id, conversationId),
@@ -82,7 +82,7 @@ export async function generateConversationTitle({
   conversationId,
 }: {
   conversationId: string;
-}): Promise<Result<undefined, string>> {
+}): Promise<Result<{ conversationTitle: string }, string>> {
   const session = await getRequiredSession();
   const conversation = await db.query.conversations.findFirst({
     where: and(
@@ -126,11 +126,12 @@ export async function generateConversationTitle({
 
   await db
     .update(conversations)
-    .set({ title: newTitle })
+    .set({ title: newTitle.trim() })
     .where(eq(conversations.id, conversation.id));
 
-  revalidatePath("/chat", "layout");
-  return { type: "success" };
+  //revalidatePath("/chat", "layout");
+  console.log({ newTitle });
+  return { type: "success", value: { conversationTitle: newTitle } };
 }
 
 function removeQuotesFromString(input: string) {
