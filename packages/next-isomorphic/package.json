@@ -6,8 +6,8 @@
   "typings": "dist/index.d.ts",
   "author": "Freddy L.",
   "scripts": {
-    "build": "tsc",
-    "eslint": "eslint ."
+    "build": "rimraf dist && tsc",
+    "lint": "eslint ."
   },
   "keywords": [
     "nextjs",

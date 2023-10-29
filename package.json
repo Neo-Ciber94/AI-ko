@@ -11,7 +11,8 @@
   },
   "scripts": {
     "dev": "pnpm --filter=\"ai-chat-bot\" dev",
-    "build": "pnpm --filter=\"ai-chat-bot\" build",
+    "build": "pnpm --filter=\"./packages/**\" --filter=\"./apps/**\" build",
+    "build:lib": "pnpm --filter=\"./packages/**\" build",
     "start": "pnpm --filter=\"ai-chat-bot\" start",
     "prod": "pnpm run build && pnpm run start"
   },

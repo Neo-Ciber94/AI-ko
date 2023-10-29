@@ -1,0 +1,29 @@
+{
+  "name": "react-declare-events",
+  "version": "0.1.0",
+  "description": "Provide a mechanism for declare and consume end-to-end type-safe events.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "Freddy L.",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^18"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "eslint": "^8.52.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
