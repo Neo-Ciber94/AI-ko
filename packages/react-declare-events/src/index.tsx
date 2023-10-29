@@ -28,7 +28,8 @@ export type DeclaredEventsSubscription<T extends DeclaredEvents> = {
  * Define the events to use in your app.
  * @returns The event emitter and listener.
  */
-export function declareEvents<T extends DeclaredEvents>() {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function declareEvents<T extends DeclaredEvents = {}>() {
   const sharedListeners = {} as DeclaredEventListeners<T>;
 
   const EventContext = createContext(sharedListeners);
