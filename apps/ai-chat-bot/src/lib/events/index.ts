@@ -1,7 +1,7 @@
 import { declareEvents } from "react-declare-events";
 
 export const { eventEmitter, eventListener } = declareEvents<{
-  changeConversationTitle: {
+  conversationTitleChanged: {
     conversationId: string;
     newTitle: string;
   };

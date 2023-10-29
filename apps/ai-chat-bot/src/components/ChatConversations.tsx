@@ -65,7 +65,7 @@ function ChatConversationItem({
   const { conversationId } = useParams<{ conversationId: string }>();
   const [title, setTitle] = useState(conversation.title);
   const isCurrentConversation = conversationId === conversation.id;
-  eventListener.changeConversationTitle.useSubscription((event) => {
+  eventListener.conversationTitleChanged.useSubscription((event) => {
     if (conversation.id === event.conversationId) {
       setTitle(event.newTitle);
     }

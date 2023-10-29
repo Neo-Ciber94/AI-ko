@@ -60,7 +60,7 @@ export default function Chat(props: ChatProps) {
     // Only after the first message we generate a title
     if (
       assistantMessages.length >= 1 &&
-      assistantMessages.length < 5 &&
+      assistantMessages.length <= 3 &&
       conversation.title === DEFAULT_CONVERSATION_TITLE
     ) {
       const result = await generateConversationTitle({
@@ -71,7 +71,7 @@ export default function Chat(props: ChatProps) {
         toast.error(result.error);
       } else {
         const newTitle = result.value.conversationTitle;
-        eventEmitter.changeConversationTitle({
+        eventEmitter.conversationTitleChanged({
           conversationId,
           newTitle,
         });
