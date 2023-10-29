@@ -17,6 +17,7 @@ export default function Sidebar({
 }: {
   conversations: Conversation[];
 }) {
+  console.log(typeof isomorphicClient.isSidebarOpen.useValue);
   const { session } = useSession();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
 
