@@ -8,11 +8,23 @@ import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
+import {
+  type Conversation,
+  generateConversationTitle,
+} from "@/lib/actions/conversations";
+import { eventEmitter } from "@/lib/events";
+import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
 
-export default function Chat(props: { messages: ConversationMessage[] }) {
+type ChatProps = {
+  conversation: Conversation;
+  messages: ConversationMessage[];
+};
+
+export default function Chat(props: ChatProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
   const toast = useToast();
+  const [conversation, setConversation] = useState(props.conversation);
   const { conversationId } = useParams<{ conversationId: string }>();
   const { chat, isLoading, messages } = useChat({
     conversationId,
@@ -42,6 +54,31 @@ export default function Chat(props: { messages: ConversationMessage[] }) {
 
   const handleChat = async (message: string) => {
     await chat(message);
+
+    const assistantMessages = messages.filter((x) => x.role === "assistant");
+
+    // Only after the first message we generate a title
+    if (
+      assistantMessages.length >= 1 &&
+      assistantMessages.length < 5 &&
+      conversation.title === DEFAULT_CONVERSATION_TITLE
+    ) {
+      const result = await generateConversationTitle({
+        conversationId,
+      });
+
+      if (result.type === "error") {
+        toast.error(result.error);
+      } else {
+        const newTitle = result.value.conversationTitle;
+        eventEmitter.changeConversationTitle({
+          conversationId,
+          newTitle,
+        });
+
+        setConversation((prev) => ({ ...prev, title: newTitle }));
+      }
+    }
   };
 
   return (

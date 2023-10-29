@@ -19,6 +19,7 @@ import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
+import { eventListener } from "@/lib/events";
 
 export default function ChatConversations({
   conversations,
@@ -34,7 +35,7 @@ export default function ChatConversations({
     <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
       {conversations.map((conversation) => {
         return (
-          <ChatConversation
+          <ChatConversationItem
             key={conversation.id}
             conversation={conversation}
             setEditing={setEditing}
@@ -51,7 +52,7 @@ type Editing = {
   title: string;
 };
 
-function ChatConversation({
+function ChatConversationItem({
   conversation,
   editing,
   setEditing,
@@ -64,6 +65,11 @@ function ChatConversation({
   const { conversationId } = useParams<{ conversationId: string }>();
   const [title, setTitle] = useState(conversation.title);
   const isCurrentConversation = conversationId === conversation.id;
+  eventListener.changeConversationTitle.useSubscription((event) => {
+    if (conversation.id === event.conversationId) {
+      setTitle(event.newTitle);
+    }
+  });
 
   return (
     <Link

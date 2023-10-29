@@ -26,7 +26,7 @@ export async function createConversation() {
   const result = await db
     .insert(conversations)
     .values({
-      title: `${DEFAULT_CONVERSATION_TITLE} ${crypto.randomUUID()}`,
+      title: DEFAULT_CONVERSATION_TITLE,
       userId: session.user.userId,
       model: "gpt-3.5-turbo",
     })
@@ -129,8 +129,6 @@ export async function generateConversationTitle({
     .set({ title: newTitle.trim() })
     .where(eq(conversations.id, conversation.id));
 
-  //revalidatePath("/chat", "layout");
-  console.log({ newTitle });
   return { type: "success", value: { conversationTitle: newTitle } };
 }
 

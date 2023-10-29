@@ -29,7 +29,6 @@ export function useChat(opts: UseChatOptions) {
 
   const chat = useCallback(
     async (message: string) => {
-      console.log("chat!");
       setIsLoading(true);
 
       try {

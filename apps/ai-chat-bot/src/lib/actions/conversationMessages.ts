@@ -7,23 +7,23 @@ import { type InferSelectModel, and, eq, asc } from "drizzle-orm";
 
 export type ConversationMessage = InferSelectModel<typeof conversationMessages>;
 
-export async function getConversationMessages(conversationId: string) {
+export async function getConversationWithMessages(conversationId: string) {
   const session = await getRequiredSession();
   const conversation = await db.query.conversations.findFirst({
     where: and(
       eq(conversations.id, conversationId),
       eq(conversations.userId, session.user.userId),
     ),
+    with: {
+      conversationMessages: {
+        orderBy: [asc(conversationMessages.createdAt)],
+      },
+    },
   });
 
   if (conversation == null) {
     return null;
   }
 
-  const messages = await db.query.conversationMessages.findMany({
-    where: eq(conversationMessages.conversationId, conversation.id),
-    orderBy: [asc(conversationMessages.createdAt)],
-  });
-
-  return messages;
+  return conversation;
 }

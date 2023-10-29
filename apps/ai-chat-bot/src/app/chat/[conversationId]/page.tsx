@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import Chat from "../Chat";
-import { getConversationMessages } from "@/lib/actions/conversationMessages";
+import Chat from "./Chat";
+import { getConversationWithMessages } from "@/lib/actions/conversationMessages";
 
 type Params = {
   conversationId: string;
@@ -11,15 +11,18 @@ export default async function ChatConversationPage({
 }: {
   params: Params;
 }) {
-  const messages = await getConversationMessages(conversationId);
+  const conversation = await getConversationWithMessages(conversationId);
 
-  if (messages == null) {
+  if (conversation == null) {
     redirect("/chat");
   }
 
   return (
     <div className="h-full w-full">
-      <Chat messages={messages} />
+      <Chat
+        conversation={conversation}
+        messages={conversation.conversationMessages}
+      />
     </div>
   );
 }
