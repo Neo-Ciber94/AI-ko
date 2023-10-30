@@ -26,10 +26,18 @@ export const auth = lucia({
   },
 });
 
+function getRedirectUrl() {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/google/login/callback`;
+  }
+
+  return "http://localhost:3000/api/auth/google/login/callback";
+}
+
 export const googleAuth = google(auth, {
   clientId: env.GOOGLE_CLIENT_ID,
   clientSecret: env.GOOGLE_CLIENT_SECRET,
-  redirectUri: "http://localhost:3000/api/auth/google/login/callback",
+  redirectUri: getRedirectUrl(),
 });
 
 export type Auth = typeof auth;
