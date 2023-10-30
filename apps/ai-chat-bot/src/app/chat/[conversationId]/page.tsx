@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import Chat from "./Chat";
 import { getConversationWithMessages } from "@/lib/actions/conversationMessages";
+import fs from "fs/promises";
+import path from "path";
+import { HighLightJsStylesProvider } from "@/components/providers/HighLightJsStylesProvider";
 
 type Params = {
   conversationId: string;
@@ -17,12 +20,39 @@ export default async function ChatConversationPage({
     redirect("/chat");
   }
 
+  const highLightJsStyles = await loadHighLightJsThemeStyles();
+
   return (
-    <div className="h-full w-full">
-      <Chat
-        conversation={conversation}
-        messages={conversation.conversationMessages}
-      />
-    </div>
+    <HighLightJsStylesProvider styles={highLightJsStyles}>
+      <div className="h-full w-full">
+        <Chat
+          conversation={conversation}
+          messages={conversation.conversationMessages}
+        />
+      </div>
+    </HighLightJsStylesProvider>
   );
+}
+
+async function loadHighLightJsThemeStyles() {
+  const publicDir = path.join(process.cwd(), "public");
+  const darkThemeStylesPromise = fs.readFile(
+    path.join(publicDir, "styles", "highlight.js", "github-dark.min.css"),
+    "utf-8",
+  );
+
+  const lightThemeStylesPromise = fs.readFile(
+    path.join(publicDir, "styles", "highlight.js", "github.min.css"),
+    "utf-8",
+  );
+
+  const [darkThemeStyles, lightThemeStyles] = await Promise.all([
+    darkThemeStylesPromise,
+    lightThemeStylesPromise,
+  ]);
+
+  return {
+    darkThemeStyles,
+    lightThemeStyles,
+  };
 }

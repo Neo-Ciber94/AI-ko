@@ -109,7 +109,7 @@ export default function Chat(props: ChatProps) {
             <span>AIChatbot</span>
           </div>
         ) : (
-          <ChatMessages messages={messages} />
+          <ChatMessages messages={messages} model={conversation.model} />
         )}
       </div>
 

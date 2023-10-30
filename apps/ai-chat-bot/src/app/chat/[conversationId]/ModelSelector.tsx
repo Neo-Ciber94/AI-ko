@@ -6,6 +6,7 @@ import {
   type Conversation,
   type AIModel,
 } from "@/lib/actions/conversations";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function ModelSelector({
@@ -14,6 +15,7 @@ export default function ModelSelector({
   conversation: Conversation;
 }) {
   const toast = useToast();
+  const router = useRouter();
   const handleChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const model = event.target.value as AIModel;
     const result = await updateConversationModel({
@@ -23,6 +25,8 @@ export default function ModelSelector({
 
     if (result.type === "error") {
       toast.error(result.error);
+    } else {
+      router.refresh();
     }
   };
 

@@ -1,10 +1,13 @@
-import "highlight.js/styles/github-dark.min.css";
 import { type ConversationMessage } from "@/lib/actions/conversationMessages";
+import { type AIModel } from "@/lib/actions/conversations";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
 // @ts-expect-error no types
 import hljsZig from "highlightjs-zig";
+import { isomorphicClient } from "@/lib/utils/isomorphic.client";
+import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesProvider";
+import InjectStyles from "@/components/InjectStyles";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -22,42 +25,60 @@ type Role = Message["role"];
 
 type ChatMessagesProps = {
   messages: Message[];
+  model: AIModel;
 };
 
-export default function ChatMessages(props: ChatMessagesProps) {
-  const messages = formatMessages(props.messages);
+export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
+  const messages = formatMessages(rest.messages);
+  const [isDark] = isomorphicClient.isDark.useValue();
+  const { darkThemeStyles, lightThemeStyles } = useHighLightJsThemes();
 
   return (
-    <div className="flex flex-col gap-4 pt-4">
-      {messages.map((message) => {
-        const role = message.role;
+    <>
+      <InjectStyles css={isDark ? darkThemeStyles : lightThemeStyles} />
+      <div className="flex flex-col gap-4 pt-4">
+        {messages.map((message) => {
+          const role = message.role;
 
-        return (
-          <div
-            key={message.id}
-            className={
-              "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
-            }
-          >
+          return (
             <div
-              className={`w-full rounded-lg p-2 ${
-                role === "user"
-                  ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
-                  : "bg-black text-white"
-              }`}
+              key={message.id}
+              className={
+                "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
+              }
             >
-              <div className="flex w-full flex-row justify-end">
-                {role === "assistant" && <Avatar role={role}>AI</Avatar>}
-                {role === "user" && <Avatar role={role}>Me</Avatar>}
-              </div>
-              <MessageContent message={message} />
-            </div>
-          </div>
-        );
-      })}
+              <div
+                className={`w-full rounded-lg p-2 shadow ${
+                  role === "user"
+                    ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
+                    : "bg-gray-200 text-black dark:bg-black dark:text-white"
+                }`}
+              >
+                <div className="flex w-full flex-row items-center justify-between">
+                  {role === "assistant" ? (
+                    <span
+                      title="AI Model"
+                      className={`flex h-6 cursor-pointer flex-row items-center justify-center 
+                      rounded-lg bg-gradient-to-t from-rose-900 to-rose-950 px-3 text-[10px] text-white`}
+                    >
+                      {model}
+                    </span>
+                  ) : (
+                    <div></div>
+                  )}
 
-      <div className="h-40 px-4">{/* Some extra padding */}</div>
-    </div>
+                  {role === "assistant" && <Avatar role={role}>AI</Avatar>}
+                  {role === "user" && <Avatar role={role}>Me</Avatar>}
+                </div>
+                <MessageContent message={message} />
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="h-40 px-4">{/* Some extra padding */}</div>
+      </div>
+    </>
   );
 }
 
