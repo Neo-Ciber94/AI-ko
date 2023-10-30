@@ -14,6 +14,7 @@ import {
 } from "@/lib/actions/conversations";
 import { eventEmitter } from "@/lib/events";
 import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
+import ModelSelector from "./ModelSelector";
 
 type ChatProps = {
   conversation: Conversation;
@@ -52,17 +53,19 @@ export default function Chat(props: ChatProps) {
     setLoaded(true);
   }, [messages]);
 
-  const handleChat = async (message: string) => {
-    await chat(message);
-
+  useEffect(() => {
     const assistantMessages = messages.filter((x) => x.role === "assistant");
 
-    // Only after the first message we generate a title
-    if (
+    const canGenerateTitle =
       assistantMessages.length >= 1 &&
       assistantMessages.length <= 3 &&
-      conversation.title === DEFAULT_CONVERSATION_TITLE
-    ) {
+      conversation.title === DEFAULT_CONVERSATION_TITLE;
+
+    if (!canGenerateTitle) {
+      return;
+    }
+
+    const run = async () => {
       const result = await generateConversationTitle({
         conversationId,
       });
@@ -78,7 +81,13 @@ export default function Chat(props: ChatProps) {
 
         setConversation((prev) => ({ ...prev, title: newTitle }));
       }
-    }
+    };
+
+    void run();
+  }, [conversation.title, conversationId, messages, toast]);
+
+  const handleChat = async (message: string) => {
+    await chat(message);
   };
 
   return (
@@ -91,10 +100,13 @@ export default function Chat(props: ChatProps) {
       >
         {messages.length === 0 ? (
           <div
-            className="flex h-full flex-grow flex-row items-center justify-center font-mono text-5xl 
-          font-bold text-gray-400 dark:text-gray-300/50"
+            className="relative flex h-full flex-grow flex-col items-center justify-center font-mono 
+          text-5xl font-bold text-gray-400 dark:text-gray-300/50"
           >
-            AIChatbot
+            <div className="absolute top-10 w-3/12">
+              <ModelSelector conversation={conversation} />
+            </div>
+            <span>AIChatbot</span>
           </div>
         ) : (
           <ChatMessages messages={messages} />
