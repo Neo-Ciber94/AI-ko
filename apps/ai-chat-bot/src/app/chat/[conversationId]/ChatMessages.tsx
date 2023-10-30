@@ -56,13 +56,7 @@ export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
               >
                 <div className="flex w-full flex-row items-center justify-between">
                   {role === "assistant" ? (
-                    <span
-                      title="AI Model"
-                      className={`flex h-6 cursor-pointer flex-row items-center justify-center 
-                      rounded-lg bg-gradient-to-t from-rose-900 to-rose-950 px-3 text-[10px] text-white`}
-                    >
-                      {model}
-                    </span>
+                    <AIModelLabel model={model} />
                   ) : (
                     <div></div>
                   )}
@@ -116,6 +110,23 @@ function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
     >
       {children}
     </div>
+  );
+}
+
+function AIModelLabel({ model }: { model: AIModel }) {
+  return (
+    <span
+      title="AI Model"
+      className={`flex h-6 cursor-pointer flex-row items-center justify-center 
+  rounded-lg bg-gradient-to-t px-3 text-[10px] font-semibold shadow
+  ${
+    model === "gpt-3.5-turbo"
+      ? "from-rose-900 to-rose-950 text-white"
+      : "from-amber-300 to-amber-500 text-black"
+  }`}
+    >
+      {model}
+    </span>
   );
 }
 
