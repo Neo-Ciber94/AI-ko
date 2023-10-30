@@ -27,8 +27,8 @@ export const auth = lucia({
 });
 
 function getRedirectUrl() {
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}/api/auth/google/login/callback`;
+  if (process.env.REDIRECT_URL) {
+    return process.env.REDIRECT_URL;
   }
 
   return "http://localhost:3000/api/auth/google/login/callback";
