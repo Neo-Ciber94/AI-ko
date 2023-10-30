@@ -75,13 +75,13 @@ function MessageContent({ message }: { message: Message }) {
   }
 
   return (
-    <div
+    <pre
       suppressHydrationWarning
-      className={"w-full p-2"}
+      className={"w-full break-before-all whitespace-pre-wrap p-2"}
       dangerouslySetInnerHTML={{
         __html: message.content,
       }}
-    ></div>
+    ></pre>
   );
 }
 
@@ -113,7 +113,7 @@ function formatMessages(messages: Message[]) {
 
           return `<div class="my-4 flex flex-col">
                 <div class="flex flex-row">
-                    <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit">
+                    <span class="my-2 text-white bg-gray-800 px-2 py-2 rounded-lg text-xs w-fit whitespace-normal">
                       ${lang}
                     </span>
                 </div>
