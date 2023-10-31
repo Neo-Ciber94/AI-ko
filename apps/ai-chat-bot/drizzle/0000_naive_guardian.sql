@@ -2,7 +2,6 @@ CREATE TABLE `conversation_message` (
 	`id` text PRIMARY KEY NOT NULL,
 	`conversation_id` text NOT NULL,
 	`role` text NOT NULL,
-	`content` text NOT NULL,
 	`created_at` integer NOT NULL,
 	FOREIGN KEY (`conversation_id`) REFERENCES `conversation`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -14,6 +13,15 @@ CREATE TABLE `conversation` (
 	`title` text NOT NULL,
 	`created_at` integer NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `message_content` (
+	`id` text PRIMARY KEY NOT NULL,
+	`type` text NOT NULL,
+	`data` text NOT NULL,
+	`conversation_message_id` text NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`conversation_message_id`) REFERENCES `conversation_message`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `user_key` (

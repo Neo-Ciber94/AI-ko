@@ -83,7 +83,26 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .notNull()
     .references(() => conversations.id),
   role: roleColumn("role").notNull(),
-  content: text("content").notNull(),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+});
+
+const messageType = customType<{ data: "text" | "image" }>({
+  dataType() {
+    return "text";
+  },
+});
+
+export const messageContents = sqliteTable("message_content", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  type: messageType("type").notNull(),
+  data: text("data").notNull(),
+  conversationMessageId: text("conversation_message_id")
+    .notNull()
+    .references(() => conversationMessages.id),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
@@ -100,5 +119,6 @@ export const conversationMessagesRelations = relations(
       fields: [conversationMessages.conversationId],
       references: [conversations.id],
     }),
+    // contents: many(messageContents),
   }),
 );

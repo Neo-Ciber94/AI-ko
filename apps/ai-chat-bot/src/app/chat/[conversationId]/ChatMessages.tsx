@@ -1,4 +1,4 @@
-import { type ConversationMessage } from "@/lib/actions/conversationMessages";
+import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { type AIModel } from "@/lib/actions/conversations";
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
@@ -20,7 +20,10 @@ if (typeof window !== "undefined") {
   hljs.highlightAll();
 }
 
-type Message = Pick<ConversationMessage, "id" | "content" | "role">;
+type Message = Pick<
+  ConversationMessageWithContents,
+  "id" | "role" | "contents"
+>;
 type Role = Message["role"];
 
 type ChatMessagesProps = {
@@ -77,6 +80,9 @@ export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
 }
 
 function MessageContent({ message }: { message: Message }) {
+  // FIXME: This should not be empty
+  const content = message.contents[0]?.data || "";
+
   // we don't format user code
   if (message.role === "user") {
     return (
@@ -84,7 +90,7 @@ function MessageContent({ message }: { message: Message }) {
         suppressHydrationWarning
         className={"w-full whitespace-pre-wrap break-all p-2"}
       >
-        {message.content}
+        {content}
       </pre>
     );
   }
@@ -94,7 +100,7 @@ function MessageContent({ message }: { message: Message }) {
       suppressHydrationWarning
       className={"w-full break-before-all whitespace-pre-wrap p-2"}
       dangerouslySetInnerHTML={{
-        __html: message.content,
+        __html: content,
       }}
     ></pre>
   );
@@ -186,12 +192,19 @@ function formatMessages(messages: Message[]) {
   };
 
   return messages.map((msg) => {
-    const formattedContent =
-      msg.role === "assistant" ? md.render(msg.content) : msg.content;
+    const isImage = msg.contents.some((x) => x.type === "image");
+    if (isImage) {
+      return msg;
+    }
+
+    const formattedMessageContent =
+      msg.role === "assistant"
+        ? msg.contents.map((x) => ({ ...x, data: md.render(x.data) }))
+        : msg.contents;
 
     return {
       ...msg,
-      content: formattedContent,
-    };
+      contents: formattedMessageContent,
+    } satisfies Message;
   });
 }

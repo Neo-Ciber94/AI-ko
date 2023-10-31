@@ -14,8 +14,13 @@ const input = z.object({
   messages: z.array(
     z.object({
       id: z.string(),
-      content: z.string(),
       role: z.enum(["user", "assistant"]),
+      contents: z.array(
+        z.object({
+          type: z.enum(["text", "image"]),
+          data: z.string(),
+        }),
+      ),
     }),
   ),
 });

@@ -6,7 +6,7 @@ import ChatMessages from "./ChatMessages";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
-import { type ConversationMessage } from "@/lib/actions/conversationMessages";
+import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
 import {
   type Conversation,
@@ -18,7 +18,7 @@ import ModelSelector from "./ModelSelector";
 
 type ChatProps = {
   conversation: Conversation;
-  messages: ConversationMessage[];
+  messages: ConversationMessageWithContents[];
 };
 
 export default function Chat(props: ChatProps) {

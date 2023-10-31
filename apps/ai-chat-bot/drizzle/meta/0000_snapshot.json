@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "ee042dd7-52eb-4294-b6f0-68c14c489112",
+  "id": "befdd6b2-db7b-4ce2-be37-5d71b033032a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "conversation_message": {
@@ -23,13 +23,6 @@
         },
         "role": {
           "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "content": {
-          "name": "content",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -109,6 +102,64 @@
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "message_content": {
+      "name": "message_content",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "conversation_message_id": {
+          "name": "conversation_message_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "message_content_conversation_message_id_conversation_message_id_fk": {
+          "name": "message_content_conversation_message_id_conversation_message_id_fk",
+          "tableFrom": "message_content",
+          "tableTo": "conversation_message",
+          "columnsFrom": [
+            "conversation_message_id"
           ],
           "columnsTo": [
             "id"

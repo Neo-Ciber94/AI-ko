@@ -39,8 +39,9 @@ export function useChat(opts: UseChatOptions) {
           ...msgs,
           {
             id: `temp_${crypto.randomUUID()}`, // temporal id
-            content: message,
+            //content: message,
             role: "user",
+            contents: [{ type: "text", data: message }],
           },
         ]);
 
@@ -101,13 +102,20 @@ export function useChat(opts: UseChatOptions) {
             setMessages((prev) => {
               const msgs = prev.slice();
               const last = msgs.pop()!;
-              msgs.push({ ...last, content });
+              msgs.push({
+                ...last,
+                contents: [{ type: "text", data: content }],
+              });
               return msgs;
             });
           } else {
             setMessages((prev) => [
               ...prev,
-              { id: assistantMessageId, role: "assistant", content },
+              {
+                id: assistantMessageId,
+                role: "assistant",
+                contents: [{ type: "text", data: content }],
+              },
             ]);
             isReading = true;
           }
