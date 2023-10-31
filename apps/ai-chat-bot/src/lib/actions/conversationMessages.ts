@@ -74,7 +74,7 @@ export async function getConversationWithMessages(conversationId: string) {
     return null;
   }
 
-  type QueryResult = {
+  type ConversationResult = {
     id: string;
     model: AIModel;
     title: string;
@@ -88,7 +88,7 @@ export async function getConversationWithMessages(conversationId: string) {
     }[];
   };
 
-  const conversation = rows.reduce<QueryResult>(
+  const conversation = rows.reduce<ConversationResult>(
     (acc, row) => {
       if (row.conversation_message) {
         acc.conversationMessages.push({
@@ -114,7 +114,7 @@ export async function getConversationWithMessages(conversationId: string) {
       model: rows[0].conversation.model,
       title: rows[0].conversation.title,
       conversationMessages: [],
-    } as QueryResult,
+    } as ConversationResult,
   );
 
   return conversation;
