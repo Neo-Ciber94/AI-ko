@@ -88,30 +88,34 @@ export async function getConversationWithMessages(conversationId: string) {
     }[];
   };
 
-  const conversation = rows.reduce<QueryResult>((acc, row) => {
-    if (!acc.conversationMessages) {
-      acc.conversationMessages = [];
-    }
-
-    if (row.conversation_message) {
-      acc.conversationMessages.push({
-        ...row.conversation_message,
-        contents: [],
-      });
-    }
-
-    if (row.message_content) {
-      const conversationMessages = acc.conversationMessages.find(
-        (x) => x.id === row.message_content?.conversationMessageId,
-      );
-
-      if (conversationMessages) {
-        conversationMessages.contents.push(row.message_content);
+  const conversation = rows.reduce<QueryResult>(
+    (acc, row) => {
+      if (row.conversation_message) {
+        acc.conversationMessages.push({
+          ...row.conversation_message,
+          contents: [],
+        });
       }
-    }
 
-    return acc;
-  }, {} as QueryResult);
+      if (row.message_content) {
+        const conversationMessages = acc.conversationMessages.find(
+          (x) => x.id === row.message_content?.conversationMessageId,
+        );
+
+        if (conversationMessages) {
+          conversationMessages.contents.push(row.message_content);
+        }
+      }
+
+      return acc;
+    },
+    {
+      id: rows[0].conversation.id,
+      model: rows[0].conversation.model,
+      title: rows[0].conversation.title,
+      conversationMessages: [],
+    } as QueryResult,
+  );
 
   return conversation;
 }
