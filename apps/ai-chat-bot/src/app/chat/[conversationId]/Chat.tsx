@@ -8,13 +8,11 @@ import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
-import {
-  type Conversation,
-  generateConversationTitle,
-} from "@/lib/actions/conversations";
+import { generateConversationTitle } from "@/lib/actions/conversations";
 import { eventEmitter } from "@/lib/events";
 import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
 import ModelSelector from "./ModelSelector";
+import type { Conversation } from "@/lib/database/types";
 
 type ChatProps = {
   conversation: Conversation;

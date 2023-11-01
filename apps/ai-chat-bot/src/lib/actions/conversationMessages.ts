@@ -7,18 +7,17 @@ import {
   conversations,
   messageContents,
 } from "@/lib/database/schema";
-import { type InferSelectModel, and, eq, asc } from "drizzle-orm";
-import { type AIModel } from "./conversations";
+import { and, eq, asc } from "drizzle-orm";
+import type { AIModel, Role } from "../database/types";
 
-export type ConversationMessage = InferSelectModel<typeof conversationMessages>;
-
-export type Role = ConversationMessage["role"];
-
-// FIXME: This is weird
-export type ConversationMessageWithContents = Pick<
-  NonNull<Awaited<ReturnType<typeof getConversationWithMessages>>>,
-  "conversationMessages"
->["conversationMessages"][number];
+export type ConversationMessageWithContents = {
+  id: string;
+  role: Role;
+  contents: {
+    type: "text" | "image";
+    data: string;
+  }[];
+};
 
 export async function getConversationWithMessages(conversationId: string) {
   const session = await getRequiredSession();
@@ -42,10 +41,6 @@ export async function getConversationWithMessages(conversationId: string) {
   //     },
   //   },
   // });
-
-  // const conversation = await sql`select * from ${conversations}
-  //   where ${conversations.id} = ${conversationId} and ${conversations.userId} = ${session.user.userId}
-  //   join ${conversationMessages} on ${conversationMessages.conversationId} = ${conversations.id}`;
 
   const rows = await db
     .select()

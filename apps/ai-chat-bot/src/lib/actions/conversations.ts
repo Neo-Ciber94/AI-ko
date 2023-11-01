@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
-import { type InferSelectModel, and, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
   conversationMessages,
   conversations,
@@ -13,10 +13,7 @@ import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
 import { DEFAULT_CONVERSATION_TITLE } from "../common/constants";
 import { type Result } from "../types";
-
-export type Conversation = InferSelectModel<typeof conversations>;
-
-export type AIModel = Conversation["model"];
+import { type AIModel } from "../database/types";
 
 export async function getConversations() {
   const session = await getRequiredSession();

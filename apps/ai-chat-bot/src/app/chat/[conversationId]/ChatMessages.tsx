@@ -1,5 +1,5 @@
 import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
-import { type AIModel } from "@/lib/actions/conversations";
+
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
@@ -8,6 +8,7 @@ import hljsZig from "highlightjs-zig";
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesProvider";
 import InjectStyles from "@/components/InjectStyles";
+import type { AIModel, Role } from "@/lib/database/types";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -24,7 +25,6 @@ type Message = Pick<
   ConversationMessageWithContents,
   "id" | "role" | "contents"
 >;
-type Role = Message["role"];
 
 type ChatMessagesProps = {
   messages: Message[];

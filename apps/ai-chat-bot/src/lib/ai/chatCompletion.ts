@@ -1,4 +1,3 @@
-import { type InferSelectModel } from "drizzle-orm";
 import { conversationMessages, messageContents } from "../database/schema";
 import { type Stream } from "openai/streaming.mjs";
 import { type ChatCompletionChunk } from "openai/resources/index.mjs";
@@ -8,10 +7,7 @@ import {
   HEADER_USER_MESSAGE_ID,
 } from "../common/constants";
 import { openaiInstance } from ".";
-import { type Role } from "../actions/conversationMessages";
-
-type MessageContent = InferSelectModel<typeof messageContents>;
-type MessageType = MessageContent["type"];
+import type { MessageType, Role } from "../database/types";
 
 type Message = {
   role: Role;
