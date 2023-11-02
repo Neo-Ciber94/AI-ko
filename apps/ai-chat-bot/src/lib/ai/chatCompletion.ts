@@ -1,4 +1,4 @@
-import { conversationMessages, messageContents } from "../database/schema";
+import { conversationMessages, messageTextContents } from "../database/schema";
 import { type Stream } from "openai/streaming.mjs";
 import { type ChatCompletionChunk } from "openai/resources/index.mjs";
 import { db } from "../database";
@@ -9,12 +9,21 @@ import {
 import { openaiInstance } from ".";
 import type { MessageType, Role } from "../database/types";
 
+type ImageContent = {
+  type: "image";
+  imageUrl: string;
+};
+
+type TextContent = {
+  type: "text";
+  text: string;
+};
+
+type MessageContent = ImageContent | TextContent;
+
 type Message = {
   role: Role;
-  contents: {
-    type: MessageType;
-    data: string;
-  }[];
+  contents: MessageContent[];
 };
 
 type ChatCompletionInput = {
@@ -27,11 +36,18 @@ type ChatCompletionInput = {
 export async function chatCompletion(input: ChatCompletionInput) {
   const messages = input.messages
     .filter((x) => x.contents.length > 0)
+    .filter((x) => !x.contents.some((x) => x.type !== "text"))
     .map((x) => {
+      const contents = x.contents[0];
+
+      if (contents.type !== "text") {
+        throw new Error("Expected text");
+      }
+
       // We already check we had at least one message content
-      const content = x.contents[0].data || "";
+
       return {
-        content,
+        content: contents.text,
         role: x.role,
       };
     })
@@ -54,9 +70,8 @@ export async function chatCompletion(input: ChatCompletionInput) {
     })
     .returning();
 
-  await db.insert(messageContents).values({
-    type: "text",
-    data: input.newMessage.content,
+  await db.insert(messageTextContents).values({
+    text: input.newMessage.content,
     conversationMessageId: userConversationMessage[0].id,
   });
 
@@ -83,9 +98,8 @@ export async function chatCompletion(input: ChatCompletionInput) {
         })
         .returning();
 
-      await db.insert(messageContents).values({
-        type: "text",
-        data,
+      await db.insert(messageTextContents).values({
+        text: data,
         conversationMessageId: assistantConversationMessage[0].id,
       });
     },

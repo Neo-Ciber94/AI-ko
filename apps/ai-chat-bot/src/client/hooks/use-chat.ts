@@ -41,7 +41,7 @@ export function useChat(opts: UseChatOptions) {
             id: `temp_${crypto.randomUUID()}`, // temporal id
             //content: message,
             role: "user",
-            contents: [{ type: "text", data: message }],
+            contents: [{ type: "text", text: message }],
           },
         ]);
 
@@ -69,10 +69,6 @@ export function useChat(opts: UseChatOptions) {
           throw new Error("Unable to read response from server");
         }
 
-        let isReading = false;
-        let content = "";
-        const decoder = new TextDecoder();
-
         const assistantMessageId =
           res.headers.get(HEADER_ASSISTANT_MESSAGE_ID) || crypto.randomUUID();
 
@@ -91,6 +87,10 @@ export function useChat(opts: UseChatOptions) {
           return msgs;
         });
 
+        let isReading = false;
+        let content = "";
+        const decoder = new TextDecoder();
+
         // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
@@ -104,7 +104,7 @@ export function useChat(opts: UseChatOptions) {
               const last = msgs.pop()!;
               msgs.push({
                 ...last,
-                contents: [{ type: "text", data: content }],
+                contents: [{ type: "text", text: content }],
               });
               return msgs;
             });
@@ -114,7 +114,7 @@ export function useChat(opts: UseChatOptions) {
               {
                 id: assistantMessageId,
                 role: "assistant",
-                contents: [{ type: "text", data: content }],
+                contents: [{ type: "text", text: content }],
               },
             ]);
             isReading = true;

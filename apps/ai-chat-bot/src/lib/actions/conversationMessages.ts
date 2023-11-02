@@ -5,19 +5,40 @@ import { db } from "@/lib/database";
 import {
   conversationMessages,
   conversations,
-  messageContents,
+  messageImageContents,
+  messageTextContents,
 } from "@/lib/database/schema";
-import { and, eq, asc } from "drizzle-orm";
+import { and, eq, asc, desc } from "drizzle-orm";
 import type { AIModel, Role } from "../database/types";
 
-export type ConversationMessageWithContents = {
+type MessageImage = {
+  type: "image";
   id: string;
-  role: Role;
-  contents: {
-    type: "text" | "image";
-    data: string;
+  imagePrompt: string;
+  imageUrl: string;
+};
+
+type MessageText = {
+  type: "text";
+  id: string;
+  text: string;
+};
+
+type MessageContents = MessageImage | MessageText;
+
+type ConversationData = {
+  id: string;
+  model: AIModel;
+  title: string;
+  conversationMessages: {
+    id: string;
+    role: Role;
+    contents: MessageContents[];
   }[];
 };
+
+export type ConversationMessageWithContents =
+  ConversationData["conversationMessages"][number];
 
 export async function getConversationWithMessages(conversationId: string) {
   const session = await getRequiredSession();
@@ -56,12 +77,17 @@ export async function getConversationWithMessages(conversationId: string) {
       eq(conversationMessages.conversationId, conversations.id),
     )
     .leftJoin(
-      messageContents,
-      eq(messageContents.conversationMessageId, conversationMessages.id),
+      messageImageContents,
+      eq(messageImageContents.conversationMessageId, conversationMessages.id),
+    )
+    .leftJoin(
+      messageTextContents,
+      eq(messageTextContents.conversationMessageId, conversationMessages.id),
     )
     .orderBy(
       asc(conversationMessages.createdAt),
-      asc(conversationMessages.createdAt),
+      desc(messageImageContents.createdAt),
+      desc(messageTextContents.createdAt),
     )
     .all();
 
@@ -69,48 +95,47 @@ export async function getConversationWithMessages(conversationId: string) {
     return null;
   }
 
-  type ConversationResult = {
-    id: string;
-    model: AIModel;
-    title: string;
-    conversationMessages: {
-      id: string;
-      role: Role;
-      contents: {
-        type: "text" | "image";
-        data: string;
-      }[];
-    }[];
+  let conversation: ConversationData = {
+    id: rows[0].conversation.id,
+    model: rows[0].conversation.model,
+    title: rows[0].conversation.title,
+    conversationMessages: [],
   };
 
-  const conversation = rows.reduce<ConversationResult>(
-    (acc, row) => {
-      if (row.conversation_message) {
-        acc.conversationMessages.push({
-          ...row.conversation_message,
-          contents: [],
+  conversation = rows.reduce((acc, row) => {
+    if (row.conversation_message) {
+      acc.conversationMessages.push({
+        ...row.conversation_message,
+        contents: [],
+      });
+    }
+
+    if (row.message_text_content) {
+      const m = acc.conversationMessages.find(
+        (x) => x.id === row.message_text_content?.conversationMessageId,
+      );
+      if (m) {
+        m.contents.push({
+          type: "text",
+          ...row.message_text_content,
         });
       }
+    }
 
-      if (row.message_content) {
-        const conversationMessages = acc.conversationMessages.find(
-          (x) => x.id === row.message_content?.conversationMessageId,
-        );
-
-        if (conversationMessages) {
-          conversationMessages.contents.push(row.message_content);
-        }
+    if (row.message_image_content) {
+      const m = acc.conversationMessages.find(
+        (x) => x.id === row.message_image_content?.conversationMessageId,
+      );
+      if (m) {
+        m.contents.push({
+          type: "image",
+          ...row.message_image_content,
+        });
       }
+    }
 
-      return acc;
-    },
-    {
-      id: rows[0].conversation.id,
-      model: rows[0].conversation.model,
-      title: rows[0].conversation.title,
-      conversationMessages: [],
-    } as ConversationResult,
-  );
+    return acc;
+  }, conversation);
 
   return conversation;
 }

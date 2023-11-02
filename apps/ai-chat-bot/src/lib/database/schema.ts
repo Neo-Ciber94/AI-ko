@@ -88,18 +88,25 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .$defaultFn(() => Date.now()),
 });
 
-const messageType = customType<{ data: "text" | "image" }>({
-  dataType() {
-    return "text";
-  },
-});
-
-export const messageContents = sqliteTable("message_content", {
+export const messageImageContents = sqliteTable("message_image_content", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  type: messageType("type").notNull(),
-  data: text("data").notNull(),
+  imagePrompt: text("image_prompt").notNull(),
+  imageUrl: text("image_url").notNull(),
+  conversationMessageId: text("conversation_message_id")
+    .notNull()
+    .references(() => conversationMessages.id),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+});
+
+export const messageTextContents = sqliteTable("message_text_content", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  text: text("text").notNull(),
   conversationMessageId: text("conversation_message_id")
     .notNull()
     .references(() => conversationMessages.id),
@@ -114,11 +121,12 @@ export const conversationRelations = relations(conversations, ({ many }) => ({
 
 export const conversationMessagesRelations = relations(
   conversationMessages,
-  ({ one }) => ({
+  ({ one, many }) => ({
     conversation: one(conversations, {
       fields: [conversationMessages.conversationId],
       references: [conversations.id],
     }),
-    // contents: many(messageContents),
+    imageContents: many(messageImageContents),
+    textContents: many(messageTextContents),
   }),
 );

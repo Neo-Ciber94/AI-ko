@@ -81,29 +81,37 @@ export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
 
 function MessageContent({ message }: { message: Message }) {
   // FIXME: This should not be empty
-  const content = message.contents[0]?.data || "";
+  const contents = message.contents[0];
 
-  // we don't format user code
-  if (message.role === "user") {
-    return (
-      <pre
-        suppressHydrationWarning
-        className={"w-full whitespace-pre-wrap break-all p-2"}
-      >
-        {content}
-      </pre>
-    );
+  switch (contents.type) {
+    case "text": {
+      const text = contents.text;
+
+      // we don't format user code
+      if (message.role === "user") {
+        return (
+          <pre
+            suppressHydrationWarning
+            className={"w-full whitespace-pre-wrap break-all p-2"}
+          >
+            {text}
+          </pre>
+        );
+      }
+
+      return (
+        <pre
+          suppressHydrationWarning
+          className={"w-full break-before-all whitespace-pre-wrap p-2"}
+          dangerouslySetInnerHTML={{
+            __html: text,
+          }}
+        ></pre>
+      );
+    }
+    default:
+      throw new Error("Not implemented");
   }
-
-  return (
-    <pre
-      suppressHydrationWarning
-      className={"w-full break-before-all whitespace-pre-wrap p-2"}
-      dangerouslySetInnerHTML={{
-        __html: content,
-      }}
-    ></pre>
-  );
 }
 
 function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
@@ -192,15 +200,16 @@ function formatMessages(messages: Message[]) {
   };
 
   return messages.map((msg) => {
-    const isImage = msg.contents.some((x) => x.type === "image");
-    if (isImage) {
-      return msg;
-    }
-
     const formattedMessageContent =
-      msg.role === "assistant"
-        ? msg.contents.map((x) => ({ ...x, data: md.render(x.data) }))
-        : msg.contents;
+      msg.role === "user"
+        ? msg.contents
+        : msg.contents.map((x) => {
+            if (x.type === "image") {
+              return x;
+            }
+
+            return { ...x, data: md.render(x.text) };
+          });
 
     return {
       ...msg,

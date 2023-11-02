@@ -5,7 +5,20 @@ import z from "zod";
 
 export const runtime = "edge";
 
-const input = z.object({
+const messageSchema = z.discriminatedUnion("type", [
+  z.object({
+    //id: z.string(),
+    type: z.literal("text"),
+    text: z.string(),
+  }),
+  z.object({
+    //id: z.string(),
+    type: z.literal("image"),
+    imageUrl: z.string(),
+  }),
+]);
+
+const inputSchema = z.object({
   conversationId: z.string(),
   model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
   newMessage: z.object({
@@ -15,20 +28,15 @@ const input = z.object({
     z.object({
       id: z.string(),
       role: z.enum(["user", "assistant"]),
-      contents: z.array(
-        z.object({
-          type: z.enum(["text", "image"]),
-          data: z.string(),
-        }),
-      ),
+      contents: z.array(messageSchema),
     }),
   ),
 });
 
-export type ChatInput = z.infer<typeof input>;
+export type ChatInput = z.infer<typeof inputSchema>;
 
 export async function POST(req: NextRequest) {
-  const result = input.safeParse(await req.json());
+  const result = inputSchema.safeParse(await req.json());
 
   if (result.success) {
     const { data } = result;
