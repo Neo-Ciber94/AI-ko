@@ -15,6 +15,7 @@ const messageSchema = z.discriminatedUnion("type", [
     //id: z.string(),
     type: z.literal("image"),
     imageUrl: z.string(),
+    imagePrompt: z.string(),
   }),
 ]);
 

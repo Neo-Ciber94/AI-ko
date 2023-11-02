@@ -12,15 +12,15 @@ import { and, eq, asc, desc } from "drizzle-orm";
 import type { AIModel, Role } from "../database/types";
 
 type MessageImage = {
+  //id: string;
   type: "image";
-  id: string;
   imagePrompt: string;
   imageUrl: string;
 };
 
 type MessageText = {
+  //id: string;
   type: "text";
-  id: string;
   text: string;
 };
 
