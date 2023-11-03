@@ -112,7 +112,7 @@ function MessageContent({ message }: { message: Message }) {
     }
     case "image": {
       return (
-        <div className="flex flex-col items-center justify-center p-4">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center p-4">
           <Image
             width={512}
             height={512}
@@ -121,7 +121,7 @@ function MessageContent({ message }: { message: Message }) {
             className="overflow-hidden rounded-lg object-cover shadow-md"
           />
 
-          <span className="text-mono dark:text-whit4 pt-4 text-xs">
+          <span className="text-mono pt-4 text-xs dark:text-white">
             {contents.imagePrompt}
           </span>
         </div>
