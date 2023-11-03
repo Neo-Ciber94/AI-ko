@@ -31,6 +31,7 @@ export function useChat(opts: UseChatOptions) {
     async (message: string) => {
       setIsLoading(true);
 
+      console.log("run");
       try {
         const prevMessages = messages;
 

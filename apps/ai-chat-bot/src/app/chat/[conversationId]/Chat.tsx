@@ -52,6 +52,10 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
     const assistantMessages = messages.filter((x) => x.role === "assistant");
 
     const canGenerateTitle =
@@ -82,7 +86,7 @@ export default function Chat(props: ChatProps) {
     };
 
     void run();
-  }, [conversation.title, conversationId, messages, toast]);
+  }, [conversation.title, conversationId, isLoading, messages, toast]);
 
   const handleChat = async (message: string) => {
     await chat(message);

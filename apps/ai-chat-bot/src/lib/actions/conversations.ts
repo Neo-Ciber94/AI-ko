@@ -121,7 +121,7 @@ export async function generateConversationTitle({
     messages: [
       {
         role: "user",
-        content: `Generate a short and concise single line summary of a conversation with this contents: \n\n${content}`,
+        content: `Generate a short title that summarize the contents of this conversation: \n\n${content}`,
       },
     ],
   });
