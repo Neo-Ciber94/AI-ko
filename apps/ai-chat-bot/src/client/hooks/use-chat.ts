@@ -39,7 +39,6 @@ export function useChat(opts: UseChatOptions) {
           ...msgs,
           {
             id: `temp_${crypto.randomUUID()}`, // temporal id
-            //content: message,
             role: "user",
             contents: [{ type: "text", text: message }],
           },

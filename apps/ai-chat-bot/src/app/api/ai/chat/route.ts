@@ -7,12 +7,10 @@ export const runtime = "edge";
 
 const messageSchema = z.discriminatedUnion("type", [
   z.object({
-    //id: z.string(),
     type: z.literal("text"),
     text: z.string(),
   }),
   z.object({
-    //id: z.string(),
     type: z.literal("image"),
     imageUrl: z.string(),
     imagePrompt: z.string(),

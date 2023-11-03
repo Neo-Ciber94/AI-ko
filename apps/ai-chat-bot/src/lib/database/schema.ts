@@ -88,12 +88,11 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .$defaultFn(() => Date.now()),
 });
 
-export const messageImageContents = sqliteTable("message_image_content", {
+export const messageTextContents = sqliteTable("message_text_content", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  imagePrompt: text("image_prompt").notNull(),
-  imageUrl: text("image_url").notNull(),
+  text: text("text").notNull(),
   conversationMessageId: text("conversation_message_id")
     .notNull()
     .references(() => conversationMessages.id),
@@ -102,11 +101,12 @@ export const messageImageContents = sqliteTable("message_image_content", {
     .$defaultFn(() => Date.now()),
 });
 
-export const messageTextContents = sqliteTable("message_text_content", {
+export const messageImageContents = sqliteTable("message_image_content", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  text: text("text").notNull(),
+  imagePrompt: text("image_prompt").notNull(),
+  imageUrl: text("image_url").notNull(),
   conversationMessageId: text("conversation_message_id")
     .notNull()
     .references(() => conversationMessages.id),

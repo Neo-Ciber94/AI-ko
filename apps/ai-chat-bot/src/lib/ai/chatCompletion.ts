@@ -12,6 +12,7 @@ import type { MessageType, Role } from "../database/types";
 type ImageContent = {
   type: "image";
   imageUrl: string;
+  imagePrompt: string;
 };
 
 type TextContent = {
@@ -40,16 +41,22 @@ export async function chatCompletion(input: ChatCompletionInput) {
     .map((x) => {
       const contents = x.contents[0];
 
-      if (contents.type !== "text") {
-        throw new Error("Expected text");
+      switch (contents.type) {
+        case "text": {
+          return {
+            content: contents.text,
+            role: x.role,
+          };
+        }
+        // TODO: Create actual function call
+        case "image": {
+          return {
+            role: "function" as const,
+            name: "generateImage",
+            content: JSON.stringify({ prompt: contents.imagePrompt }),
+          };
+        }
       }
-
-      // We already check we had at least one message content
-
-      return {
-        content: contents.text,
-        role: x.role,
-      };
     })
     // Add the new message
     .concat({
