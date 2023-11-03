@@ -9,6 +9,7 @@ import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesProvider";
 import InjectStyles from "@/components/InjectStyles";
 import type { AIModel, Role } from "@/lib/database/types";
+import Image from "next/image";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -107,6 +108,23 @@ function MessageContent({ message }: { message: Message }) {
             __html: text,
           }}
         ></pre>
+      );
+    }
+    case "image": {
+      return (
+        <div className="flex flex-col items-center justify-center p-4">
+          <Image
+            width={512}
+            height={512}
+            alt={contents.imagePrompt}
+            src={contents.imageUrl}
+            className="overflow-hidden rounded-lg object-cover shadow-md"
+          />
+
+          <span className="text-mono dark:text-whit4 pt-4 text-xs">
+            {contents.imagePrompt}
+          </span>
+        </div>
       );
     }
     default:

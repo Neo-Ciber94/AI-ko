@@ -58,7 +58,8 @@ type AIMessage =
 const FUNCTIONS = {
   generateImage: {
     name: "generateImage",
-    description: "Generate an image using the given prompt",
+    description:
+      "Generate an image using a well descriptive and detailed text prompt",
     parameters: {
       type: "object",
       properties: {
