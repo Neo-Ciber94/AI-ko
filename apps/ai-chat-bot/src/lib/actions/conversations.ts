@@ -2,12 +2,8 @@
 
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
-import { and, eq } from "drizzle-orm";
-import {
-  conversationMessages,
-  conversations,
-  messageContents,
-} from "@/lib/database/schema";
+import { and, desc, eq } from "drizzle-orm";
+import { conversations, messageTextContents } from "@/lib/database/schema";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
@@ -112,19 +108,20 @@ export async function generateConversationTitle({
     };
   }
 
-  const messageContent = db.query.messageContents.findFirst({
+  const messageContent = await db.query.messageTextContents.findFirst({
     where: and(
-      eq(messageContents.conversationMessageId, conversationMessages.id),
-      eq(messageContents.type, "text"),
+      eq(messageTextContents.conversationMessageId, lastAssistantMessage.id),
     ),
+    orderBy: desc(messageTextContents.createdAt),
   });
 
+  const content = messageContent?.text || "";
   const openAiResponse = await openaiInstance.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
       {
         role: "user",
-        content: `Generate a short and concise single line title that summarizes a conversation with this content: \n\n${messageContent}`,
+        content: `Generate a short and concise single line summary of a conversation with this contents: \n\n${content}`,
       },
     ],
   });

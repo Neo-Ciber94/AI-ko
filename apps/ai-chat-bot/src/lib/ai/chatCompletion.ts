@@ -7,7 +7,7 @@ import {
   HEADER_USER_MESSAGE_ID,
 } from "../common/constants";
 import { openaiInstance } from ".";
-import type { MessageType, Role } from "../database/types";
+import type { Role } from "../database/types";
 
 type ImageContent = {
   type: "image";
@@ -119,7 +119,7 @@ export async function chatCompletion(input: ChatCompletionInput) {
 }
 
 type AIMessage = {
-  type: MessageType;
+  type: "text" | "image";
   data: string;
 };
 

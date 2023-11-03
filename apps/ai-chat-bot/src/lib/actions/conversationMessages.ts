@@ -27,9 +27,11 @@ type MessageText = {
 type MessageContents = MessageImage | MessageText;
 
 type ConversationData = {
-  conversationId: string;
+  id: string;
   model: AIModel;
   title: string;
+  createdAt: number;
+  userId: string;
   conversationMessages: {
     id: string;
     role: Role;
@@ -96,9 +98,11 @@ export async function getConversationWithMessages(conversationId: string) {
   }
 
   let conversation: ConversationData = {
-    conversationId: rows[0].conversation.id,
+    id: rows[0].conversation.id,
     model: rows[0].conversation.model,
     title: rows[0].conversation.title,
+    createdAt: rows[0].conversation.createdAt,
+    userId: rows[0].conversation.userId,
     conversationMessages: [],
   };
 
