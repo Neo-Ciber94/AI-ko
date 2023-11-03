@@ -7,6 +7,7 @@ import { type Stream } from "openai/streaming.mjs";
 import type {
   ChatCompletionCreateParams,
   ChatCompletionChunk,
+  ChatCompletionMessageParam,
 } from "openai/resources/index.mjs";
 import { db } from "../database";
 import {
@@ -42,7 +43,7 @@ type ChatCompletionInput = {
   messages: Message[];
 };
 
-type AIMessage =
+type GeneratedMessage =
   | {
       type: "text";
       content: string;
@@ -73,8 +74,10 @@ const FUNCTIONS = {
   },
 } satisfies Record<string, ChatCompletionCreateParams.Function>;
 
+type FunctionCall = keyof typeof FUNCTIONS;
+
 export async function chatCompletion(input: ChatCompletionInput) {
-  const messages = input.messages
+  const messages: ChatCompletionMessageParam[] = input.messages
     .filter((x) => x.contents.length > 0)
     .filter((x) => !x.contents.some((x) => x.type !== "text"))
     .map((x) => {
@@ -85,15 +88,14 @@ export async function chatCompletion(input: ChatCompletionInput) {
           return {
             content: contents.text,
             role: x.role,
-          };
+          } as ChatCompletionMessageParam;
         }
-        // TODO: Create actual function call
         case "image": {
           return {
-            role: "function" as const,
+            role: "function",
             name: "generateImage",
-            content: JSON.stringify({ prompt: contents.imagePrompt }),
-          };
+            content: JSON.stringify({ imagePrompt: contents.imagePrompt }),
+          } as ChatCompletionMessageParam;
         }
       }
     })
@@ -124,9 +126,9 @@ export async function chatCompletion(input: ChatCompletionInput) {
   });
 
   const openAIStream = await openaiInstance.chat.completions.create({
+    messages,
     stream: true,
     model: input.model,
-    messages,
     function_call: "auto",
     functions: Object.values(FUNCTIONS),
   });
@@ -210,10 +212,10 @@ function createResponseStream({
   onGenerate,
 }: {
   openAIStream: Stream<ChatCompletionChunk>;
-  onGenerate: (message: AIMessage) => void;
+  onGenerate: (generated: GeneratedMessage) => void;
 }) {
   let data: string = "";
-  let isGeneratingImage = false;
+  let currentFunction: FunctionCall | undefined = undefined;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -224,89 +226,56 @@ function createResponseStream({
 
       for await (const chunk of openAIStream) {
         const choice = chunk.choices[0];
-
-        if (
+        const isDone =
           choice == null ||
           choice.finish_reason === "stop" ||
-          choice.finish_reason === "function_call"
-        ) {
-          if (isGeneratingImage) {
-            try {
-              console.log({ args: data });
-              const args = JSON.parse(data || "{}") as {
-                imagePrompt?: string;
-              };
+          choice.finish_reason === "function_call";
 
-              const imagePrompt = args.imagePrompt;
-              if (imagePrompt == null) {
-                throw new Error("No prompt was provided");
-              }
-
-              // TODO: Add userId
-              const { images } = await generateImage({ prompt: imagePrompt });
-              if (images.length === 0) {
-                throw new Error("No images were generated");
-              }
-
-              for (const imageUrl of images) {
-                emit({
-                  type: "image",
-                  imagePrompt,
-                  imageUrl,
-                });
-              }
-
-              onGenerate({
-                type: "image",
-                images: images.map((x) => ({
-                  imageUrl: x,
-                  imagePrompt,
-                })),
+        if (isDone) {
+          try {
+            if (currentFunction === "generateImage") {
+              const images = await generateImageForChatCompletion({
+                data,
+                emit,
               });
-            } catch (err) {
-              console.error(err);
-              emit({
-                type: "error",
-                message: "Failed to generate image",
-              });
-            } finally {
-              controller.close();
+              onGenerate({ type: "image", images });
+            } else {
+              onGenerate({ type: "text", content: data });
             }
-          } else {
-            onGenerate({ type: "text", content: data });
+          } catch (err) {
+            console.error(err);
+            emit({ type: "error", message: "Failed to send stream" });
+          } finally {
             controller.close();
           }
 
-          return;
-        }
-
-        if (choice.delta.function_call) {
-          const f = choice.delta.function_call;
-          console.log({ choice });
-
-          if (isGeneratingImage) {
-            data += f.arguments || "";
-          } else {
-            if (f.name === FUNCTIONS.generateImage.name) {
-              isGeneratingImage = true;
-              data += f.arguments || "";
-              console.log("Generating image: ", choice.delta.function_call);
-            } else {
-              emit({
-                type: "error",
-                message: "Failed to call function",
-              });
-              controller.close();
-            }
-          }
+          return; // we should exit anyways
         } else {
-          const content = choice.delta.content || "";
-          data += content;
+          if (choice.delta.function_call) {
+            const f = choice.delta.function_call;
+            console.log({ choice });
 
-          emit({
-            type: "text",
-            chunk: content,
-          });
+            if (currentFunction) {
+              data += f.arguments || "";
+            } else {
+              if (f.name === FUNCTIONS.generateImage.name) {
+                currentFunction = FUNCTIONS.generateImage.name as FunctionCall;
+                data += f.arguments || "";
+                console.log("Generating image: ", choice.delta.function_call);
+              } else {
+                emit({ type: "error", message: "Failed to call function" });
+                controller.close();
+              }
+            }
+          } else {
+            const content = choice.delta.content || "";
+            data += content;
+
+            emit({
+              type: "text",
+              chunk: content,
+            });
+          }
         }
       }
     },
@@ -317,4 +286,38 @@ function createResponseStream({
       "Content-Type": "text/event-stream",
     },
   });
+}
+
+type EmitFunction = (msg: ChatEventMessage) => void;
+
+async function generateImageForChatCompletion({
+  data,
+  emit,
+}: {
+  data: string;
+  emit: EmitFunction;
+}) {
+  console.log({ args: data });
+  const args = JSON.parse(data || "{}") as {
+    imagePrompt?: string;
+  };
+
+  const imagePrompt = args.imagePrompt;
+  if (imagePrompt == null) {
+    throw new Error("No prompt was provided");
+  }
+
+  // TODO: Add userId
+  const { images } = await generateImage({ prompt: imagePrompt });
+  if (images.length === 0) {
+    throw new Error("No images were generated");
+  }
+
+  const generatedImages = images.map((img) => ({ imagePrompt, imageUrl: img }));
+
+  for (const img of generatedImages) {
+    emit({ type: "image", ...img });
+  }
+
+  return generatedImages;
 }
