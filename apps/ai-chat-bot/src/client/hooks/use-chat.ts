@@ -95,7 +95,10 @@ export function useChat(opts: UseChatOptions) {
         while (true) {
           const { done, value } = await reader.read();
           const json = decoder.decode(value);
+          console.log({ json });
           const eventMsg = JSON.parse(json) as ChatEventMessage;
+
+          console.log({ eventMsg });
 
           switch (eventMsg.type) {
             case "text": {

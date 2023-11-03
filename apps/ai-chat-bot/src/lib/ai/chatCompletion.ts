@@ -58,14 +58,14 @@ type AIMessage =
 const FUNCTIONS = {
   generateImage: {
     name: "generateImage",
-    description:
-      "Generate an image using a well descriptive and detailed text prompt",
+    description: "Generate an image using a text prompt",
     parameters: {
       type: "object",
       properties: {
-        prompt: {
+        imagePrompt: {
           type: "string",
-          description: "The prompt used to generate the image",
+          description:
+            "A descriptive and detailed prompt used to generate the image",
         },
       },
     },
@@ -212,26 +212,26 @@ function createResponseStream({
   onGenerate: (message: AIMessage) => void;
 }) {
   let data: string = "";
+  let isGeneratingImage = false;
+
   const stream = new ReadableStream({
     async start(controller) {
       for await (const chunk of openAIStream) {
         const choice = chunk.choices[0];
 
-        if (choice == null || choice.finish_reason === "stop") {
-          onGenerate({ type: "text", content: data });
-          controller.close();
-          return;
-        }
-
-        if (choice.delta.function_call) {
-          const f = choice.delta.function_call;
-          if (f.name === FUNCTIONS.generateImage.name) {
+        if (
+          choice == null ||
+          choice.finish_reason === "stop" ||
+          choice.finish_reason === "function_call"
+        ) {
+          if (isGeneratingImage) {
             try {
-              const args = JSON.parse(f.arguments || "{}") as {
-                prompt?: string;
+              console.log({ args: data });
+              const args = JSON.parse(data || "{}") as {
+                imagePrompt?: string;
               };
 
-              const imagePrompt = args.prompt;
+              const imagePrompt = args.imagePrompt;
               if (imagePrompt == null) {
                 throw new Error("No prompt was provided");
               }
@@ -270,12 +270,32 @@ function createResponseStream({
               controller.close();
             }
           } else {
-            const msg: ChatEventMessage = {
-              type: "error",
-              message: "Failed to call function",
-            };
-            controller.enqueue(JSON.stringify(msg));
+            onGenerate({ type: "text", content: data });
             controller.close();
+          }
+
+          return;
+        }
+
+        if (choice.delta.function_call) {
+          const f = choice.delta.function_call;
+          console.log({ choice });
+
+          if (isGeneratingImage) {
+            data += f.arguments || "";
+          } else {
+            if (f.name === FUNCTIONS.generateImage.name) {
+              isGeneratingImage = true;
+              data += f.arguments || "";
+              console.log("Generating image: ", choice.delta.function_call);
+            } else {
+              const msg: ChatEventMessage = {
+                type: "error",
+                message: "Failed to call function",
+              };
+              controller.enqueue(JSON.stringify(msg));
+              controller.close();
+            }
           }
         } else {
           const content = choice.delta.content || "";
