@@ -253,7 +253,6 @@ function createResponseStream({
         } else {
           if (choice.delta.function_call) {
             const f = choice.delta.function_call;
-            console.log({ choice });
 
             if (currentFunction) {
               data += f.arguments || "";
@@ -261,7 +260,6 @@ function createResponseStream({
               if (f.name === FUNCTIONS.generateImage.name) {
                 currentFunction = FUNCTIONS.generateImage.name as FunctionCall;
                 data += f.arguments || "";
-                console.log("Generating image: ", choice.delta.function_call);
               } else {
                 emit({ type: "error", message: "Failed to call function" });
                 controller.close();
@@ -297,7 +295,6 @@ async function generateImageForChatCompletion({
   data: string;
   emit: EmitFunction;
 }) {
-  console.log({ args: data });
   const args = JSON.parse(data || "{}") as {
     imagePrompt?: string;
   };
