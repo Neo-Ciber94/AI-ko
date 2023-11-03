@@ -6,19 +6,17 @@ import ChatMessages from "./ChatMessages";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
-import { type ConversationMessage } from "@/lib/actions/conversationMessages";
+import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
-import {
-  type Conversation,
-  generateConversationTitle,
-} from "@/lib/actions/conversations";
+import { generateConversationTitle } from "@/lib/actions/conversations";
 import { eventEmitter } from "@/lib/events";
 import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
 import ModelSelector from "./ModelSelector";
+import type { Conversation } from "@/lib/database/types";
 
 type ChatProps = {
   conversation: Conversation;
-  messages: ConversationMessage[];
+  messages: ConversationMessageWithContents[];
 };
 
 export default function Chat(props: ChatProps) {
@@ -54,6 +52,10 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
     const assistantMessages = messages.filter((x) => x.role === "assistant");
 
     const canGenerateTitle =
@@ -84,7 +86,7 @@ export default function Chat(props: ChatProps) {
     };
 
     void run();
-  }, [conversation.title, conversationId, messages, toast]);
+  }, [conversation.title, conversationId, isLoading, messages, toast]);
 
   const handleChat = async (message: string) => {
     await chat(message);

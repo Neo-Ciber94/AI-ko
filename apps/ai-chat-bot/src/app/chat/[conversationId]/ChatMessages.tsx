@@ -1,5 +1,5 @@
-import { type ConversationMessage } from "@/lib/actions/conversationMessages";
-import { type AIModel } from "@/lib/actions/conversations";
+import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
+
 import markdownIt from "markdown-it";
 import hljs from "highlight.js";
 
@@ -8,6 +8,8 @@ import hljsZig from "highlightjs-zig";
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesProvider";
 import InjectStyles from "@/components/InjectStyles";
+import type { AIModel, Role } from "@/lib/database/types";
+import Image from "next/image";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -20,8 +22,10 @@ if (typeof window !== "undefined") {
   hljs.highlightAll();
 }
 
-type Message = Pick<ConversationMessage, "id" | "content" | "role">;
-type Role = Message["role"];
+type Message = Pick<
+  ConversationMessageWithContents,
+  "id" | "role" | "contents"
+>;
 
 type ChatMessagesProps = {
   messages: Message[];
@@ -77,27 +81,55 @@ export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
 }
 
 function MessageContent({ message }: { message: Message }) {
-  // we don't format user code
-  if (message.role === "user") {
-    return (
-      <pre
-        suppressHydrationWarning
-        className={"w-full whitespace-pre-wrap break-all p-2"}
-      >
-        {message.content}
-      </pre>
-    );
-  }
+  // FIXME: This should not be empty
+  const contents = message.contents[0];
 
-  return (
-    <pre
-      suppressHydrationWarning
-      className={"w-full break-before-all whitespace-pre-wrap p-2"}
-      dangerouslySetInnerHTML={{
-        __html: message.content,
-      }}
-    ></pre>
-  );
+  switch (contents.type) {
+    case "text": {
+      const text = contents.text;
+
+      // we don't format user code
+      if (message.role === "user") {
+        return (
+          <pre
+            suppressHydrationWarning
+            className={"w-full whitespace-pre-wrap break-all p-2"}
+          >
+            {text}
+          </pre>
+        );
+      }
+
+      return (
+        <pre
+          suppressHydrationWarning
+          className={"w-full break-before-all whitespace-pre-wrap p-2"}
+          dangerouslySetInnerHTML={{
+            __html: text,
+          }}
+        ></pre>
+      );
+    }
+    case "image": {
+      return (
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center p-4">
+          <Image
+            width={512}
+            height={512}
+            alt={contents.imagePrompt}
+            src={contents.imageUrl}
+            className="overflow-hidden rounded-lg object-cover shadow-md"
+          />
+
+          <span className="text-mono pt-4 text-xs dark:text-white">
+            {contents.imagePrompt}
+          </span>
+        </div>
+      );
+    }
+    default:
+      throw new Error("Not implemented");
+  }
 }
 
 function Avatar({ role, children }: { role: Role; children: React.ReactNode }) {
@@ -186,12 +218,20 @@ function formatMessages(messages: Message[]) {
   };
 
   return messages.map((msg) => {
-    const formattedContent =
-      msg.role === "assistant" ? md.render(msg.content) : msg.content;
+    const formattedMessageContent =
+      msg.role === "user"
+        ? msg.contents
+        : msg.contents.map((x) => {
+            if (x.type === "image") {
+              return x;
+            }
+
+            return { ...x, data: md.render(x.text) };
+          });
 
     return {
       ...msg,
-      content: formattedContent,
-    };
+      contents: formattedMessageContent,
+    } satisfies Message;
   });
 }

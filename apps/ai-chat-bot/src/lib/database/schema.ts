@@ -83,7 +83,33 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .notNull()
     .references(() => conversations.id),
   role: roleColumn("role").notNull(),
-  content: text("content").notNull(),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+});
+
+export const messageTextContents = sqliteTable("message_text_content", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  text: text("text").notNull(),
+  conversationMessageId: text("conversation_message_id")
+    .notNull()
+    .references(() => conversationMessages.id),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+});
+
+export const messageImageContents = sqliteTable("message_image_content", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  imagePrompt: text("image_prompt").notNull(),
+  imageUrl: text("image_url").notNull(),
+  conversationMessageId: text("conversation_message_id")
+    .notNull()
+    .references(() => conversationMessages.id),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
@@ -95,10 +121,12 @@ export const conversationRelations = relations(conversations, ({ many }) => ({
 
 export const conversationMessagesRelations = relations(
   conversationMessages,
-  ({ one }) => ({
+  ({ one, many }) => ({
     conversation: one(conversations, {
       fields: [conversationMessages.conversationId],
       references: [conversations.id],
     }),
+    imageContents: many(messageImageContents),
+    textContents: many(messageTextContents),
   }),
 );

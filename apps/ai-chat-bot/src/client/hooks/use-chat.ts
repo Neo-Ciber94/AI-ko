@@ -1,9 +1,11 @@
 import { type ChatInput } from "@/app/api/ai/chat/route";
+import { type ChatEventMessage } from "@/lib/ai/chatCompletion";
 import {
   HEADER_ASSISTANT_MESSAGE_ID,
   HEADER_USER_MESSAGE_ID,
 } from "@/lib/common/constants";
 import { useCallback, useRef, useState } from "react";
+import { EventSourceParserStream } from "eventsource-parser/stream";
 
 type ChatMessage = ChatInput["messages"][number];
 
@@ -39,12 +41,12 @@ export function useChat(opts: UseChatOptions) {
           ...msgs,
           {
             id: `temp_${crypto.randomUUID()}`, // temporal id
-            content: message,
             role: "user",
+            contents: [{ type: "text", text: message }],
           },
         ]);
 
-        const res = await fetch(endpoint, {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -57,26 +59,23 @@ export function useChat(opts: UseChatOptions) {
           } satisfies ChatInput),
         });
 
-        if (!res) {
-          const msg = await getResponseError(res);
+        if (!response) {
+          const msg = await getResponseError(response);
           throw new Error(msg ?? "Something went wrong");
         }
 
-        const reader = res.body?.getReader();
+        const body = response.body;
 
-        if (reader == null) {
+        if (body == null) {
           throw new Error("Unable to read response from server");
         }
 
-        let isReading = false;
-        let content = "";
-        const decoder = new TextDecoder();
-
         const assistantMessageId =
-          res.headers.get(HEADER_ASSISTANT_MESSAGE_ID) || crypto.randomUUID();
+          response.headers.get(HEADER_ASSISTANT_MESSAGE_ID) ||
+          crypto.randomUUID();
 
         const userMessageId =
-          res.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
+          response.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
 
         // Assign user message id, to last message
         setMessages((prev) => {
@@ -90,29 +89,93 @@ export function useChat(opts: UseChatOptions) {
           return msgs;
         });
 
+        const stream = body
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(new EventSourceParserStream());
+
+        const reader = stream.getReader();
+        let isReading = false;
+        let textContent = "";
+
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          const { done, value } = await reader.read();
-          const chunk = decoder.decode(value);
+          const { done, value: event } = await reader.read();
 
-          content += chunk;
+          if (event && event.type === "event") {
+            const json = event?.data || "";
+            const eventMsg = JSON.parse(json) as ChatEventMessage;
+            console.log({ eventMsg });
 
-          if (isReading) {
-            setMessages((prev) => {
-              const msgs = prev.slice();
-              const last = msgs.pop()!;
-              msgs.push({ ...last, content });
-              return msgs;
-            });
-          } else {
-            setMessages((prev) => [
-              ...prev,
-              { id: assistantMessageId, role: "assistant", content },
-            ]);
-            isReading = true;
+            switch (eventMsg.type) {
+              case "text": {
+                textContent += eventMsg.chunk;
+
+                if (isReading) {
+                  setMessages((prev) => {
+                    const msgs = prev.slice();
+                    const last = msgs.pop()!;
+                    msgs.push({
+                      ...last,
+                      contents: [{ type: "text", text: textContent }],
+                    });
+                    return msgs;
+                  });
+                } else {
+                  setMessages((prev) => [
+                    ...prev,
+                    {
+                      id: assistantMessageId,
+                      role: "assistant",
+                      contents: [{ type: "text", text: textContent }],
+                    },
+                  ]);
+                  isReading = true;
+                }
+
+                break;
+              }
+              case "image": {
+                if (isReading) {
+                  setMessages((prev) => {
+                    const msgs = clone(prev);
+                    const last = msgs.pop();
+
+                    last?.contents.push({
+                      type: "image",
+                      imagePrompt: eventMsg.imagePrompt,
+                      imageUrl: eventMsg.imageUrl,
+                    });
+
+                    return msgs;
+                  });
+                } else {
+                  setMessages((prev) => [
+                    ...prev,
+                    {
+                      id: assistantMessageId,
+                      role: "assistant",
+                      contents: [
+                        {
+                          type: "image",
+                          imagePrompt: eventMsg.imagePrompt,
+                          imageUrl: eventMsg.imageUrl,
+                        },
+                      ],
+                    },
+                  ]);
+
+                  isReading = true;
+                }
+
+                break;
+              }
+              case "error": {
+                throw new Error(eventMsg.message);
+              }
+            }
           }
 
-          if (done) {
+          if (event == null || done) {
             break;
           }
         }
@@ -146,4 +209,12 @@ async function getResponseError(res: Response) {
   }
 
   return null;
+}
+
+function clone<T>(obj: T) {
+  if (typeof structuredClone !== "undefined") {
+    return structuredClone(obj) as T;
+  }
+
+  return JSON.parse(JSON.stringify(obj));
 }

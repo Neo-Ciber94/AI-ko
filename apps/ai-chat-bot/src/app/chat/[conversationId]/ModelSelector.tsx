@@ -1,11 +1,8 @@
 "use client";
 
 import { useToast } from "@/client/hooks/use-toast";
-import {
-  updateConversationModel,
-  type Conversation,
-  type AIModel,
-} from "@/lib/actions/conversations";
+import { updateConversationModel } from "@/lib/actions/conversations";
+import type { Conversation, AIModel } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import React from "react";
 

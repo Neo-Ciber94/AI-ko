@@ -5,12 +5,10 @@ import { logOut, useSession } from "./providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import ChatBubbleOvalLeftEllipsisIcon from "@heroicons/react/24/outline/esm/ChatBubbleOvalLeftEllipsisIcon";
 import ChatConversations from "./ChatConversations";
-import {
-  type Conversation,
-  createConversation,
-} from "@/lib/actions/conversations";
+import { createConversation } from "@/lib/actions/conversations";
 import { useFormStatus } from "react-dom";
 import LoadingSpinner from "./LoadingSpinner";
+import type { Conversation } from "@/lib/database/types";
 
 export default function Sidebar({
   conversations,

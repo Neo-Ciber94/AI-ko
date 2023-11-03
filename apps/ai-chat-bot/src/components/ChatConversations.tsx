@@ -10,7 +10,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 import {
-  type Conversation,
   deleteConversation,
   updateConversationTitle,
   generateConversationTitle,
@@ -20,6 +19,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
 import { eventListener } from "@/lib/events";
+import type { Conversation } from "@/lib/database/types";
 
 export default function ChatConversations({
   conversations,
