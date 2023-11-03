@@ -1,4 +1,5 @@
 import { chatCompletion } from "@/lib/ai/chatCompletion";
+import { isSafeInput } from "@/lib/ai/isSafeInput";
 import { json } from "@/lib/server/functions";
 import { type NextRequest } from "next/server";
 import z from "zod";
@@ -37,9 +38,15 @@ export type ChatInput = z.infer<typeof inputSchema>;
 export async function POST(req: NextRequest) {
   const result = inputSchema.safeParse(await req.json());
 
-  // TODO: Moderate input
   if (result.success) {
     const { data } = result;
+    if (await isSafeInput(data.newMessage.content)) {
+      return json(
+        { message: "The user message violates the usage policy" },
+        { status: 400 },
+      );
+    }
+
     const response = await chatCompletion(data);
     return response;
   } else {

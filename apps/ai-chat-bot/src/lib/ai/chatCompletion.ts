@@ -17,6 +17,7 @@ import {
 import { openaiInstance } from ".";
 import type { Role } from "../database/types";
 import { generateImage } from "./generateImage";
+import { getSession } from "../auth/utils";
 
 type ImageContent = {
   type: "image";
@@ -304,8 +305,12 @@ async function generateImageForChatCompletion({
     throw new Error("No prompt was provided");
   }
 
-  // TODO: Add userId
-  const { images } = await generateImage({ prompt: imagePrompt });
+  const session = await getSession();
+  const { images } = await generateImage({
+    prompt: imagePrompt,
+    userId: session?.user.userId,
+  });
+
   if (images.length === 0) {
     throw new Error("No images were generated");
   }
