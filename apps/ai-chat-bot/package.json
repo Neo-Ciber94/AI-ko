@@ -18,6 +18,7 @@
     "@lucia-auth/oauth": "^3.3.1",
     "@types/markdown-it": "^13.0.5",
     "drizzle-orm": "^0.28.6",
+    "eventsource-parser": "^1.1.1",
     "highlight.js": "^11.9.0",
     "highlightjs-zig": "^1.0.2",
     "isomorphic-dompurify": "^1.9.0",

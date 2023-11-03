@@ -53,6 +53,9 @@ importers:
       drizzle-orm:
         specifier: ^0.28.6
         version: 0.28.6(@libsql/client@0.3.6)(@types/better-sqlite3@7.6.6)
+      eventsource-parser:
+        specifier: ^1.1.1
+        version: 1.1.1
       highlight.js:
         specifier: ^11.9.0
         version: 11.9.0
@@ -3318,6 +3321,11 @@ packages:
   /event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
+    dev: false
+
+  /eventsource-parser@1.1.1:
+    resolution: {integrity: sha512-3Ej2iLj6ZnX+5CMxqyUb8syl9yVZwcwm8IIMrOJlF7I51zxOOrRlU3zxSb/6hFbl03ts1ZxHAGJdWLZOLyKG7w==}
+    engines: {node: '>=14.18'}
     dev: false
 
   /execa@5.1.1:

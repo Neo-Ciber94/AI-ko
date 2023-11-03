@@ -5,6 +5,7 @@ import {
   HEADER_USER_MESSAGE_ID,
 } from "@/lib/common/constants";
 import { useCallback, useRef, useState } from "react";
+import { EventSourceParserStream } from "eventsource-parser/stream";
 
 type ChatMessage = ChatInput["messages"][number];
 
@@ -45,7 +46,7 @@ export function useChat(opts: UseChatOptions) {
           },
         ]);
 
-        const res = await fetch(endpoint, {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -58,22 +59,23 @@ export function useChat(opts: UseChatOptions) {
           } satisfies ChatInput),
         });
 
-        if (!res) {
-          const msg = await getResponseError(res);
+        if (!response) {
+          const msg = await getResponseError(response);
           throw new Error(msg ?? "Something went wrong");
         }
 
-        const reader = res.body?.getReader();
+        const body = response.body;
 
-        if (reader == null) {
+        if (body == null) {
           throw new Error("Unable to read response from server");
         }
 
         const assistantMessageId =
-          res.headers.get(HEADER_ASSISTANT_MESSAGE_ID) || crypto.randomUUID();
+          response.headers.get(HEADER_ASSISTANT_MESSAGE_ID) ||
+          crypto.randomUUID();
 
         const userMessageId =
-          res.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
+          response.headers.get(HEADER_USER_MESSAGE_ID) || crypto.randomUUID();
 
         // Assign user message id, to last message
         setMessages((prev) => {
@@ -87,88 +89,93 @@ export function useChat(opts: UseChatOptions) {
           return msgs;
         });
 
+        const stream = body
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(new EventSourceParserStream());
+
+        const reader = stream.getReader();
         let isReading = false;
         let textContent = "";
-        const decoder = new TextDecoder();
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          const { done, value } = await reader.read();
-          const json = decoder.decode(value);
-          console.log({ json });
-          const eventMsg = JSON.parse(json) as ChatEventMessage;
+          const { done, value: event } = await reader.read();
 
-          console.log({ eventMsg });
+          if (event && event.type === "event") {
+            const json = event?.data || "";
+            const eventMsg = JSON.parse(json) as ChatEventMessage;
+            console.log({ eventMsg });
 
-          switch (eventMsg.type) {
-            case "text": {
-              textContent += eventMsg.chunk;
+            switch (eventMsg.type) {
+              case "text": {
+                textContent += eventMsg.chunk;
 
-              if (isReading) {
-                setMessages((prev) => {
-                  const msgs = prev.slice();
-                  const last = msgs.pop()!;
-                  msgs.push({
-                    ...last,
-                    contents: [{ type: "text", text: textContent }],
+                if (isReading) {
+                  setMessages((prev) => {
+                    const msgs = prev.slice();
+                    const last = msgs.pop()!;
+                    msgs.push({
+                      ...last,
+                      contents: [{ type: "text", text: textContent }],
+                    });
+                    return msgs;
                   });
-                  return msgs;
-                });
-              } else {
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    id: assistantMessageId,
-                    role: "assistant",
-                    contents: [{ type: "text", text: textContent }],
-                  },
-                ]);
-                isReading = true;
+                } else {
+                  setMessages((prev) => [
+                    ...prev,
+                    {
+                      id: assistantMessageId,
+                      role: "assistant",
+                      contents: [{ type: "text", text: textContent }],
+                    },
+                  ]);
+                  isReading = true;
+                }
+
+                break;
               }
+              case "image": {
+                if (isReading) {
+                  setMessages((prev) => {
+                    const msgs = clone(prev);
+                    const last = msgs.pop();
 
-              break;
-            }
-            case "image": {
-              if (isReading) {
-                setMessages((prev) => {
-                  const msgs = clone(prev);
-                  const last = msgs.pop();
+                    last?.contents.push({
+                      type: "image",
+                      imagePrompt: eventMsg.imagePrompt,
+                      imageUrl: eventMsg.imageUrl,
+                    });
 
-                  last?.contents.push({
-                    type: "image",
-                    imagePrompt: eventMsg.imagePrompt,
-                    imageUrl: eventMsg.imageUrl,
+                    return msgs;
                   });
+                } else {
+                  setMessages((prev) => [
+                    ...prev,
+                    {
+                      id: assistantMessageId,
+                      role: "assistant",
+                      contents: [
+                        {
+                          type: "image",
+                          imagePrompt: eventMsg.imagePrompt,
+                          imageUrl: eventMsg.imageUrl,
+                        },
+                      ],
+                    },
+                  ]);
 
-                  return msgs;
-                });
-              } else {
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    id: assistantMessageId,
-                    role: "assistant",
-                    contents: [
-                      {
-                        type: "image",
-                        imagePrompt: eventMsg.imagePrompt,
-                        imageUrl: eventMsg.imageUrl,
-                      },
-                    ],
-                  },
-                ]);
+                  isReading = true;
+                }
 
-                isReading = true;
+                break;
               }
-
-              break;
-            }
-            case "error": {
-              throw new Error(eventMsg.message);
+              case "error": {
+                throw new Error(eventMsg.message);
+              }
             }
           }
 
-          if (done) {
+          if (event == null || done) {
             break;
           }
         }

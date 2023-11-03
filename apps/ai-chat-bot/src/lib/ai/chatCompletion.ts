@@ -58,7 +58,8 @@ type AIMessage =
 const FUNCTIONS = {
   generateImage: {
     name: "generateImage",
-    description: "Generate an image using a text prompt",
+    description:
+      "Generate an image using a text prompt, the prompt should be long descriptive and detailed",
     parameters: {
       type: "object",
       properties: {
@@ -216,6 +217,11 @@ function createResponseStream({
 
   const stream = new ReadableStream({
     async start(controller) {
+      const emit = (msg: ChatEventMessage) => {
+        const json = JSON.stringify(msg);
+        controller.enqueue(`data: ${json}\n\n`);
+      };
+
       for await (const chunk of openAIStream) {
         const choice = chunk.choices[0];
 
@@ -243,13 +249,11 @@ function createResponseStream({
               }
 
               for (const imageUrl of images) {
-                const msg: ChatEventMessage = {
+                emit({
                   type: "image",
                   imagePrompt,
                   imageUrl,
-                };
-
-                controller.enqueue(JSON.stringify(msg));
+                });
               }
 
               onGenerate({
@@ -261,11 +265,10 @@ function createResponseStream({
               });
             } catch (err) {
               console.error(err);
-              const msg: ChatEventMessage = {
+              emit({
                 type: "error",
                 message: "Failed to generate image",
-              };
-              controller.enqueue(JSON.stringify(msg));
+              });
             } finally {
               controller.close();
             }
@@ -289,11 +292,10 @@ function createResponseStream({
               data += f.arguments || "";
               console.log("Generating image: ", choice.delta.function_call);
             } else {
-              const msg: ChatEventMessage = {
+              emit({
                 type: "error",
                 message: "Failed to call function",
-              };
-              controller.enqueue(JSON.stringify(msg));
+              });
               controller.close();
             }
           }
@@ -301,11 +303,10 @@ function createResponseStream({
           const content = choice.delta.content || "";
           data += content;
 
-          const msg: ChatEventMessage = {
+          emit({
             type: "text",
             chunk: content,
-          };
-          controller.enqueue(JSON.stringify(msg));
+          });
         }
       }
     },
