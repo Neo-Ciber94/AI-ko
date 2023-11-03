@@ -11,6 +11,7 @@
     "db:generate": "drizzle-kit generate:sqlite"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.441.0",
     "@heroicons/react": "^2.0.18",
     "@libsql/client": "^0.3.6",
     "@lucia-auth/adapter-sqlite": "^2.0.1",

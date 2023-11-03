@@ -1,6 +1,13 @@
-import { conversationMessages, messageTextContents } from "../database/schema";
+import {
+  conversationMessages,
+  messageImageContents,
+  messageTextContents,
+} from "../database/schema";
 import { type Stream } from "openai/streaming.mjs";
-import { type ChatCompletionChunk } from "openai/resources/index.mjs";
+import type {
+  ChatCompletionCreateParams,
+  ChatCompletionChunk,
+} from "openai/resources/index.mjs";
 import { db } from "../database";
 import {
   HEADER_ASSISTANT_MESSAGE_ID,
@@ -8,6 +15,7 @@ import {
 } from "../common/constants";
 import { openaiInstance } from ".";
 import type { Role } from "../database/types";
+import { generateImage } from "./generateImage";
 
 type ImageContent = {
   type: "image";
@@ -33,6 +41,35 @@ type ChatCompletionInput = {
   newMessage: { content: string };
   messages: Message[];
 };
+
+type AIMessage =
+  | {
+      type: "text";
+      content: string;
+    }
+  | {
+      type: "image";
+      images: {
+        imageUrl: string;
+        imagePrompt: string;
+      }[];
+    };
+
+const FUNCTIONS = {
+  generateImage: {
+    name: "generateImage",
+    description: "Generate an image using the given prompt",
+    parameters: {
+      type: "object",
+      properties: {
+        prompt: {
+          type: "string",
+          description: "The prompt used to generate the image",
+        },
+      },
+    },
+  },
+} satisfies Record<string, ChatCompletionCreateParams.Function>;
 
 export async function chatCompletion(input: ChatCompletionInput) {
   const messages = input.messages
@@ -68,47 +105,80 @@ export async function chatCompletion(input: ChatCompletionInput) {
   const assistantMessageId = crypto.randomUUID();
 
   // Save the new user message to the db
-  const userConversationMessage = await db
-    .insert(conversationMessages)
-    .values({
-      id: userMessageId,
-      conversationId: input.conversationId,
-      role: "user",
-    })
-    .returning();
+  await db.transaction(async (tx) => {
+    const userConversationMessage = await tx
+      .insert(conversationMessages)
+      .values({
+        id: userMessageId,
+        conversationId: input.conversationId,
+        role: "user",
+      })
+      .returning();
 
-  await db.insert(messageTextContents).values({
-    text: input.newMessage.content,
-    conversationMessageId: userConversationMessage[0].id,
+    await tx.insert(messageTextContents).values({
+      text: input.newMessage.content,
+      conversationMessageId: userConversationMessage[0].id,
+    });
   });
 
   const openAIStream = await openaiInstance.chat.completions.create({
     stream: true,
     model: input.model,
     messages,
+    function_call: "auto",
+    functions: Object.values(FUNCTIONS),
   });
 
   const response = createResponseStream({
     openAIStream,
-    async onDone({ type, data }) {
-      if (type === "image") {
-        throw new Error("Unimplemented");
+    async onGenerate(generated) {
+      switch (generated.type) {
+        case "text": {
+          await db.transaction(async (tx) => {
+            // Save the AI message to the db
+            const assistantConversationMessage = await tx
+              .insert(conversationMessages)
+              .values({
+                id: assistantMessageId,
+                conversationId: input.conversationId,
+                role: "assistant",
+              })
+              .returning();
+
+            await tx.insert(messageTextContents).values({
+              text: generated.content,
+              conversationMessageId: assistantConversationMessage[0].id,
+            });
+          });
+          break;
+        }
+        case "image": {
+          // Save the generated images
+          await db.transaction(async (tx) => {
+            // Save the AI message to the db
+            const assistantConversationMessage = await tx
+              .insert(conversationMessages)
+              .values({
+                id: assistantMessageId,
+                conversationId: input.conversationId,
+                role: "assistant",
+              })
+              .returning();
+
+            // TODO: Use Promise.all
+            for (const img of generated.images) {
+              await tx.insert(messageImageContents).values({
+                imagePrompt: img.imagePrompt,
+                imageUrl: img.imageUrl,
+                conversationMessageId: assistantConversationMessage[0].id,
+              });
+            }
+          });
+          break;
+        }
+        default:
+          throw new Error("Unknown generated type");
       }
-
-      // Save the AI message to the db
-      const assistantConversationMessage = await db
-        .insert(conversationMessages)
-        .values({
-          id: assistantMessageId,
-          conversationId: input.conversationId,
-          role: "assistant",
-        })
-        .returning();
-
-      await db.insert(messageTextContents).values({
-        text: data,
-        conversationMessageId: assistantConversationMessage[0].id,
-      });
     },
   });
 
@@ -118,17 +188,27 @@ export async function chatCompletion(input: ChatCompletionInput) {
   return response;
 }
 
-type AIMessage = {
-  type: "text" | "image";
-  data: string;
-};
+export type ChatEventMessage =
+  | {
+      type: "text";
+      chunk: string;
+    }
+  | {
+      type: "image";
+      imageUrl: string;
+      imagePrompt: string;
+    }
+  | {
+      type: "error";
+      message: string;
+    };
 
 function createResponseStream({
   openAIStream,
-  onDone,
+  onGenerate,
 }: {
   openAIStream: Stream<ChatCompletionChunk>;
-  onDone: (message: AIMessage) => void;
+  onGenerate: (message: AIMessage) => void;
 }) {
   let data: string = "";
   const stream = new ReadableStream({
@@ -137,14 +217,75 @@ function createResponseStream({
         const choice = chunk.choices[0];
 
         if (choice == null || choice.finish_reason === "stop") {
-          onDone({ type: "text", data });
+          onGenerate({ type: "text", content: data });
           controller.close();
           return;
         }
 
-        const content = choice.delta.content || "";
-        data += content;
-        controller.enqueue(content);
+        if (choice.delta.function_call) {
+          const f = choice.delta.function_call;
+          if (f.name === FUNCTIONS.generateImage.name) {
+            try {
+              const args = JSON.parse(f.arguments || "{}") as {
+                prompt?: string;
+              };
+
+              const imagePrompt = args.prompt;
+              if (imagePrompt == null) {
+                throw new Error("No prompt was provided");
+              }
+
+              // TODO: Add userId
+              const { images } = await generateImage({ prompt: imagePrompt });
+              if (images.length === 0) {
+                throw new Error("No images were generated");
+              }
+
+              for (const imageUrl of images) {
+                const msg: ChatEventMessage = {
+                  type: "image",
+                  imagePrompt,
+                  imageUrl,
+                };
+
+                controller.enqueue(JSON.stringify(msg));
+              }
+
+              onGenerate({
+                type: "image",
+                images: images.map((x) => ({
+                  imageUrl: x,
+                  imagePrompt,
+                })),
+              });
+            } catch (err) {
+              console.error(err);
+              const msg: ChatEventMessage = {
+                type: "error",
+                message: "Failed to generate image",
+              };
+              controller.enqueue(JSON.stringify(msg));
+            } finally {
+              controller.close();
+            }
+          } else {
+            const msg: ChatEventMessage = {
+              type: "error",
+              message: "Failed to call function",
+            };
+            controller.enqueue(JSON.stringify(msg));
+            controller.close();
+          }
+        } else {
+          const content = choice.delta.content || "";
+          data += content;
+
+          const msg: ChatEventMessage = {
+            type: "text",
+            chunk: content,
+          };
+          controller.enqueue(JSON.stringify(msg));
+        }
       }
     },
   });

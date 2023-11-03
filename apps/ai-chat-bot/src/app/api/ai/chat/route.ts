@@ -37,6 +37,7 @@ export type ChatInput = z.infer<typeof inputSchema>;
 export async function POST(req: NextRequest) {
   const result = inputSchema.safeParse(await req.json());
 
+  // TODO: Moderate input
   if (result.success) {
     const { data } = result;
     const response = await chatCompletion(data);

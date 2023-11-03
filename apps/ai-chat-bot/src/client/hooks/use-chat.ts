@@ -1,4 +1,5 @@
 import { type ChatInput } from "@/app/api/ai/chat/route";
+import { type ChatEventMessage } from "@/lib/ai/chatCompletion";
 import {
   HEADER_ASSISTANT_MESSAGE_ID,
   HEADER_USER_MESSAGE_ID,
@@ -31,7 +32,6 @@ export function useChat(opts: UseChatOptions) {
     async (message: string) => {
       setIsLoading(true);
 
-      console.log("run");
       try {
         const prevMessages = messages;
 
@@ -88,36 +88,81 @@ export function useChat(opts: UseChatOptions) {
         });
 
         let isReading = false;
-        let content = "";
+        let textContent = "";
         const decoder = new TextDecoder();
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
-          const chunk = decoder.decode(value);
+          const json = decoder.decode(value);
+          const eventMsg = JSON.parse(json) as ChatEventMessage;
 
-          content += chunk;
+          switch (eventMsg.type) {
+            case "text": {
+              textContent += eventMsg.chunk;
 
-          if (isReading) {
-            setMessages((prev) => {
-              const msgs = prev.slice();
-              const last = msgs.pop()!;
-              msgs.push({
-                ...last,
-                contents: [{ type: "text", text: content }],
-              });
-              return msgs;
-            });
-          } else {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: assistantMessageId,
-                role: "assistant",
-                contents: [{ type: "text", text: content }],
-              },
-            ]);
-            isReading = true;
+              if (isReading) {
+                setMessages((prev) => {
+                  const msgs = prev.slice();
+                  const last = msgs.pop()!;
+                  msgs.push({
+                    ...last,
+                    contents: [{ type: "text", text: textContent }],
+                  });
+                  return msgs;
+                });
+              } else {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: assistantMessageId,
+                    role: "assistant",
+                    contents: [{ type: "text", text: textContent }],
+                  },
+                ]);
+                isReading = true;
+              }
+
+              break;
+            }
+            case "image": {
+              if (isReading) {
+                setMessages((prev) => {
+                  const msgs = clone(prev);
+                  const last = msgs.pop();
+
+                  last?.contents.push({
+                    type: "image",
+                    imagePrompt: eventMsg.imagePrompt,
+                    imageUrl: eventMsg.imageUrl,
+                  });
+
+                  return msgs;
+                });
+              } else {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: assistantMessageId,
+                    role: "assistant",
+                    contents: [
+                      {
+                        type: "image",
+                        imagePrompt: eventMsg.imagePrompt,
+                        imageUrl: eventMsg.imageUrl,
+                      },
+                    ],
+                  },
+                ]);
+
+                isReading = true;
+              }
+
+              break;
+            }
+            case "error": {
+              throw new Error(eventMsg.message);
+            }
           }
 
           if (done) {
@@ -154,4 +199,12 @@ async function getResponseError(res: Response) {
   }
 
   return null;
+}
+
+function clone<T>(obj: T) {
+  if (typeof structuredClone !== "undefined") {
+    return structuredClone(obj) as T;
+  }
+
+  return JSON.parse(JSON.stringify(obj));
 }
