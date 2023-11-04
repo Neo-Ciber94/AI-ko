@@ -18,6 +18,7 @@ const envSchema = z.object({
   APP_AWS_ACCESS_KEY: z.string(),
   APP_AWS_SECRET_KEY: z.string(),
   APP_AWS_BUCKET: z.string(),
+  APP_AWS_REGION: z.string(),
   PUBLIC_APP_AWS_CLOUDFRONT_URL: z.string(),
 });
 
