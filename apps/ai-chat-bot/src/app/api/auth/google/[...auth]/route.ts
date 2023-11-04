@@ -123,10 +123,10 @@ async function handleCallback(request: NextRequest) {
         Location: "/", // redirect to profile page
       },
     });
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
 
-    if (e instanceof OAuthRequestError) {
+    if (err instanceof OAuthRequestError) {
       // invalid code
       return new Response(null, {
         status: 400,

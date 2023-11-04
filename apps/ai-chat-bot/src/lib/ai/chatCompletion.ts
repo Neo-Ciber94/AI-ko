@@ -40,7 +40,7 @@ type Message = {
 type ChatCompletionInput = {
   conversationId: string;
   model: "gpt-3.5-turbo" | "gpt-4";
-  newMessage: { content: string };
+  newMessage?: { content: string };
   messages: Message[];
 };
 
@@ -104,32 +104,38 @@ export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
           } as ChatCompletionMessageParam;
         }
       }
-    })
+    });
+
+  if (input.newMessage) {
     // Add the new message
-    .concat({
+    messages.push({
       content: input.newMessage.content,
       role: "user",
     });
+  }
 
   const userMessageId = crypto.randomUUID();
   const assistantMessageId = crypto.randomUUID();
+  const newMessage = input.newMessage;
 
-  // Save the new user message to the db
-  await db.transaction(async (tx) => {
-    const userConversationMessage = await tx
-      .insert(conversationMessages)
-      .values({
-        id: userMessageId,
-        conversationId: input.conversationId,
-        role: "user",
-      })
-      .returning();
+  if (newMessage) {
+    // Save the new user message to the db
+    await db.transaction(async (tx) => {
+      const userConversationMessage = await tx
+        .insert(conversationMessages)
+        .values({
+          id: userMessageId,
+          conversationId: input.conversationId,
+          role: "user",
+        })
+        .returning();
 
-    await tx.insert(messageTextContents).values({
-      text: input.newMessage.content,
-      conversationMessageId: userConversationMessage[0].id,
+      await tx.insert(messageTextContents).values({
+        text: newMessage.content,
+        conversationMessageId: userConversationMessage[0].id,
+      });
     });
-  });
+  }
 
   const openAIStream = await openaiInstance.chat.completions.create({
     messages,
@@ -195,7 +201,11 @@ export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
 
   // Set ids in the headers
   response.headers.set(HEADER_ASSISTANT_MESSAGE_ID, assistantMessageId);
-  response.headers.set(HEADER_USER_MESSAGE_ID, userMessageId);
+
+  if (newMessage) {
+    response.headers.set(HEADER_USER_MESSAGE_ID, userMessageId);
+  }
+
   return response;
 }
 

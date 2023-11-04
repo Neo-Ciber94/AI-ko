@@ -30,25 +30,25 @@ export function useChat(opts: UseChatOptions) {
   const [isCallingFunction, setIsCallingFunction] = useState(false);
   const onErrorRef = useRef(onError);
 
-  const chat = useCallback(
-    async (message: string) => {
+  const completion = useCallback(
+    async (message: string | undefined) => {
       setIsLoading(true);
 
-      // remove whitespace
-      message = message.trim();
-
       try {
-        const prevMessages = messages;
+        if (message != null) {
+          // remove whitespace
+          const text = message.trim();
 
-        // Optimistically add the new message to the queue
-        setMessages((msgs) => [
-          ...msgs,
-          {
-            id: `temp_${crypto.randomUUID()}`, // temporal id
-            role: "user",
-            contents: [{ type: "text", text: message }],
-          },
-        ]);
+          // Optimistically add the new message to the queue
+          setMessages((msgs) => [
+            ...msgs,
+            {
+              id: `temp_${crypto.randomUUID()}`, // temporal id
+              role: "user",
+              contents: [{ type: "text", text }],
+            },
+          ]);
+        }
 
         const response = await fetch(endpoint, {
           method: "POST",
@@ -58,8 +58,8 @@ export function useChat(opts: UseChatOptions) {
           body: JSON.stringify({
             model,
             conversationId,
-            messages: prevMessages,
-            newMessage: { content: message },
+            messages,
+            newMessage: message ? { content: message } : undefined,
           } satisfies ChatInput),
         });
 
@@ -198,7 +198,14 @@ export function useChat(opts: UseChatOptions) {
     [conversationId, endpoint, messages, model],
   );
 
-  return { chat, messages, isLoading, isCallingFunction };
+  const chat = useCallback(
+    (message: string) => completion(message),
+    [completion],
+  );
+
+  const regenerate = useCallback(() => completion(undefined), [completion]);
+
+  return { chat, regenerate, messages, isLoading, isCallingFunction };
 }
 
 async function getResponseError(res: Response) {

@@ -11,6 +11,7 @@ import InjectStyles from "@/components/InjectStyles";
 import type { AIModel, Role } from "@/lib/database/types";
 import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import RegenerateButton from "./RegenerateButton";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -32,11 +33,13 @@ type ChatMessagesProps = {
   messages: Message[];
   model: AIModel;
   isLoading?: boolean;
+  canRegenerate?: boolean;
 };
 
 export default function ChatMessages({
   model,
   isLoading,
+  canRegenerate,
   ...rest
 }: ChatMessagesProps) {
   const messages = formatMessages(rest.messages);
@@ -47,8 +50,16 @@ export default function ChatMessages({
     <>
       <InjectStyles css={isDark ? darkThemeStyles : lightThemeStyles} />
       <div className="flex flex-col gap-4 pt-4">
-        {messages.map((message) => {
-          return <Message key={message.id} model={model} message={message} />;
+        {messages.map((message, idx) => {
+          const isLastMessage = idx === messages.length - 1;
+          return (
+            <Message
+              key={message.id}
+              model={model}
+              message={message}
+              canRegenerate={canRegenerate && isLastMessage}
+            />
+          );
         })}
 
         {isLoading && (
@@ -73,10 +84,12 @@ function Message({
   model,
   message,
   isLoading,
+  canRegenerate,
 }: {
   model: AIModel;
   message: Message;
   isLoading?: boolean;
+  canRegenerate?: boolean;
 }) {
   const role = message.role;
 
@@ -94,7 +107,13 @@ function Message({
         }`}
       >
         <div className="flex w-full flex-row items-center justify-between">
-          {role === "assistant" ? <AIModelLabel model={model} /> : <div></div>}
+          {role === "assistant" ? (
+            <AIModelLabel model={model} />
+          ) : canRegenerate ? (
+            <RegenerateButton />
+          ) : (
+            <div></div>
+          )}
           {role === "assistant" && <Avatar role={role}>AI</Avatar>}
           {role === "user" && <Avatar role={role}>Me</Avatar>}
         </div>

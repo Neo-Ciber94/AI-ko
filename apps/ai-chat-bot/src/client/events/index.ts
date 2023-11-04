@@ -5,4 +5,6 @@ export const { eventEmitter, eventListener } = declareEvents<{
     conversationId: string;
     newTitle: string;
   };
+
+  regenerateChat: void;
 }>();

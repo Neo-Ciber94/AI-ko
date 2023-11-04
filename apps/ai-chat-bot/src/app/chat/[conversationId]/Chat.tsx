@@ -4,12 +4,12 @@ import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
 
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
 import { generateConversationTitle } from "@/lib/actions/conversations";
-import { eventEmitter } from "@/client/events";
+import { eventEmitter, eventListener } from "@/client/events";
 import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
 import ModelSelector from "./ModelSelector";
 import type { Conversation } from "@/lib/database/types";
@@ -25,7 +25,7 @@ export default function Chat(props: ChatProps) {
   const toast = useToast();
   const [conversation, setConversation] = useState(props.conversation);
   const { conversationId } = useParams<{ conversationId: string }>();
-  const { chat, messages, isLoading, isCallingFunction } = useChat({
+  const { chat, regenerate, messages, isLoading, isCallingFunction } = useChat({
     conversationId,
     messages: props.messages,
     model: conversation.model,
@@ -36,6 +36,15 @@ export default function Chat(props: ChatProps) {
       toast.error(message);
     },
   });
+
+  eventListener.regenerateChat.useSubscription(async () => {
+    await regenerate();
+  });
+
+  const canRegenerate = useMemo(() => {
+    const lastMessage = messages.at(-1);
+    return !isLoading && lastMessage && lastMessage.role === "user";
+  }, [isLoading, messages]);
 
   const scrollToBottom = () => {
     const container = containerRef.current;
@@ -115,6 +124,7 @@ export default function Chat(props: ChatProps) {
             messages={messages}
             model={conversation.model}
             isLoading={isCallingFunction}
+            canRegenerate={canRegenerate}
           />
         )}
       </div>

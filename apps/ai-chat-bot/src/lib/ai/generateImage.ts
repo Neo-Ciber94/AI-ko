@@ -24,7 +24,6 @@ export async function generateImage({
   const images: GeneratedImage[] = [];
 
   for (const imageUrl of openAiImageUrls) {
-    console.log({ imageUrl });
     const res = await fetch(imageUrl);
 
     if (!res.ok) {
