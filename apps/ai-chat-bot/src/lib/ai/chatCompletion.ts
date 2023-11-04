@@ -272,13 +272,9 @@ function createResponseStream({
               }
             }
           } else {
-            const content = choice.delta.content || "";
-            data += content;
-
-            emit({
-              type: "text",
-              chunk: content,
-            });
+            const chunk = choice.delta.content || "";
+            data += chunk;
+            emit({ type: "text", chunk });
           }
         }
       }
