@@ -81,7 +81,7 @@ export const conversationMessages = sqliteTable("conversation_message", {
     .$defaultFn(() => crypto.randomUUID()),
   conversationId: text("conversation_id")
     .notNull()
-    .references(() => conversations.id),
+    .references(() => conversations.id, { onDelete: "cascade" }),
   role: roleColumn("role").notNull(),
   createdAt: integer("created_at")
     .notNull()
@@ -95,7 +95,7 @@ export const messageTextContents = sqliteTable("message_text_content", {
   text: text("text").notNull(),
   conversationMessageId: text("conversation_message_id")
     .notNull()
-    .references(() => conversationMessages.id),
+    .references(() => conversationMessages.id, { onDelete: "cascade" }),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
@@ -109,7 +109,7 @@ export const messageImageContents = sqliteTable("message_image_content", {
   imageUrl: text("image_url").notNull(),
   conversationMessageId: text("conversation_message_id")
     .notNull()
-    .references(() => conversationMessages.id),
+    .references(() => conversationMessages.id, { onDelete: "cascade" }),
   createdAt: integer("created_at")
     .notNull()
     .$defaultFn(() => Date.now()),
