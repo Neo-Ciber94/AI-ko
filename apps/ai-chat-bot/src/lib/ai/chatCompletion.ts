@@ -77,7 +77,12 @@ const FUNCTIONS = {
 
 type FunctionCall = keyof typeof FUNCTIONS;
 
-export async function chatCompletion(input: ChatCompletionInput) {
+type ChatCompletionOptions = {
+  input: ChatCompletionInput;
+  signal?: AbortSignal;
+};
+
+export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
   const messages: ChatCompletionMessageParam[] = input.messages
     .filter((x) => x.contents.length > 0)
     .filter((x) => !x.contents.some((x) => x.type !== "text"))
@@ -135,6 +140,7 @@ export async function chatCompletion(input: ChatCompletionInput) {
   });
 
   const response = createResponseStream({
+    signal,
     openAIStream,
     async onGenerate(generated) {
       switch (generated.type) {
@@ -212,14 +218,17 @@ export type ChatEventMessage =
     };
 
 function createResponseStream({
+  signal,
   openAIStream,
   onGenerate,
 }: {
+  signal?: AbortSignal;
   openAIStream: Stream<ChatCompletionChunk>;
   onGenerate: (generated: GeneratedMessage) => void;
 }) {
   const encoder = new TextEncoder();
   let data: string = "";
+  let done = false;
   let currentFunction: FunctionCall | undefined = undefined;
 
   const stream = new ReadableStream({
@@ -229,14 +238,25 @@ function createResponseStream({
         controller.enqueue(encoder.encode(`data: ${json}\n\n`));
       };
 
+      if (signal) {
+        signal.addEventListener("abort", () => {
+          done = true;
+          controller.close();
+        });
+      }
+
       for await (const chunk of openAIStream) {
+        if (done) {
+          return;
+        }
+
         const choice = chunk.choices[0];
-        const isDone =
+        const isStopped =
           choice == null ||
           choice.finish_reason === "stop" ||
           choice.finish_reason === "function_call";
 
-        if (isDone) {
+        if (isStopped) {
           try {
             if (currentFunction === "generateImage") {
               const images = await generateImageForChatCompletion({

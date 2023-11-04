@@ -95,7 +95,6 @@ function Message({
       >
         <div className="flex w-full flex-row items-center justify-between">
           {role === "assistant" ? <AIModelLabel model={model} /> : <div></div>}
-
           {role === "assistant" && <Avatar role={role}>AI</Avatar>}
           {role === "user" && <Avatar role={role}>Me</Avatar>}
         </div>

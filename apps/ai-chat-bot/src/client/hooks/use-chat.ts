@@ -34,7 +34,7 @@ export function useChat(opts: UseChatOptions) {
     async (message: string) => {
       setIsLoading(true);
 
-      // remove whitespaces
+      // remove whitespace
       message = message.trim();
 
       try {

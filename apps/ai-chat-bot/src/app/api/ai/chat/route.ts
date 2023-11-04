@@ -39,15 +39,15 @@ export async function POST(req: NextRequest) {
   const result = inputSchema.safeParse(await req.json());
 
   if (result.success) {
-    const { data } = result;
-    if (await isSafeInput(data.newMessage.content)) {
+    const { data: input } = result;
+    if (await isSafeInput(input.newMessage.content)) {
       return json(
         { message: "The user message violates the usage policy" },
         { status: 400 },
       );
     }
 
-    const response = await chatCompletion(data);
+    const response = await chatCompletion({ input, signal: req.signal });
     return response;
   } else {
     const message = result.error.message;
