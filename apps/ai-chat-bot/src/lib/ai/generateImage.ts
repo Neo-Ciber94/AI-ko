@@ -1,13 +1,17 @@
 import { openaiInstance } from ".";
 import { fileHandler } from "../server/storage";
 
+type GeneratedImage = {
+  imageUrl: string;
+};
+
 export async function generateImage({
   prompt,
   userId,
 }: {
   prompt: string;
   userId?: string;
-}) {
+}): Promise<GeneratedImage[]> {
   const result = await openaiInstance.images.generate({
     prompt,
     n: 1,
@@ -17,7 +21,7 @@ export async function generateImage({
   });
 
   const openAiImageUrls = result.data.map((x) => x.url!);
-  const images: string[] = [];
+  const images: GeneratedImage[] = [];
 
   for (const imageUrl of openAiImageUrls) {
     console.log({ imageUrl });
@@ -44,14 +48,12 @@ export async function generateImage({
         },
       });
 
-      images.push(result.url);
+      images.push({ imageUrl: result.url });
     } catch (err) {
       console.error(err);
       throw new Error("Failed to upload file");
     }
   }
 
-  return {
-    images,
-  };
+  return images;
 }

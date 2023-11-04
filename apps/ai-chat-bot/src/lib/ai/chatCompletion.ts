@@ -310,7 +310,7 @@ async function generateImageForChatCompletion({
   }
 
   const session = await getSession();
-  const { images } = await generateImage({
+  const images = await generateImage({
     prompt: imagePrompt,
     userId: session?.user.userId,
   });
@@ -319,7 +319,10 @@ async function generateImageForChatCompletion({
     throw new Error("No images were generated");
   }
 
-  const generatedImages = images.map((img) => ({ imagePrompt, imageUrl: img }));
+  const generatedImages = images.map(({ imageUrl }) => ({
+    imagePrompt,
+    imageUrl,
+  }));
 
   for (const img of generatedImages) {
     emit({ type: "image", ...img });

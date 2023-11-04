@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { env } from "./src/lib/env.mjs";
+import { env } from "./src/lib/env.js";
 import type { Config } from "drizzle-kit";
 
 export default {
