@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "lint": "eslint .",
-    "prepublishOnly": "build"
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [
     "react",
