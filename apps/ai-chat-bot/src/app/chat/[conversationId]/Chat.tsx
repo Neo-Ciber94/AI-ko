@@ -28,7 +28,7 @@ export default function Chat(props: ChatProps) {
   const { chat, messages, isLoading, isCallingFunction } = useChat({
     conversationId,
     messages: props.messages,
-    model: "gpt-3.5-turbo",
+    model: conversation.model,
     onError(err) {
       const message =
         err instanceof Error ? err.message : "Something went wrong";
