@@ -105,7 +105,6 @@ export function useChat(opts: UseChatOptions) {
           if (event && event.type === "event") {
             const json = event?.data || "";
             const eventMsg = JSON.parse(json) as ChatEventMessage;
-            console.log({ eventMsg });
 
             switch (eventMsg.type) {
               case "text": {
