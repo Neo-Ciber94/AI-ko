@@ -23,6 +23,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${store.state.isDark ? "dark" : ""}`}>
+      <head>
+        <link rel="icon" href="favicon.ico" />
+      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
           <IsomorphicStoreProvider store={store}>
