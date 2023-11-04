@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepublishOnly": "build"
   },
   "keywords": [
     "react",
@@ -29,5 +30,11 @@
       "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
-  }
+  },
+  "files": [
+    "package.json",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ]
 }

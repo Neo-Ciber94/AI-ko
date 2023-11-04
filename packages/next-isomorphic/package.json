@@ -7,7 +7,8 @@
   "author": "Freddy L.",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepublishOnly": "build"
   },
   "keywords": [
     "nextjs",
@@ -38,5 +39,11 @@
       "import": "./dist/client.js",
       "default": "./dist/client.js"
     }
-  }
+  },
+  "files": [
+    "package.json",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ]
 }
