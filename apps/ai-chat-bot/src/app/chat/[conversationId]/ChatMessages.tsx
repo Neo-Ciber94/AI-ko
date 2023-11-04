@@ -10,6 +10,7 @@ import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesPr
 import InjectStyles from "@/components/InjectStyles";
 import type { AIModel, Role } from "@/lib/database/types";
 import Image from "next/image";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -30,9 +31,14 @@ type Message = Pick<
 type ChatMessagesProps = {
   messages: Message[];
   model: AIModel;
+  isLoading?: boolean;
 };
 
-export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
+export default function ChatMessages({
+  model,
+  isLoading,
+  ...rest
+}: ChatMessagesProps) {
   const messages = formatMessages(rest.messages);
   const [isDark] = isomorphicClient.isDark.useValue();
   const { darkThemeStyles, lightThemeStyles } = useHighLightJsThemes();
@@ -42,41 +48,61 @@ export default function ChatMessages({ model, ...rest }: ChatMessagesProps) {
       <InjectStyles css={isDark ? darkThemeStyles : lightThemeStyles} />
       <div className="flex flex-col gap-4 pt-4">
         {messages.map((message) => {
-          const role = message.role;
-
-          return (
-            <div
-              key={message.id}
-              className={
-                "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
-              }
-            >
-              <div
-                className={`w-full rounded-lg p-2 shadow ${
-                  role === "user"
-                    ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
-                    : "bg-gray-200 text-black dark:bg-black dark:text-white"
-                }`}
-              >
-                <div className="flex w-full flex-row items-center justify-between">
-                  {role === "assistant" ? (
-                    <AIModelLabel model={model} />
-                  ) : (
-                    <div></div>
-                  )}
-
-                  {role === "assistant" && <Avatar role={role}>AI</Avatar>}
-                  {role === "user" && <Avatar role={role}>Me</Avatar>}
-                </div>
-                <MessageContent message={message} />
-              </div>
-            </div>
-          );
+          return <Message key={message.id} model={model} message={message} />;
         })}
+
+        {isLoading && (
+          <Message
+            isLoading
+            model={model}
+            message={{
+              id: crypto.randomUUID(),
+              role: "assistant",
+              contents: [],
+            }}
+          />
+        )}
 
         <div className="h-40 px-4">{/* Some extra padding */}</div>
       </div>
     </>
+  );
+}
+
+function Message({
+  model,
+  message,
+  isLoading,
+}: {
+  model: AIModel;
+  message: Message;
+  isLoading?: boolean;
+}) {
+  const role = message.role;
+
+  return (
+    <div
+      className={
+        "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
+      }
+    >
+      <div
+        className={`w-full rounded-lg p-2 shadow ${
+          role === "user"
+            ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
+            : "bg-gray-200 text-black dark:bg-black dark:text-white"
+        }`}
+      >
+        <div className="flex w-full flex-row items-center justify-between">
+          {role === "assistant" ? <AIModelLabel model={model} /> : <div></div>}
+
+          {role === "assistant" && <Avatar role={role}>AI</Avatar>}
+          {role === "user" && <Avatar role={role}>Me</Avatar>}
+        </div>
+
+        {isLoading ? <LoadingSpinner /> : <MessageContent message={message} />}
+      </div>
+    </div>
   );
 }
 

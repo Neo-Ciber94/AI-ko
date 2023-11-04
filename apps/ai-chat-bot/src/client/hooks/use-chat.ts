@@ -27,6 +27,7 @@ export function useChat(opts: UseChatOptions) {
   } = opts || {};
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCallingFunction, setIsCallingFunction] = useState(false);
   const onErrorRef = useRef(onError);
 
   const chat = useCallback(
@@ -169,6 +170,10 @@ export function useChat(opts: UseChatOptions) {
 
                 break;
               }
+              case "is_calling_function": {
+                setIsCallingFunction(true);
+                break;
+              }
               case "error": {
                 throw new Error(eventMsg.message);
               }
@@ -185,12 +190,13 @@ export function useChat(opts: UseChatOptions) {
         }
       } finally {
         setIsLoading(false);
+        setIsCallingFunction(false);
       }
     },
     [conversationId, endpoint, messages, model],
   );
 
-  return { chat, messages, isLoading };
+  return { chat, messages, isLoading, isCallingFunction };
 }
 
 async function getResponseError(res: Response) {

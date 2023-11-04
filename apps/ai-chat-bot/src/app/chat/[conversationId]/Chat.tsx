@@ -25,7 +25,7 @@ export default function Chat(props: ChatProps) {
   const toast = useToast();
   const [conversation, setConversation] = useState(props.conversation);
   const { conversationId } = useParams<{ conversationId: string }>();
-  const { chat, isLoading, messages } = useChat({
+  const { chat, messages, isLoading, isCallingFunction } = useChat({
     conversationId,
     messages: props.messages,
     model: "gpt-3.5-turbo",
@@ -111,7 +111,11 @@ export default function Chat(props: ChatProps) {
             <span>AIChatbot</span>
           </div>
         ) : (
-          <ChatMessages messages={messages} model={conversation.model} />
+          <ChatMessages
+            messages={messages}
+            model={conversation.model}
+            isLoading={isCallingFunction}
+          />
         )}
       </div>
 

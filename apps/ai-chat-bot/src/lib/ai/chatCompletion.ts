@@ -206,6 +206,9 @@ export type ChatEventMessage =
   | {
       type: "error";
       message: string;
+    }
+  | {
+      type: "is_calling_function";
     };
 
 function createResponseStream({
@@ -261,6 +264,7 @@ function createResponseStream({
               if (f.name === FUNCTIONS.generateImage.name) {
                 currentFunction = FUNCTIONS.generateImage.name as FunctionCall;
                 data += f.arguments || "";
+                emit({ type: "is_calling_function" });
               } else {
                 emit({ type: "error", message: "Failed to call function" });
                 controller.close();
