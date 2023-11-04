@@ -1,4 +1,4 @@
-# Next-Isomorphic
+# next-isomorphic
 
 Share state between the client and server using cookies.
 

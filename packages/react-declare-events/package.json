@@ -8,7 +8,11 @@
     "build": "rimraf dist && tsc",
     "lint": "eslint ."
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "events",
+    "observable"
+  ],
   "author": "Freddy L.",
   "license": "ISC",
   "peerDependencies": {
