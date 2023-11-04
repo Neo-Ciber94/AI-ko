@@ -1,6 +1,6 @@
 {
   "name": "react-declare-events",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Provide a mechanism for declare and consume end-to-end type-safe events.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "observable"
   ],
   "author": "Freddy L.",
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "react": "^18"
   },
