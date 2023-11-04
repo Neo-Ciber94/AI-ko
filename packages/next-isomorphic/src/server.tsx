@@ -1,10 +1,6 @@
 import { cookies } from "next/headers";
 import { type JsonValue } from ".";
 
-// type IsomorphicState = {
-//   [key: string]: JsonValue | (() => JsonValue);
-// };
-
 /**
  * Create a store that maintains state an state between the server and client.
  * @param prefix The prefix used for the cookies.
