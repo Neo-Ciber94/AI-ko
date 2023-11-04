@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { env } from "@/lib/env.js";
 import type { FileUploader, UploadData, UploadFileResult } from ".";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
@@ -31,7 +31,7 @@ export class S3FileUploader implements FileUploader {
     );
 
     return {
-      url: `${env.PUBLIC_APP_AWS_CLOUDFRONT_URL}/${objectKey}`,
+      url: `https://${env.PUBLIC_APP_AWS_CLOUDFRONT_DOMAIN}/${objectKey}`,
     };
   }
 }
