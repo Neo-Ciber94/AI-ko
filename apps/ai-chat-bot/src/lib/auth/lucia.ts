@@ -3,7 +3,7 @@ import { lucia } from "lucia";
 import { nextjs_future } from "lucia/middleware";
 import { tursoDbClient } from "../database";
 import { google } from "@lucia-auth/oauth/providers";
-import { env } from "../env.js";
+import { env } from "../env";
 
 export const auth = lucia({
   adapter: libsql(tursoDbClient, {

@@ -1,4 +1,4 @@
-import { env } from "@/lib/env.js";
+import { env } from "@/lib/env";
 import type { FileUploader, UploadData, UploadFileResult } from ".";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
