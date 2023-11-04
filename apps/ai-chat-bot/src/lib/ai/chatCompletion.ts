@@ -218,6 +218,7 @@ function createResponseStream({
   openAIStream: Stream<ChatCompletionChunk>;
   onGenerate: (generated: GeneratedMessage) => void;
 }) {
+  const encoder = new TextEncoder();
   let data: string = "";
   let currentFunction: FunctionCall | undefined = undefined;
 
@@ -225,7 +226,7 @@ function createResponseStream({
     async start(controller) {
       const emit = (msg: ChatEventMessage) => {
         const json = JSON.stringify(msg);
-        controller.enqueue(`data: ${json}\n\n`);
+        controller.enqueue(encoder.encode(`data: ${json}\n\n`));
       };
 
       for await (const chunk of openAIStream) {
