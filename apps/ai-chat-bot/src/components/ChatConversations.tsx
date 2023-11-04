@@ -18,7 +18,7 @@ import React, { useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
-import { eventListener } from "@/lib/events";
+import { eventListener } from "@/client/events";
 import type { Conversation } from "@/lib/database/types";
 
 export default function ChatConversations({

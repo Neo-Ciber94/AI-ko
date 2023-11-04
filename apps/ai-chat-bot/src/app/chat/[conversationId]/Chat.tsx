@@ -9,7 +9,7 @@ import { useChat } from "@/client/hooks/use-chat";
 import { type ConversationMessageWithContents } from "@/lib/actions/conversationMessages";
 import { useToast } from "@/client/hooks/use-toast";
 import { generateConversationTitle } from "@/lib/actions/conversations";
-import { eventEmitter } from "@/lib/events";
+import { eventEmitter } from "@/client/events";
 import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
 import ModelSelector from "./ModelSelector";
 import type { Conversation } from "@/lib/database/types";
