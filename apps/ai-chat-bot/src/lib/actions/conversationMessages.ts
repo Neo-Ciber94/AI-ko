@@ -93,7 +93,7 @@ export async function getConversationWithMessages(conversationId: string) {
     )
     .all();
 
-  if (rows == null) {
+  if (rows == null || rows.length == 0) {
     return null;
   }
 
