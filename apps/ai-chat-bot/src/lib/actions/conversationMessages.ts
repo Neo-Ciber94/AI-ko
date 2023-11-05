@@ -143,3 +143,15 @@ export async function getConversationWithMessages(conversationId: string) {
 
   return conversation;
 }
+
+export async function getConversationTitle(conversationId: string) {
+  const result = await db.query.conversations.findFirst({
+    where: eq(conversations.id, conversationId),
+    columns: {
+      id: true,
+      title: true,
+    },
+  });
+
+  return result;
+}

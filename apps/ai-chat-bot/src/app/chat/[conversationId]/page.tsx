@@ -1,13 +1,37 @@
 import { redirect } from "next/navigation";
 import Chat from "./Chat";
-import { getConversationWithMessages } from "@/lib/actions/conversationMessages";
+import {
+  getConversationTitle,
+  getConversationWithMessages,
+} from "@/lib/actions/conversationMessages";
 import fs from "fs/promises";
 import path from "path";
 import { HighLightJsStylesProvider } from "@/components/providers/HighLightJsStylesProvider";
+import type { Metadata, ResolvingMetadata } from "next";
 
 type Params = {
   conversationId: string;
 };
+
+export async function generateMetadata(
+  {
+    params: { conversationId },
+  }: {
+    params: Params;
+  },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const conversation = await getConversationTitle(conversationId);
+
+  if (conversation == null) {
+    const parentMetadata = await parent;
+    return { title: parentMetadata.title };
+  }
+
+  return {
+    title: conversation.title,
+  };
+}
 
 export default async function ChatConversationPage({
   params: { conversationId },
