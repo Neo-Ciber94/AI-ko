@@ -115,7 +115,12 @@ export default function Chat(props: ChatProps) {
           text-5xl font-bold text-gray-400 dark:text-gray-300/50"
           >
             <div className="absolute top-10 w-3/12">
-              <ModelSelector conversation={conversation} />
+              <ModelSelector
+                conversation={conversation}
+                onChange={(model) => {
+                  setConversation((prev) => ({ ...prev, model }));
+                }}
+              />
             </div>
             <span>AIChatbot</span>
           </div>

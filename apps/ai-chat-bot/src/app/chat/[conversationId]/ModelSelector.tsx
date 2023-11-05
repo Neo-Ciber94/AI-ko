@@ -8,8 +8,10 @@ import React from "react";
 
 export default function ModelSelector({
   conversation,
+  onChange,
 }: {
   conversation: Conversation;
+  onChange?: (model: AIModel) => void;
 }) {
   const toast = useToast();
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function ModelSelector({
     if (result.type === "error") {
       toast.error(result.error);
     } else {
+      onChange?.(model);
       router.refresh();
     }
   };
