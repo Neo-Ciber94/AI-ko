@@ -129,6 +129,8 @@ export default function Chat(props: ChatProps) {
         )}
       </div>
 
+      <div className="absolute bottom-0 h-16 w-full bg-gradient-to-t from-white to-transparent dark:from-neutral-900"></div>
+
       <div className={`absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2`}>
         <ChatInput onSend={handleChat} disabled={isLoading} />
       </div>
