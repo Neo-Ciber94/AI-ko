@@ -3,6 +3,7 @@
     "short_name": "AI Chatbot",
     "theme_color": "#c2c6c1",
     "background_color": "#03030b",
+    "description": "An AI driven chatbot application",
     "display": "standalone",
     "orientation": "portrait",
     "start_url": "/",
