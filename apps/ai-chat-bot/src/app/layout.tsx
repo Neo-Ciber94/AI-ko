@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   applicationName: "AI Chatbot",
   description: "An AI chatbot to have a good conversation with",
+  icons: ["/favicon.ico"],
   openGraph: {
     type: "website",
     title: "AI Chatbot",
@@ -35,9 +36,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${store.state.isDark ? "dark" : ""}`}>
-      <head>
-        <link rel="icon" href="favicon.ico" />
-      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
           <IsomorphicStoreProvider store={store}>
