@@ -17,6 +17,9 @@ export default async function ServerHighLightJsStylesProvider({
   );
 }
 
+
+// FIXME: We should look a way to directly import the css and inline it,
+// instead of directly read them from the fs.
 async function loadHighLightJsThemeStyles() {
   const publicDir = path.join(process.cwd(), "public");
   const darkThemeStylesPromise = fs.readFile(
