@@ -11,6 +11,18 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AI Chatbot",
+  manifest: "/manifest.json",
+  applicationName: "AI Chatbot",
+  description: "An AI chatbot to have a good conversation with",
+  openGraph: {
+    type: "website",
+    title: "AI Chatbot",
+  },
+  twitter: {
+    card: "summary",
+    title: "AI Chatbot",
+    description: "An AI chatbot to have a good conversation with",
+  },
 };
 
 export default async function RootLayout({

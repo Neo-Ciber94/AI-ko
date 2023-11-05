@@ -1,5 +1,5 @@
 const withPWA = require("next-pwa")({
-  dest: "public",
+  dest: "public/sw",
   disable: !!process.env.PWA_DISABLED,
 });
 

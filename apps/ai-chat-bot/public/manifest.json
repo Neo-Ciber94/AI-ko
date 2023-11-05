@@ -1,0 +1,57 @@
+{
+    "name": "AI Chatbot",
+    "short_name": "AI Chatbot",
+    "theme_color": "#111827",
+    "background_color": "#000000",
+    "display": "standalone",
+    "orientation": "portrait",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "/icons/aichatbot-48x48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/aichatbot-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/aichatbot-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/aichatbot-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/aichatbot-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/aichatbot-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshots/chat-page.jpg",
+            "sizes": "1132x786",
+            "type": "image/jpg",
+            "form_factor": "wide",
+            "label": "Chat page with generated image"
+        },
+        {
+            "src": "screenshots/chat-page-mobile.jpg",
+            "sizes": "410x910",
+            "type": "image/jpg",
+            "form_factor": "narrow",
+            "label": "Chat page with generated image"
+        }
+    ]
+}
