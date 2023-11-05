@@ -1,8 +1,8 @@
 {
     "name": "AI Chatbot",
     "short_name": "AI Chatbot",
-    "theme_color": "#111827",
-    "background_color": "#000000",
+    "theme_color": "#c2c6c1",
+    "background_color": "#03030b",
     "display": "standalone",
     "orientation": "portrait",
     "start_url": "/",
