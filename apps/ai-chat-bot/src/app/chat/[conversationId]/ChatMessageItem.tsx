@@ -115,8 +115,8 @@ function ImageContent(props: ImageContentProps) {
       />
 
       <span
-        className={`text-mono overflow-hidden pt-4 text-xs transition duration-200 dark:text-white ${
-          showPrompt ? "max-h-full" : "max-h-0"
+        className={`block text-mono overflow-hidden pt-4 text-xs transition-all duration-700 dark:text-white ${
+          showPrompt ? "max-h-[300px]" : "max-h-0"
         }`}
       >
         {imagePrompt}
