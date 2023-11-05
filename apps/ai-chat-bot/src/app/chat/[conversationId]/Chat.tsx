@@ -1,7 +1,7 @@
 "use client";
 
 import ChatInput from "./ChatInput";
-import ChatMessages from "./ChatMessages";
+import ChatMessageList from "./ChatMessages";
 
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -120,7 +120,7 @@ export default function Chat(props: ChatProps) {
             <span>AIChatbot</span>
           </div>
         ) : (
-          <ChatMessages
+          <ChatMessageList
             messages={messages}
             model={conversation.model}
             isLoading={isCallingFunction}
