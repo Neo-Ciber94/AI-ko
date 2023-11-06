@@ -1,13 +1,19 @@
-"use client";
-
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import CubesRotating from "./CubesRotating";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto flex h-[70vh] w-full flex-col items-center justify-center gap-4 p-4 md:container">
+    <div className="mx-auto flex h-2/3 w-full flex-col items-center justify-center gap-4 p-4 md:container">
+      <div className="h-full w-full sm:h-40">
+        <CubesRotating />
+      </div>
       <h1 className="text-3xl font-bold sm:text-4xl md:text-6xl">
-        Unleash Your Imagination with our AI Chatbot with image generation!
+        Unleash Your Imagination with our{" "}
+        <span className="bg-gradient-to-r from-pink-700 to-violet-700 bg-clip-text text-transparent">
+          AI Chatbot
+        </span>{" "}
+        with image generation!
       </h1>
 
       <p className="text-xl font-medium opacity-80 sm:text-2xl md:text-4xl">
