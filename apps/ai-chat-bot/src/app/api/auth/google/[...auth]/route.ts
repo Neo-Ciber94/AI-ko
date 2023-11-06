@@ -120,7 +120,7 @@ async function handleCallback(request: NextRequest) {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/", // redirect to profile page
+        Location: "/chat",
       },
     });
   } catch (err) {

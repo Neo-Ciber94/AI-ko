@@ -4,15 +4,23 @@ import { auth } from "./lib/auth/lucia";
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname === "/") {
-    return redirectTo(req, "/chat");
-  }
+  // if (pathname === "/") {
+  //   return redirectTo(req, "/chat");
+  // }
 
   const authRequest = auth.handleRequest(req as NextRequest);
   const session = await authRequest.validate();
 
   if (!session) {
+    if (pathname === "/") {
+      return NextResponse.next();
+    }
+
     return redirectTo(req, "/login");
+  }
+
+  if (session && pathname === "/login") {
+    return redirectTo(req, "/chat");
   }
 
   // Is user is not unauthorized redirect to `/unauthorized`
