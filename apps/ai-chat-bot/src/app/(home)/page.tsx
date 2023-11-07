@@ -5,7 +5,7 @@ import CubesRotating from "./CubesRotating";
 export default function HomePage() {
   return (
     <div className="mx-auto flex h-2/3 w-full flex-col items-center justify-center gap-4 p-4 md:container">
-      <div className="h-full w-full sm:h-40">
+      <div className="h-56 w-full sm:h-full">
         <CubesRotating />
       </div>
       <h1 className="text-3xl font-bold sm:text-4xl md:text-6xl">
@@ -27,10 +27,10 @@ export default function HomePage() {
       <div>
         <Link
           href="/chat"
-          className="before:bg-rainbow-right relative flex flex-row items-center gap-2 rounded-xl bg-black
-            px-16 py-3 text-base text-white shadow-md before:absolute before:left-1/2 before:top-1/2 
-            before:-z-10 before:h-[calc(100%+2.5px)] before:w-[calc(100%+2.5px)] 
-            before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-xl sm:text-lg"
+          className="relative flex flex-row items-center gap-2 rounded-xl bg-black px-16
+            py-3 text-base text-white shadow-md before:absolute before:left-1/2 before:top-1/2 before:-z-10 
+            before:h-[calc(100%+2.5px)] before:w-[calc(100%+2.5px)] before:-translate-x-1/2 
+            before:-translate-y-1/2 before:rounded-xl before:bg-rainbow-right sm:text-lg"
         >
           <span>Chat</span>
           <ChatBubbleLeftRightIcon className="h-6 w-6" />
