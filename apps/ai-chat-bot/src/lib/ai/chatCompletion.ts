@@ -15,7 +15,7 @@ import {
   HEADER_USER_MESSAGE_ID,
 } from "../common/constants";
 import { openaiInstance } from ".";
-import type { Role } from "../database/types";
+import type { AIModel, Role } from "../database/types";
 import { generateImage } from "./generateImage";
 import { getSession } from "../auth/utils";
 
@@ -39,7 +39,7 @@ type Message = {
 
 type ChatCompletionInput = {
   conversationId: string;
-  model: "gpt-3.5-turbo" | "gpt-4";
+  model: AIModel;
   newMessage?: { content: string };
   messages: Message[];
 };
@@ -57,7 +57,7 @@ type GeneratedMessage =
       }[];
     };
 
-const FUNCTIONS = {
+const TOOLS = {
   generateImage: {
     name: "generateImage",
     description:
@@ -75,7 +75,7 @@ const FUNCTIONS = {
   },
 } satisfies Record<string, ChatCompletionCreateParams.Function>;
 
-type FunctionCall = keyof typeof FUNCTIONS;
+type ToolChoice = keyof typeof TOOLS;
 
 type ChatCompletionOptions = {
   input: ChatCompletionInput;
@@ -139,7 +139,7 @@ export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
     stream: true,
     model: input.model,
     function_call: "auto",
-    functions: Object.values(FUNCTIONS),
+    functions: Object.values(TOOLS),
   });
 
   const response = createResponseStream({
@@ -236,7 +236,7 @@ function createResponseStream({
   const encoder = new TextEncoder();
   let data: string = "";
   let done = false;
-  let currentFunction: FunctionCall | undefined = undefined;
+  let currentFunction: ToolChoice | undefined = undefined;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -261,7 +261,7 @@ function createResponseStream({
         const isStopped =
           choice == null ||
           choice.finish_reason === "stop" ||
-          choice.finish_reason === "function_call";
+          choice.finish_reason === "tool_calls";
 
         if (isStopped) {
           try {
@@ -283,15 +283,14 @@ function createResponseStream({
 
           return; // we should exit anyways
         } else {
-          if (choice.delta.function_call) {
-            const f = choice.delta.function_call;
-
+          const func = choice.delta?.tool_calls?.[0]?.function;
+          if (func) {
             if (currentFunction) {
-              data += f.arguments || "";
+              data += func.arguments || "";
             } else {
-              if (f.name === FUNCTIONS.generateImage.name) {
-                currentFunction = FUNCTIONS.generateImage.name as FunctionCall;
-                data += f.arguments || "";
+              if (func.name === TOOLS.generateImage.name) {
+                currentFunction = TOOLS.generateImage.name as ToolChoice;
+                data += func.arguments || "";
                 emit({ type: "is_calling_function" });
               } else {
                 emit({ type: "error", message: "Failed to call function" });

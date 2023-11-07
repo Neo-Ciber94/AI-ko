@@ -6,7 +6,7 @@ import {
   integer,
   customType,
 } from "drizzle-orm/sqlite-core";
-import { type OpenAIModel } from "../common/constants";
+import { type Models } from "../common/constants";
 
 const booleanType = customType<{
   data: boolean;
@@ -50,7 +50,7 @@ export const userKeys = sqliteTable("user_key", {
   hashedPassword: text("hashed_password"),
 });
 
-const modelColumn = customType<{ data: OpenAIModel }>({
+const modelColumn = customType<{ data: Models }>({
   dataType() {
     return "text";
   },
