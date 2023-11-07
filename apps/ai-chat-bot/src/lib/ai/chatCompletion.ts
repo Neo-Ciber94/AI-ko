@@ -8,6 +8,7 @@ import type {
   ChatCompletionCreateParams,
   ChatCompletionChunk,
   ChatCompletionMessageParam,
+  ChatCompletionTool,
 } from "openai/resources/index.mjs";
 import { db } from "../database";
 import {
@@ -59,21 +60,24 @@ type GeneratedMessage =
 
 const TOOLS = {
   generateImage: {
-    name: "generateImage",
-    description:
-      "Generate an image using a text prompt, the prompt should be long descriptive and detailed",
-    parameters: {
-      type: "object",
-      properties: {
-        imagePrompt: {
-          type: "string",
-          description:
-            "A descriptive and detailed prompt used to generate the image",
+    type: "function",
+    function: {
+      name: "generateImage",
+      description:
+        "Generate an image using a text prompt, the prompt should be long descriptive and detailed",
+      parameters: {
+        type: "object",
+        properties: {
+          imagePrompt: {
+            type: "string",
+            description:
+              "A descriptive and detailed prompt used to generate the image",
+          },
         },
       },
     },
   },
-} satisfies Record<string, ChatCompletionCreateParams.Function>;
+} satisfies Record<string, ChatCompletionTool>;
 
 type ToolChoice = keyof typeof TOOLS;
 
@@ -138,8 +142,8 @@ export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
     messages,
     stream: true,
     model: input.model,
-    function_call: "auto",
-    functions: Object.values(TOOLS),
+    tool_choice: "auto",
+    tools: Object.values(TOOLS),
   });
 
   const response = createResponseStream({
@@ -288,8 +292,9 @@ function createResponseStream({
             if (currentFunction) {
               data += func.arguments || "";
             } else {
-              if (func.name === TOOLS.generateImage.name) {
-                currentFunction = TOOLS.generateImage.name as ToolChoice;
+              if (func.name === TOOLS.generateImage.function.name) {
+                // prettier-ignore
+                currentFunction = TOOLS.generateImage.function.name as ToolChoice;
                 data += func.arguments || "";
                 emit({ type: "is_calling_function" });
               } else {
