@@ -2,6 +2,7 @@
 
 import { useToast } from "@/client/hooks/use-toast";
 import { updateConversationModel } from "@/lib/actions/conversations";
+import { OPENAI_MODELS } from "@/lib/common/constants";
 import type { Conversation, AIModel } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -39,18 +40,17 @@ export default function ModelSelector({
         onChange={handleChange}
         defaultValue={conversation.model}
       >
-        <option
-          className="text-gray-900 dark:bg-black dark:text-white"
-          value="gpt-3.5-turbo"
-        >
-          GPT-3.5
-        </option>
-        <option
-          className="text-gray-900 dark:bg-black dark:text-white"
-          value="gpt-4"
-        >
-          GPT-4
-        </option>
+        {OPENAI_MODELS.map((x, idx) => {
+          return (
+            <option
+              key={idx}
+              className="text-gray-900 dark:bg-black dark:text-white"
+              value={x.model}
+            >
+              {x.name}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

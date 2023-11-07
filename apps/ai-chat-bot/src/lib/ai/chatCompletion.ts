@@ -83,28 +83,25 @@ type ChatCompletionOptions = {
 };
 
 export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
-  const messages: ChatCompletionMessageParam[] = input.messages
-    .filter((x) => x.contents.length > 0)
-    .filter((x) => !x.contents.some((x) => x.type !== "text"))
-    .map((x) => {
-      const contents = x.contents[0];
+  const messages: ChatCompletionMessageParam[] = input.messages.map((x) => {
+    const contents = x.contents[0];
 
-      switch (contents.type) {
-        case "text": {
-          return {
-            content: contents.text,
-            role: x.role,
-          } as ChatCompletionMessageParam;
-        }
-        case "image": {
-          return {
-            role: "function",
-            name: "generateImage",
-            content: JSON.stringify({ imagePrompt: contents.imagePrompt }),
-          } as ChatCompletionMessageParam;
-        }
+    switch (contents.type) {
+      case "text": {
+        return {
+          content: contents.text,
+          role: x.role,
+        } as ChatCompletionMessageParam;
       }
-    });
+      case "image": {
+        return {
+          role: "function",
+          name: "generateImage",
+          content: JSON.stringify({ imagePrompt: contents.imagePrompt }),
+        } as ChatCompletionMessageParam;
+      }
+    }
+  });
 
   if (input.newMessage) {
     // Add the new message
