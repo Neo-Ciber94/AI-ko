@@ -1,5 +1,6 @@
 import { chatCompletion } from "@/lib/ai/chatCompletion";
 import { isSafeInput } from "@/lib/ai/isSafeInput";
+import { AIModel } from "@/lib/database/types";
 import { json } from "@/lib/server/functions";
 import { type NextRequest } from "next/server";
 import z from "zod";
@@ -20,7 +21,7 @@ const messageSchema = z.discriminatedUnion("type", [
 
 const inputSchema = z.object({
   conversationId: z.string(),
-  model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
+  model: z.enum(["gpt-3.5-turbo", "gpt-4"] satisfies [AIModel, ...AIModel[]]),
   newMessage: z
     .object({
       content: z.string(),
