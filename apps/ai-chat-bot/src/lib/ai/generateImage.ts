@@ -10,7 +10,7 @@ type GeneratedImage = {
 export async function generateImage({
   prompt,
   userId,
-  model,
+  model = 'dall-e-3',
 }: {
   prompt: string;
   userId?: string;
