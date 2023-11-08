@@ -1,16 +1,22 @@
 "use client";
 
+import { useTextProgression } from "@/client/hooks/use-text-progression";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useEffect, useRef, useState } from "react";
 
 type ChatInputProps = {
-  disabled?: boolean;
+  isLoading?: boolean;
   onSend: (text: string) => void;
 };
 
-export default function ChatInput({ disabled, onSend }: ChatInputProps) {
+export default function ChatInput({ isLoading, onSend }: ChatInputProps) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [text, setText] = useState("");
+  const loadingText = useTextProgression({
+    texts: ["Loading", "Loading.", "Loading..", "Loading..."],
+    enabled: !isLoading,
+  });
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -32,9 +38,9 @@ export default function ChatInput({ disabled, onSend }: ChatInputProps) {
   return (
     <div className="flex w-full flex-row items-center justify-center">
       <textarea
-        disabled={disabled}
+        disabled={isLoading}
         ref={textAreaRef}
-        placeholder="Send Message"
+        placeholder={isLoading ? loadingText : "Send Message"}
         rows={1}
         value={text}
         className="w-full resize-none overflow-hidden rounded-lg border border-gray-400/30 bg-black py-4 pl-4 pr-10 text-white
@@ -49,8 +55,16 @@ export default function ChatInput({ disabled, onSend }: ChatInputProps) {
         }}
         onChange={(e) => setText(e.currentTarget.value)}
       ></textarea>
-      <button className="-ml-8" onClick={handleSend}>
-        <PaperAirplaneIcon className="right-8 h-5 w-5 text-gray-400/50" />
+      <button
+        className="relative -ml-8"
+        onClick={handleSend}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ArrowPathIcon className="right-8 h-5 w-5 animate-spin text-gray-400/50" />
+        ) : (
+          <PaperAirplaneIcon className="right-8 h-5 w-5 text-gray-400/50" />
+        )}
       </button>
     </div>
   );
