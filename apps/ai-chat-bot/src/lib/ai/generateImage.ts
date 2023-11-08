@@ -1,6 +1,8 @@
 import { openaiInstance } from ".";
 import { fileHandler } from "../server/storage";
 
+type ImageAIModel = "dall-e-2" | "dall-e-3";
+
 type GeneratedImage = {
   imageUrl: string;
 };
@@ -8,29 +10,41 @@ type GeneratedImage = {
 export async function generateImage({
   prompt,
   userId,
+  model,
 }: {
   prompt: string;
   userId?: string;
+  model?: ImageAIModel;
 }): Promise<GeneratedImage[]> {
   const result = await openaiInstance.images.generate({
     prompt,
     n: 1,
     size: "1024x1024",
-    model: "dall-e-2",
+    model,
     user: userId,
-    response_format: "b64_json",
+    response_format: "url",
   });
 
-  const openAiImageUrls = result.data.map((x) => x.b64_json!);
+  const openAiImageUrls = result.data.map((x) => x.url!);
   const images: GeneratedImage[] = [];
 
   for (const imageUrl of openAiImageUrls) {
-    const blob = Buffer.from(imageUrl, "base64");
-    const content = new Blob([blob]);
+    const res = await fetch(imageUrl);
+
+    if (!res.ok) {
+      const msg = await res.text();
+      console.error(`Failed to fetch generated image: ${msg}`);
+      throw new Error("Failed to fetch generated image");
+    }
+
+    const contentType =
+      res.headers.get("content-type") || "application/octet-stream";
+
+    const content = await res.blob();
 
     try {
       const result = await fileHandler.uploadFile({
-        contentType: "image/png",
+        contentType,
         content,
         metadata: {
           prompt,
@@ -61,29 +75,19 @@ export async function generateImage({
 //     size: "1024x1024",
 //     model: "dall-e-3",
 //     user: userId,
-//     response_format: "url",
+//     response_format: "b64_json",
 //   });
 
-//   const openAiImageUrls = result.data.map((x) => x.url!);
+//   const openAiImageUrls = result.data.map((x) => x.b64_json!);
 //   const images: GeneratedImage[] = [];
 
 //   for (const imageUrl of openAiImageUrls) {
-//     const res = await fetch(imageUrl);
-
-//     if (!res.ok) {
-//       const msg = await res.text();
-//       console.error(`Failed to fetch generated image: ${msg}`);
-//       throw new Error("Failed to fetch generated image");
-//     }
-
-//     const contentType =
-//       res.headers.get("content-type") || "application/octet-stream";
-
-//     const content = await res.blob();
+//     const blob = Buffer.from(imageUrl, "base64");
+//     const content = new Blob([blob]);
 
 //     try {
 //       const result = await fileHandler.uploadFile({
-//         contentType,
+//         contentType: "image/png",
 //         content,
 //         metadata: {
 //           prompt,
