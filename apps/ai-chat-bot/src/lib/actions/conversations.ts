@@ -104,7 +104,7 @@ export async function generateConversationTitle({
   if (lastAssistantMessage == null) {
     return {
       type: "error",
-      error: "Failed to generate message",
+      error: "Failed to generate title",
     };
   }
 
