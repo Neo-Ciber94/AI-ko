@@ -16,7 +16,6 @@
     "@libsql/client": "^0.3.6",
     "@lucia-auth/adapter-sqlite": "^2.0.1",
     "@lucia-auth/oauth": "^3.3.1",
-    "@react-three/fiber": "^8.15.9",
     "@types/markdown-it": "^13.0.5",
     "@types/three": "^0.158.1",
     "drizzle-orm": "^0.28.6",
