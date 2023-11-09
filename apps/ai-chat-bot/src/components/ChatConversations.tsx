@@ -118,6 +118,8 @@ function ChatConversationItem({
 
               if (result) {
                 setTitle(result.title);
+              } else {
+                toast.error("Failed to generate conversation title");
               }
             }}
           >
