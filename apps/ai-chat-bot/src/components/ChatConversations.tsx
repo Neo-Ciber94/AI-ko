@@ -116,10 +116,8 @@ function ChatConversationItem({
                 conversationId: conversation.id,
               });
 
-              if (result.type === "error") {
-                toast.error(result.error);
-              } else {
-                setTitle(result.value.conversationTitle);
+              if (result) {
+                setTitle(result.title);
               }
             }}
           >

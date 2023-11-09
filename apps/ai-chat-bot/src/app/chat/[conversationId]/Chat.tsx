@@ -81,10 +81,8 @@ export default function Chat(props: ChatProps) {
         conversationId,
       });
 
-      if (result.type === "error") {
-        toast.error(result.error);
-      } else {
-        const newTitle = result.value.conversationTitle;
+      if (result) {
+        const newTitle = result.title;
         eventEmitter.conversationTitleChanged({
           conversationId,
           newTitle,

@@ -82,7 +82,7 @@ export async function generateConversationTitle({
   conversationId,
 }: {
   conversationId: string;
-}): Promise<Result<{ conversationTitle: string }, string>> {
+}): Promise<{ title: string } | null> {
   const session = await getRequiredSession();
   const conversation = await db.query.conversations.findFirst({
     where: and(
@@ -103,10 +103,8 @@ export async function generateConversationTitle({
     .pop();
 
   if (lastAssistantMessage == null) {
-    return {
-      type: "error",
-      error: "Failed to generate title",
-    };
+    console.warn("No assistant messages found");
+    return null;
   }
 
   const messageContent = await db.query.messageTextContents.findFirst({
@@ -137,7 +135,7 @@ export async function generateConversationTitle({
     .set({ title: newTitle.trim() })
     .where(eq(conversations.id, conversation.id));
 
-  return { type: "success", value: { conversationTitle: newTitle } };
+  return { title: newTitle };
 }
 
 export async function updateConversationModel({
