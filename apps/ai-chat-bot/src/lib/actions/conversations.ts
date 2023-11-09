@@ -15,6 +15,7 @@ export async function getConversations() {
   const session = await getRequiredSession();
   const result = await db.query.conversations.findMany({
     where: eq(conversations.userId, session.user.userId),
+    orderBy: desc(conversations.createdAt),
   });
 
   return result;
