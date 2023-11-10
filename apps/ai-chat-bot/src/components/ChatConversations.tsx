@@ -20,6 +20,8 @@ import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
 import { eventListener } from "@/client/events";
 import type { Conversation } from "@/lib/database/types";
+import { isomorphicClient } from "@/lib/utils/isomorphic.client";
+import { useIsSmallScreen } from "@/client/hooks/use-is-small-screen";
 
 export default function ChatConversations({
   conversations,
@@ -64,12 +66,20 @@ function ChatConversationItem({
   const toast = useToast();
   const { conversationId } = useParams<{ conversationId: string }>();
   const [title, setTitle] = useState(conversation.title);
+  const isSmallScreen = useIsSmallScreen();
+  const [_, setSidebarOpen] = isomorphicClient.isSidebarOpen.useValue();
   const isCurrentConversation = conversationId === conversation.id;
   eventListener.conversationTitleChanged.useSubscription((event) => {
     if (conversation.id === event.conversationId) {
       setTitle(event.newTitle);
     }
   });
+
+  const checkIsSmallScreen = () => {
+    if (isSmallScreen) {
+      setSidebarOpen(false);
+    }
+  };
 
   return (
     <Link
@@ -78,6 +88,9 @@ function ChatConversationItem({
       className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
         text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
         ${isCurrentConversation ? "bg-neutral-900" : "hover:bg-neutral-900"}`}
+      onClick={() => {
+        checkIsSmallScreen();
+      }}
     >
       {editing && editing.conversationId === conversation.id ? (
         <input
@@ -118,6 +131,7 @@ function ChatConversationItem({
 
               if (result) {
                 setTitle(result.title);
+                checkIsSmallScreen();
               } else {
                 toast.error("Failed to generate conversation title");
               }
@@ -140,6 +154,7 @@ function ChatConversationItem({
 
               setEditing(undefined);
               setTitle(editing.title);
+              checkIsSmallScreen();
             }}
           />
         ) : (

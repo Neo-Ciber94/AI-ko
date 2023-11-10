@@ -9,6 +9,8 @@ import { createConversation } from "@/lib/actions/conversations";
 import { useFormStatus } from "react-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
+import { useIsSmallScreen } from "@/client/hooks/use-is-small-screen";
+import { useEffect } from "react";
 
 export default function Sidebar({
   conversations,
@@ -16,7 +18,15 @@ export default function Sidebar({
   conversations: Conversation[];
 }) {
   const { session } = useSession();
+  const isSmallScreen = useIsSmallScreen();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSmallScreen]);
 
   return (
     <>
@@ -36,7 +46,15 @@ export default function Sidebar({
         >
           <div className="relative flex h-full flex-col px-2 py-4">
             <div className="flex w-full flex-row border-b border-b-red-500">
-              <form action={createConversation} className="w-full">
+              <form
+                action={createConversation}
+                className="w-full"
+                onSubmit={() => {
+                  if (isSmallScreen) {
+                    setIsOpen(false);
+                  }
+                }}
+              >
                 <SubmitButton />
               </form>
             </div>
