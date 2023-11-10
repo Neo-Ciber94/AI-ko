@@ -109,7 +109,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
         setCookie(cookieName, JSON.stringify(value));
       },
 
-      [name, setStore, store.prefix, store.state],
+      [name, setStore, store],
     );
 
     const value = useMemo(() => {
