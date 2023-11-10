@@ -150,7 +150,6 @@ export async function chatCompletion({ input, signal }: ChatCompletionOptions) {
     signal,
     openAIStream,
     async onGenerate(generated) {
-      console.log({ generated });
       switch (generated.type) {
         case "text": {
           await db.transaction(async (tx) => {
