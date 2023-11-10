@@ -13,20 +13,20 @@ const metadataBase = process.env.VERCEL_URL
   : new URL(`http://localhost:${process.env.PORT || 3000}`);
 
 export const metadata: Metadata = {
-  title: "AI Chatbot",
+  title: "AIko",
   manifest: "/manifest.json",
   metadataBase,
-  applicationName: "AI Chatbot",
-  description: "An AI chatbot to have a good conversation with",
+  applicationName: "AIko",
+  description: "An AIko to have a good conversation with",
   icons: ["/favicon.ico"],
   openGraph: {
     type: "website",
-    title: "AI Chatbot",
+    title: "AIko",
   },
   twitter: {
     card: "summary",
-    title: "AI Chatbot",
-    description: "An AI chatbot to have a good conversation with",
+    title: "AIko",
+    description: "An AIko to have a good conversation with",
   },
 };
 

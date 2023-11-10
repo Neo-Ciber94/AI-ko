@@ -4,7 +4,7 @@ import { getConversations } from "@/lib/actions/conversations";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Chatbot | Chat",
+  title: "AIko | Chat",
 };
 
 export default async function PageLayout({

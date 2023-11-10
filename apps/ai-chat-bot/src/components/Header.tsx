@@ -81,7 +81,7 @@ function Logo() {
   return (
     <Link href="/">
       <h1 className="bg-clip-text font-mono text-2xl font-bold text-white">
-        AIChatbot
+        AIko
       </h1>
     </Link>
   );

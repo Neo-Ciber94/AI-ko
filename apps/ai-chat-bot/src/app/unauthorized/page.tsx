@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Chatbot | Unauthorized",
+  title: "AIko | Unauthorized",
 };
 
 export default function UnauthorizedPage() {

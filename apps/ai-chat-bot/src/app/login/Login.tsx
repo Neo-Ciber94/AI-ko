@@ -9,7 +9,7 @@ export default function Login() {
       <div className="mb-2">
         <h1 className="text-xl font-bold">Login</h1>
         <p className="text-xs text-gray-500/80 dark:text-gray-400/70">
-          To continue to the AIChatbot
+          To continue to the AIko
         </p>
       </div>
       <a

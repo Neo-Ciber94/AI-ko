@@ -120,7 +120,7 @@ export default function Chat(props: ChatProps) {
                 }}
               />
             </div>
-            <span>AIChatbot</span>
+            <span>AIko</span>
           </div>
         ) : (
           <ChatMessageList
