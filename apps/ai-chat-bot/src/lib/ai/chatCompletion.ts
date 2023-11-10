@@ -274,7 +274,7 @@ function createResponseStream({
                 data,
                 emit,
               });
-              onGenerate({ type: "image", images });
+              await onGenerate({ type: "image", images });
             } else {
               await onGenerate({ type: "text", content: data });
             }
