@@ -236,7 +236,7 @@ function createResponseStream({
 }: {
   signal?: AbortSignal;
   openAIStream: Stream<ChatCompletionChunk>;
-  onGenerate: (generated: GeneratedMessage) => void;
+  onGenerate: (generated: GeneratedMessage) => Promise<void>;
 }) {
   const encoder = new TextEncoder();
   let data: string = "";
@@ -277,7 +277,7 @@ function createResponseStream({
               });
               onGenerate({ type: "image", images });
             } else {
-              onGenerate({ type: "text", content: data });
+              await onGenerate({ type: "text", content: data });
             }
           } catch (err) {
             console.error(err);
