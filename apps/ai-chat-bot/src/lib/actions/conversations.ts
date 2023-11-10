@@ -2,8 +2,12 @@
 
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
-import { and, desc, eq } from "drizzle-orm";
-import { conversations, messageTextContents } from "@/lib/database/schema";
+import { and, desc, eq, sql } from "drizzle-orm";
+import {
+  conversationMessages,
+  conversations,
+  messageTextContents,
+} from "@/lib/database/schema";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
@@ -84,37 +88,50 @@ export async function generateConversationTitle({
   conversationId: string;
 }): Promise<{ title: string } | null> {
   const session = await getRequiredSession();
-  const conversation = await db.query.conversations.findFirst({
-    where: and(
-      eq(conversations.id, conversationId),
-      eq(conversations.userId, session.user.userId),
-    ),
-    with: {
-      conversationMessages: true,
-    },
-  });
+  const messages = await db
+    .select({
+      role: conversationMessages.role,
+      content: messageTextContents.text,
+      conversationTitle: conversations.title,
+    })
+    .from(conversations)
+    .limit(5) // we just take enough messages
+    .where(
+      and(
+        eq(conversations.id, conversationId),
+        eq(conversations.userId, session.user.userId),
+      ),
+    )
+    .leftJoin(
+      conversationMessages,
+      eq(conversationMessages.conversationId, conversationId),
+    )
+    .leftJoin(
+      messageTextContents,
+      eq(messageTextContents.conversationMessageId, conversationMessages.id),
+    )
+    .orderBy(
+      desc(conversationMessages.createdAt),
+      desc(messageTextContents.createdAt),
+    );
 
-  if (conversation == null) {
+  if (messages.length === 0) {
     notFound();
   }
 
-  const lastAssistantMessage = conversation.conversationMessages
+  const lastUserMessage = messages.filter((x) => x.role === "user").pop();
+  const lastAssistantMessage = messages
     .filter((x) => x.role === "assistant")
     .pop();
 
-  if (lastAssistantMessage == null) {
-    console.warn("No assistant messages found");
+  if (lastUserMessage == null && lastAssistantMessage == null) {
     return null;
   }
 
-  const messageContent = await db.query.messageTextContents.findFirst({
-    where: and(
-      eq(messageTextContents.conversationMessageId, lastAssistantMessage.id),
-    ),
-    orderBy: desc(messageTextContents.createdAt),
-  });
-
-  const content = messageContent?.text || "";
+  const conversationTitle =
+    messages[0].conversationTitle || DEFAULT_CONVERSATION_TITLE;
+  const content =
+    lastAssistantMessage?.content || lastUserMessage?.content || "";
   const openAiResponse = await openaiInstance.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
@@ -128,12 +145,12 @@ export async function generateConversationTitle({
   const generatedTitle = openAiResponse.choices[0]?.message.content;
   const newTitle = generatedTitle
     ? removeQuotesFromString(generatedTitle)
-    : conversation.title;
+    : conversationTitle;
 
   await db
     .update(conversations)
     .set({ title: newTitle.trim() })
-    .where(eq(conversations.id, conversation.id));
+    .where(eq(conversations.id, conversationId));
 
   return { title: newTitle };
 }
