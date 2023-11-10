@@ -32,7 +32,7 @@ export default function ModelSelector({
   };
 
   return (
-    <div className="w-full p-4 text-2xl">
+    <div className="w-full p-4 text-lg md:text-2xl">
       <label className="text-lg text-gray-700 dark:text-gray-400">Model</label>
       <select
         className={`w-full rounded-lg border border-gray-600/50 bg-transparent p-2 text-gray-800 outline-none

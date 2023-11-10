@@ -9,7 +9,6 @@ export function useIsSmallScreen() {
 
     const checkSize = (ev: MediaQueryListEvent) => {
       setIsSmallScreen(ev.matches);
-      console.log(`Is small screen: ${ev.matches}`);
     };
 
     mq.addEventListener("change", checkSize);

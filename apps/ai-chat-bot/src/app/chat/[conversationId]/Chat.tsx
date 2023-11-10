@@ -112,7 +112,7 @@ export default function Chat(props: ChatProps) {
             className="relative flex h-full flex-grow flex-col items-center justify-center font-mono 
           text-5xl font-bold text-gray-400 dark:text-gray-300/50"
           >
-            <div className="absolute top-10 w-3/12">
+            <div className="absolute top-10 w-11/12 sm:w-1/2 lg:w-4/12">
               <ModelSelector
                 conversation={conversation}
                 onChange={(model) => {
