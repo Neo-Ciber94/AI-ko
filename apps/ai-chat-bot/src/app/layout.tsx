@@ -8,10 +8,14 @@ import { IsomorphicStoreProvider } from "next-isomorphic/client";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
+const metadataBase = process.env.VERCEL_URL
+  ? new URL(`https://${process.env.VERCEL_URL}`)
+  : new URL(`http://localhost:${process.env.PORT || 3000}`);
 
 export const metadata: Metadata = {
   title: "AI Chatbot",
   manifest: "/manifest.json",
+  metadataBase,
   applicationName: "AI Chatbot",
   description: "An AI chatbot to have a good conversation with",
   icons: ["/favicon.ico"],
