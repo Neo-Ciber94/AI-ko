@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <div
-      className={`container mx-auto flex h-1/2 w-full max-w-4xl flex-col items-center justify-center gap-4 px-4 py-4 sm:px-10 md:h-2/3
+      className={`container mx-auto flex h-full w-full max-w-4xl flex-col items-center justify-center gap-4 px-4 py-4 sm:px-10 lg:h-2/3
       md:max-w-6xl md:px-10`}
     >
       <h1 className="text-3xl font-bold sm:text-4xl md:text-6xl">
