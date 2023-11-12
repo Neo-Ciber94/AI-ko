@@ -3,6 +3,7 @@ import { type ChatCompletionCreateParamsBase } from "openai/resources/chat/compl
 export const HEADER_ASSISTANT_MESSAGE_ID = "Assistant-Message-Id";
 export const HEADER_USER_MESSAGE_ID = "User-Message-Id";
 export const DEFAULT_CONVERSATION_TITLE = "New Chat";
+export const COOKIE_CONVERSATION_CREATED = "New-Conversation-Created";
 
 type OpenAIModel = ChatCompletionCreateParamsBase["model"];
 

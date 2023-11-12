@@ -10,10 +10,14 @@ import { useFormStatus } from "react-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
 import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "@/client/hooks/use-media-query";
-import { breakpoints } from "@/lib/common/constants";
+import {
+  COOKIE_CONVERSATION_CREATED,
+  breakpoints,
+} from "@/lib/common/constants";
 import { useScreenSize } from "@/client/hooks/use-screen-size";
+import { getCookie, removeCookie } from "@/client/utils/functions";
 
 const isClient = typeof window !== "undefined";
 
@@ -65,16 +69,8 @@ export default function Sidebar({
           >
             <div className="relative flex h-full flex-col px-2 py-4">
               <div className="flex w-full flex-row border-b border-b-red-500">
-                <form
-                  action={createConversation}
-                  className="w-full"
-                  onSubmit={() => {
-                    if (isMobileScreen) {
-                      setIsOpen(false);
-                    }
-                  }}
-                >
-                  <SubmitButton />
+                <form action={createConversation} className="w-full">
+                  <CreateConversationButton />
                 </form>
               </div>
 
@@ -102,8 +98,23 @@ export default function Sidebar({
   );
 }
 
-function SubmitButton() {
+function CreateConversationButton() {
   const { pending } = useFormStatus();
+  const isMobileScreen = useIsMobileScreen();
+  const [_, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
+
+  useEffect(() => {
+    if (pending) {
+      return;
+    }
+
+    const conversationWasCreated =
+      getCookie(COOKIE_CONVERSATION_CREATED) === "1";
+    if (conversationWasCreated && isMobileScreen) {
+      removeCookie(COOKIE_CONVERSATION_CREATED);
+      setIsOpen(false);
+    }
+  }, [isMobileScreen, pending, setIsOpen]);
 
   return (
     <button

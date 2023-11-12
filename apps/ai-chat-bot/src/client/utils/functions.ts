@@ -1,5 +1,11 @@
-export function setCookie(cookieName: string, value: string) {
-  document.cookie = `${cookieName}=${value};path=/`;
+export function setCookie(cookieName: string, value: string, maxAge?: number) {
+  let cookie = `${cookieName}=${value};path=/`;
+
+  if (maxAge) {
+    cookie += `;max-age=${maxAge}`;
+  }
+
+  document.cookie = cookie;
 }
 
 export function getCookie(cookieName: string): string | null {
@@ -15,4 +21,8 @@ export function getCookie(cookieName: string): string | null {
   }
 
   return null;
+}
+
+export function removeCookie(cookieName: string) {
+  setCookie(cookieName, "", -1);
 }

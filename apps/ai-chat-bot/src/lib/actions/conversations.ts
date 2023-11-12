@@ -11,9 +11,13 @@ import {
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { openaiInstance } from "../ai";
-import { DEFAULT_CONVERSATION_TITLE } from "../common/constants";
+import {
+  COOKIE_CONVERSATION_CREATED,
+  DEFAULT_CONVERSATION_TITLE,
+} from "../common/constants";
 import { type Result } from "../types";
 import { type AIModel } from "../database/types";
+import { cookies } from "next/headers";
 
 export async function getConversations() {
   const session = await getRequiredSession();
@@ -37,6 +41,7 @@ export async function createConversation() {
     .returning();
 
   const conversation = result[0]!;
+  cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
   revalidatePath("/chat", "layout");
   redirect(`/chat/${conversation.id}`);
 }
