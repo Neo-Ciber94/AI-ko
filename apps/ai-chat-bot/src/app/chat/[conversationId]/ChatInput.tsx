@@ -55,11 +55,7 @@ export default function ChatInput({ isLoading, onSend }: ChatInputProps) {
         }}
         onChange={(e) => setText(e.currentTarget.value)}
       ></textarea>
-      <button
-        className="relative -ml-8"
-        onClick={handleSend}
-        disabled={isLoading}
-      >
+      <button className="absolute right-4" onClick={handleSend} disabled={isLoading}>
         {isLoading ? (
           <ArrowPathIcon className="right-8 h-5 w-5 animate-spin text-gray-400/50" />
         ) : (
