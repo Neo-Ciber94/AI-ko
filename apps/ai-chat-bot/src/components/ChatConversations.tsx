@@ -21,7 +21,7 @@ import TypeWriter from "./TypeWriter";
 import { eventListener } from "@/client/events";
 import type { Conversation } from "@/lib/database/types";
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
-import { useIsSmallScreen } from "@/client/hooks/use-is-small-screen";
+import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
 
 export default function ChatConversations({
   conversations,
@@ -66,7 +66,7 @@ function ChatConversationItem({
   const toast = useToast();
   const { conversationId } = useParams<{ conversationId: string }>();
   const [title, setTitle] = useState(conversation.title);
-  const isSmallScreen = useIsSmallScreen();
+  const isMobileScreen = useIsMobileScreen();
   const [_, setSidebarOpen] = isomorphicClient.isSidebarOpen.useValue();
   const isCurrentConversation = conversationId === conversation.id;
   eventListener.conversationTitleChanged.useSubscription((event) => {
@@ -76,7 +76,7 @@ function ChatConversationItem({
   });
 
   const checkIsSmallScreen = () => {
-    if (isSmallScreen) {
+    if (isMobileScreen) {
       setSidebarOpen(false);
     }
   };

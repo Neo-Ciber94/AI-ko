@@ -17,3 +17,10 @@ export const OPENAI_MODELS = [
 ] satisfies AIModelCollection;
 
 export type Models = (typeof OPENAI_MODELS)[number]["model"];
+
+export const breakpoints = {
+  sm: "640px",
+  md: "768px",
+  lg: "1024px",
+  xl: "1280px",
+} as const;

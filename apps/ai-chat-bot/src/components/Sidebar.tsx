@@ -9,8 +9,8 @@ import { createConversation } from "@/lib/actions/conversations";
 import { useFormStatus } from "react-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
-import { useIsSmallScreen } from "@/client/hooks/use-is-small-screen";
-import { useEffect } from "react";
+import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
+import { useEffect, useMemo } from "react";
 
 export default function Sidebar({
   conversations,
@@ -18,15 +18,17 @@ export default function Sidebar({
   conversations: Conversation[];
 }) {
   const { session } = useSession();
-  const isSmallScreen = useIsSmallScreen();
+  const isMobileScreen = useIsMobileScreen();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
+  
+
 
   useEffect(() => {
-    if (isSmallScreen) {
+    if (isMobileScreen) {
       setIsOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSmallScreen]);
+  }, [isMobileScreen]);
 
   return (
     <>
@@ -40,7 +42,7 @@ export default function Sidebar({
       <aside className="relative z-20 h-full">
         <div
           className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
-            isOpen ? "w-10/12 border-r sm:w-[300px]" : "w-0"
+            isOpen ? "border-r sm:w-[300px]" : "w-0"
           }`}
         >
           <div
@@ -53,7 +55,7 @@ export default function Sidebar({
                   action={createConversation}
                   className="w-full"
                   onSubmit={() => {
-                    if (isSmallScreen) {
+                    if (isMobileScreen) {
                       setIsOpen(false);
                     }
                   }}
