@@ -39,42 +39,46 @@ export default function Sidebar({
 
       <aside className="relative z-20 h-full">
         <div
-          className={`fixed left-0 z-20 h-full overflow-hidden whitespace-nowrap border-transparent bg-black
-        text-white shadow-xl shadow-black/50 transition-all duration-300 sm:static ${
-          isOpen ? "border-rainbow-bottom w-10/12 border-r sm:w-[300px]" : "w-0"
-        }`}
+          className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
+            isOpen ? "w-10/12 border-r sm:w-[300px]" : "w-0"
+          }`}
         >
-          <div className="relative flex h-full flex-col px-2 py-4">
-            <div className="flex w-full flex-row border-b border-b-red-500">
-              <form
-                action={createConversation}
-                className="w-full"
-                onSubmit={() => {
-                  if (isSmallScreen) {
-                    setIsOpen(false);
-                  }
-                }}
-              >
-                <SubmitButton />
-              </form>
-            </div>
-
-            <ChatConversations conversations={conversations} />
-
-            {session && (
-              <div className="mt-auto border-t border-t-violet-600 pt-4">
-                <div className="flex flex-row items-center justify-between text-white">
-                  <span>{session.user.username}</span>
-                  <button
-                    title="Log out"
-                    className="rounded-md p-3 shadow-white/40 shadow-inset hover:bg-neutral-900"
-                    onClick={logOut}
-                  >
-                    <ArrowRightOnRectangleIcon className="h-6 w-6" />
-                  </button>
-                </div>
+          <div
+            className={`z-20 h-full w-full overflow-hidden whitespace-nowrap
+         bg-black text-white shadow-xl shadow-black/50 sm:w-[300px]`}
+          >
+            <div className="relative flex h-full flex-col px-2 py-4">
+              <div className="flex w-full flex-row border-b border-b-red-500">
+                <form
+                  action={createConversation}
+                  className="w-full"
+                  onSubmit={() => {
+                    if (isSmallScreen) {
+                      setIsOpen(false);
+                    }
+                  }}
+                >
+                  <SubmitButton />
+                </form>
               </div>
-            )}
+
+              <ChatConversations conversations={conversations} />
+
+              {session && (
+                <div className="mt-auto border-t border-t-violet-600 pt-4">
+                  <div className="flex flex-row items-center justify-between text-white">
+                    <span>{session.user.username}</span>
+                    <button
+                      title="Log out"
+                      className="rounded-md p-3 shadow-white/40 shadow-inset hover:bg-neutral-900"
+                      onClick={logOut}
+                    >
+                      <ArrowRightOnRectangleIcon className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </aside>
