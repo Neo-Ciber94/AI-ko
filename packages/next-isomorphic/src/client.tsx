@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import { type IsomorphicStore } from "./server";
-import { setCookie } from ".";
+import { getCookie, setCookie } from ".";
 
 const isomorphicStoreContext = createContext<{
   store: IsomorphicStore;
@@ -77,6 +77,7 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
     type TKey = keyof typeof store.state;
 
     const { store, setStore } = useContext(isomorphicStoreContext);
+    const cookieName = `${store.prefix}/${String(name)}`;
 
     const setValue = useCallback(
       (newValue: SetStateAction<TValue>) => {
@@ -105,7 +106,6 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
           };
         });
 
-        const cookieName = `${store.prefix}/${String(name)}`;
         setCookie(cookieName, JSON.stringify(value));
       },
 
@@ -113,8 +113,24 @@ export function createIsomorphicClient<S extends IsomorphicStore>(
     );
 
     const value = useMemo(() => {
+      let value: TValue;
       const key = name as TKey;
-      return store.state[key]!;
+
+      try {
+        const cookieValue = getCookie(cookieName);
+        if (cookieValue) {
+          value = JSON.parse(cookieValue);
+        } else {
+          value = store.state[key]! as TValue;
+        }
+      } catch {
+        value = store.state[key]! as TValue;
+        if (typeof document !== "undefined") {
+          setCookie(cookieName, JSON.stringify(value));
+        }
+      }
+
+      return value;
     }, [name, store]);
 
     // prettier-ignore
