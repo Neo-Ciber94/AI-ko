@@ -11,6 +11,11 @@ import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
 import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
 import { useEffect, useMemo } from "react";
+import { useMediaQuery } from "@/client/hooks/use-media-query";
+import { breakpoints } from "@/lib/common/constants";
+import { useScreenSize } from "@/client/hooks/use-screen-size";
+
+const isClient = typeof window !== "undefined";
 
 export default function Sidebar({
   conversations,
@@ -20,8 +25,9 @@ export default function Sidebar({
   const { session } = useSession();
   const isMobileScreen = useIsMobileScreen();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
-  
-
+  const screenSize = useScreenSize();
+  const isSmallScreen = useMediaQuery(`(max-width: ${breakpoints.sm})`);
+  const sidebarWidth = isSmallScreen ? screenSize.width * (10 / 12) : "300px";
 
   useEffect(() => {
     if (isMobileScreen) {
@@ -41,13 +47,21 @@ export default function Sidebar({
 
       <aside className="relative z-20 h-full">
         <div
+          suppressHydrationWarning
           className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
-            isOpen ? "border-r sm:w-[300px]" : "w-0"
+            isOpen ? "w-10/12 border-r sm:w-[300px]" : ""
           }`}
+          style={{
+            width: isClient ? (isOpen ? sidebarWidth : "0px") : undefined,
+          }}
         >
           <div
-            className={`z-20 h-full w-full overflow-hidden whitespace-nowrap
-         bg-black text-white shadow-xl shadow-black/50 sm:w-[300px]`}
+            suppressHydrationWarning
+            className={`z-20 h-full  overflow-hidden whitespace-nowrap bg-black
+         text-white shadow-xl shadow-black/50 sm:w-[300px] `}
+            style={{
+              width: isClient ? sidebarWidth : undefined,
+            }}
           >
             <div className="relative flex h-full flex-col px-2 py-4">
               <div className="flex w-full flex-row border-b border-b-red-500">
