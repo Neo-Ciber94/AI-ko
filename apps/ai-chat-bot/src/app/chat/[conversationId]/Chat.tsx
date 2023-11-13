@@ -10,9 +10,13 @@ import { type ConversationMessageWithContents } from "@/lib/actions/conversation
 import { useToast } from "@/client/hooks/use-toast";
 import { generateConversationTitle } from "@/lib/actions/conversations";
 import { eventEmitter, eventListener } from "@/client/events";
-import { DEFAULT_CONVERSATION_TITLE } from "@/lib/common/constants";
+import {
+  DEFAULT_CONVERSATION_TITLE,
+  breakpoints,
+} from "@/lib/common/constants";
 import ModelSelector from "./ModelSelector";
 import type { Conversation } from "@/lib/database/types";
+import { useMediaQuery } from "@/client/hooks/use-media-query";
 
 type ChatProps = {
   conversation: Conversation;
@@ -137,6 +141,22 @@ export default function Chat(props: ChatProps) {
       <div className={`absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2`}>
         <ChatInput onSend={handleChat} isLoading={isLoading} />
       </div>
+
+      <ScrollToBottomOnMobile />
     </>
   );
+}
+
+function ScrollToBottomOnMobile() {
+  const isSmallScreen = useMediaQuery(`(max-width: ${breakpoints.sm})`);
+  const hasScrolledRef = useRef(false);
+
+  useEffect(() => {
+    if (isSmallScreen && !hasScrolledRef.current) {
+      window.scrollTo({ top: document.body.scrollHeight });
+      hasScrolledRef.current = true;
+    }
+  }, [isSmallScreen]);
+
+  return <></>;
 }
