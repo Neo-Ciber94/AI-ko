@@ -25,11 +25,11 @@ export default function Sidebar({
   const sidebarCheckForMobileScreen = useRef(false);
 
   useEffect(() => {
-    if (isOpen && isMobileScreen && !sidebarCheckForMobileScreen.current) {
+    if (isMobileScreen && !sidebarCheckForMobileScreen.current) {
       sidebarCheckForMobileScreen.current = true;
       setIsOpen(false);
     }
-  }, [isMobileScreen, isOpen, setIsOpen]);
+  }, [isMobileScreen, setIsOpen]);
 
   return (
     <>
@@ -40,15 +40,13 @@ export default function Sidebar({
         ></div>
       )}
 
-      <aside className="relative z-20 h-full">
+      <nav className="relative z-20 h-full">
         <div
-          suppressHydrationWarning
           className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
             isOpen ? "w-10/12 border-r sm:w-[300px]" : "w-0"
           }`}
         >
           <div
-            suppressHydrationWarning
             className={`z-20 h-full w-full overflow-hidden whitespace-nowrap bg-black
          text-white shadow-xl shadow-black/50 sm:w-[300px] `}
           >
@@ -78,7 +76,7 @@ export default function Sidebar({
             </div>
           </div>
         </div>
-      </aside>
+      </nav>
     </>
   );
 }

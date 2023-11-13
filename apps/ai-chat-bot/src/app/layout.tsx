@@ -6,8 +6,6 @@ import { appStore } from "@/lib/utils/isomorphic.server";
 import { getSession } from "@/lib/auth/utils";
 import { IsomorphicStoreProvider } from "next-isomorphic/client";
 import { Toaster } from "react-hot-toast";
-import { breakpoints } from "@/lib/common/constants";
-import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 const metadataBase = process.env.VERCEL_URL
@@ -43,7 +41,6 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${store.state.isDark ? "dark" : ""}`}>
       <body className={inter.className}>
-        <CheckSidebarScript />
         <SessionProvider session={session}>
           <IsomorphicStoreProvider store={store}>
             {children}
@@ -52,18 +49,5 @@ export default async function RootLayout({
         <Toaster />
       </body>
     </html>
-  );
-}
-
-function CheckSidebarScript() {
-  return (
-    <Script id="check-sidebar">{`
-    const sideBarShouldBeOpen = window.matchMedia("(max-width: ${breakpoints.sm})");
-
-    if (sideBarShouldBeOpen.matches) {
-      console.log("matches")
-      document.cookie = "ai-ko/isSidebarOpen=false;path=/"
-    }
-`}</Script>
   );
 }
