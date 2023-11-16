@@ -7,6 +7,8 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { EventSourceParserStream } from "eventsource-parser/stream";
 
+type ChatError = { message: string };
+
 type ChatMessage = ChatInput["messages"][number];
 
 type ChatInputWithoutNewMessage = Omit<ChatInput, "newMessage">;
@@ -28,6 +30,7 @@ export function useChat(opts: UseChatOptions) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [isCallingFunction, setIsCallingFunction] = useState(false);
+  const [error, setError] = useState<ChatError>();
   const onErrorRef = useRef(onError);
 
   const completion = useCallback(
@@ -187,6 +190,10 @@ export function useChat(opts: UseChatOptions) {
           }
         }
       } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Something went wrong";
+        setError({ message });
+
         if (onErrorRef.current) {
           onErrorRef.current(err);
         }
@@ -205,7 +212,7 @@ export function useChat(opts: UseChatOptions) {
 
   const regenerate = useCallback(() => completion(undefined), [completion]);
 
-  return { chat, regenerate, messages, isLoading, isCallingFunction };
+  return { chat, regenerate, messages, error, isLoading, isCallingFunction };
 }
 
 async function getResponseError(res: Response) {

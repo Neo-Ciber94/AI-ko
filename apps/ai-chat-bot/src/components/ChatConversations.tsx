@@ -22,6 +22,8 @@ import { eventListener } from "@/client/events";
 import type { Conversation } from "@/lib/database/types";
 import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import Dropdown from "./Dropdown";
 
 export default function ChatConversations({
   conversations,
@@ -69,11 +71,16 @@ function ChatConversationItem({
   const isMobileScreen = useIsMobileScreen();
   const [_, setSidebarOpen] = isomorphicClient.isSidebarOpen.useValue();
   const isCurrentConversation = conversationId === conversation.id;
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   eventListener.conversationTitleChanged.useSubscription((event) => {
     if (conversation.id === event.conversationId) {
       setTitle(event.newTitle);
     }
   });
+
+  const handleCloseDropdown = () => {
+    setAnchor(null);
+  };
 
   const checkIsSmallScreen = () => {
     if (isMobileScreen) {
@@ -82,121 +89,155 @@ function ChatConversationItem({
   };
 
   return (
-    <Link
-      title={title}
-      href={`/chat/${conversation.id}`}
-      className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
+    <>
+      <Link
+        title={title}
+        href={`/chat/${conversation.id}`}
+        className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
         text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
         ${isCurrentConversation ? "bg-neutral-900" : "hover:bg-neutral-900"}`}
-      onClick={() => {
-        checkIsSmallScreen();
-      }}
-    >
-      {editing && editing.conversationId === conversation.id ? (
-        <input
-          autoFocus
-          className={
-            "h-5 w-full overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none"
-          }
-          value={editing.title}
-          onChange={(e) => {
-            setEditing({
-              conversationId: conversation.id,
-              title: e.target.value,
-            });
-          }}
-        />
-      ) : (
-        <TypeWriter
-          text={title}
-          className={`h-5 w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
-          startCompleted
-        />
-      )}
+        onClick={() => {
+          checkIsSmallScreen();
+        }}
+      >
+        {editing && editing.conversationId === conversation.id ? (
+          <input
+            autoFocus
+            className={
+              "h-5 w-full overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none"
+            }
+            value={editing.title}
+            onChange={(e) => {
+              setEditing({
+                conversationId: conversation.id,
+                title: e.target.value,
+              });
+            }}
+          />
+        ) : (
+          <TypeWriter
+            text={title}
+            className={`h-5 w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap bg-transparent text-white outline-none`}
+            startCompleted
+          />
+        )}
 
-      <div className="flex flex-row items-center gap-2">
         {editing == null && (
           <button
-            type="submit"
-            title="Generate"
-            className={`text-white/60 hover:text-white ${
-              isCurrentConversation ? "block" : "hidden group-hover:block"
-            } `}
-            onClick={async (e) => {
-              e.preventDefault();
+            onClick={(e) => {
               e.stopPropagation();
-              const result = await generateConversationTitle({
-                conversationId: conversation.id,
-              });
-
-              if (result) {
-                setTitle(result.title);
-                checkIsSmallScreen();
-              } else {
-                toast.error("Failed to generate conversation title");
-              }
+              e.preventDefault();
+              setAnchor(e.currentTarget);
             }}
           >
-            <ArrowPathIcon className="h-4 w-4" />
+            <EllipsisHorizontalIcon className="h-5 w-5 rounded-full hover:bg-gray-500/50" />
           </button>
         )}
 
-        {editing && editing.conversationId === conversation.id ? (
-          <SaveButton
-            isCurrentConversation={isCurrentConversation}
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              await updateConversationTitle({
-                conversationId: editing.conversationId,
-                title: editing.title,
-              });
+        <div className="flex flex-row items-center gap-2">
+          {editing && editing.conversationId === conversation.id && (
+            <SaveButton
+              isCurrentConversation={isCurrentConversation}
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
 
-              setEditing(undefined);
-              setTitle(editing.title);
+                if (editing.title !== conversation.title) {
+                  await updateConversationTitle({
+                    conversationId: editing.conversationId,
+                    title: editing.title,
+                  });
+
+                  setTitle(editing.title);
+                }
+
+                setEditing(undefined);
+                checkIsSmallScreen();
+              }}
+            />
+          )}
+
+          {editing && editing.conversationId === conversation.id && (
+            <CancelButton
+              isCurrentConversation={isCurrentConversation}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setEditing(undefined);
+              }}
+            />
+          )}
+        </div>
+      </Link>
+
+      <Dropdown anchor={anchor} open={!!anchor} onClose={handleCloseDropdown}>
+        <Dropdown.Item
+          title="Edit Conversation"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleCloseDropdown();
+
+            setEditing({
+              conversationId: conversation.id,
+              title: conversation.title,
+            });
+          }}
+        >
+          <div
+            className={`flex flex-row items-center gap-2 hover:text-yellow-400`}
+          >
+            <PencilSquareIcon className="h-4 w-4" />
+            <span>Rename</span>
+          </div>
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          title="Generate Title"
+          onClick={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleCloseDropdown();
+
+            const result = await generateConversationTitle({
+              conversationId: conversation.id,
+            });
+
+            if (result) {
+              setTitle(result.title);
               checkIsSmallScreen();
-            }}
-          />
-        ) : (
-          <EditButton
-            isCurrentConversation={isCurrentConversation}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setEditing({
+            } else {
+              toast.error("Failed to generate conversation title");
+            }
+          }}
+        >
+          <div className={`flex flex-row items-center gap-2 text-white`}>
+            <ArrowPathIcon className="h-4 w-4" />
+            <span>Generate</span>
+          </div>
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          title="Delete Conversation"
+          onClick={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleCloseDropdown();
+
+            if (confirm("Delete conversation?")) {
+              await deleteConversation({
                 conversationId: conversation.id,
-                title: conversation.title,
               });
-            }}
-          />
-        )}
-
-        {editing && editing.conversationId === conversation.id ? (
-          <CancelButton
-            isCurrentConversation={isCurrentConversation}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setEditing(undefined);
-            }}
-          />
-        ) : (
-          <DeleteButton
-            isCurrentConversation={isCurrentConversation}
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              if (confirm("Delete conversation?")) {
-                await deleteConversation({
-                  conversationId: conversation.id,
-                });
-              }
-            }}
-          />
-        )}
-      </div>
-    </Link>
+            }
+          }}
+        >
+          <div className={`flex flex-row items-center gap-2 text-red-500`}>
+            <TrashIcon className="h-4 w-4 opacity-80" />
+            <span>Delete</span>
+          </div>
+        </Dropdown.Item>
+      </Dropdown>
+    </>
   );
 }
 
@@ -220,26 +261,6 @@ function SaveButton({
   );
 }
 
-function EditButton({
-  isCurrentConversation,
-  onClick,
-}: {
-  isCurrentConversation: boolean;
-  onClick: (event: React.MouseEvent) => void;
-}) {
-  return (
-    <button
-      title="Edit Conversation"
-      className={`hover:text-yellow-400 ${
-        isCurrentConversation ? "block" : "hidden group-hover:block"
-      } `}
-      onClick={onClick}
-    >
-      <PencilSquareIcon className="h-4 w-4 opacity-80" />
-    </button>
-  );
-}
-
 function CancelButton({
   isCurrentConversation,
   onClick,
@@ -256,26 +277,6 @@ function CancelButton({
       onClick={onClick}
     >
       <XMarkIcon className="h-4 w-4 opacity-80" />
-    </button>
-  );
-}
-
-function DeleteButton({
-  isCurrentConversation,
-  onClick,
-}: {
-  isCurrentConversation: boolean;
-  onClick: (event: React.MouseEvent) => void;
-}) {
-  return (
-    <button
-      title="Delete Conversation"
-      className={`hover:text-red-500 ${
-        isCurrentConversation ? "block" : "hidden group-hover:block"
-      } `}
-      onClick={onClick}
-    >
-      <TrashIcon className="h-4 w-4 opacity-80" />
     </button>
   );
 }
