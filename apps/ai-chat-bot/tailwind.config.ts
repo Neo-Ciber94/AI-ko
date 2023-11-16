@@ -23,6 +23,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [rainbowBorder, customShadows],
+  plugins: [
+    rainbowBorder, 
+    customShadows,
+  ],
 };
 export default config;
