@@ -63,7 +63,9 @@ function MessageContent({ message }: { message: Message }) {
         return (
           <pre
             suppressHydrationWarning
-            className={"w-full whitespace-pre-wrap break-all p-2"}
+            className={
+              "message w-full max-w-4xl whitespace-pre-wrap break-all p-2 text-white"
+            }
           >
             {text}
           </pre>
@@ -72,7 +74,9 @@ function MessageContent({ message }: { message: Message }) {
         return (
           <pre
             suppressHydrationWarning
-            className={"w-full break-before-all whitespace-pre-wrap p-2"}
+            className={
+              "message w-full max-w-4xl break-before-all whitespace-pre-wrap p-2 text-white"
+            }
             dangerouslySetInnerHTML={{
               __html: text,
             }}
@@ -115,7 +119,7 @@ function ImageContent(props: ImageContentProps) {
       />
 
       <span
-        className={`block text-mono overflow-hidden pt-4 text-xs transition-all duration-700 dark:text-white ${
+        className={`text-mono block overflow-hidden pt-4 text-xs transition-all duration-700 dark:text-white ${
           showPrompt ? "max-h-[300px]" : "max-h-0"
         }`}
       >

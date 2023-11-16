@@ -33,3 +33,19 @@
     box-shadow: none;
   }
 }
+
+@layer components {
+  .message ul {
+    list-style: disc;
+    list-style-position: inside;
+  }
+
+  .message ol {
+    list-style: decimal;
+    list-style-position: inside;
+  }
+
+  .message li > * {
+    padding-left: 10px;
+  }
+}
