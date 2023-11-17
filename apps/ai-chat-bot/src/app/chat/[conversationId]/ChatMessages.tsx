@@ -10,6 +10,7 @@ import { useHighLightJsThemes } from "@/components/providers/HighLightJsStylesPr
 import InjectStyles from "@/components/InjectStyles";
 import type { AIModel } from "@/lib/database/types";
 import ChatMessageItem from "./ChatMessageItem";
+import { ChatError } from "@/client/hooks/use-chat";
 
 // FIXME: Not entirely sure if this is safe
 hljs.configure({
@@ -32,12 +33,14 @@ type ChatMessagesProps = {
   model: AIModel;
   isLoading?: boolean;
   canRegenerate?: boolean;
+  error?: ChatError
 };
 
 export default function ChatMessages({
   model,
   isLoading,
   canRegenerate,
+  error,
   ...rest
 }: ChatMessagesProps) {
   const messages = formatMessages(rest.messages);
@@ -63,6 +66,7 @@ export default function ChatMessages({
         {isLoading && (
           <ChatMessageItem
             isLoading
+            error={error}
             model={model}
             message={{
               id: crypto.randomUUID(),

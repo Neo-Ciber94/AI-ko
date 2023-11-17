@@ -7,7 +7,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { EventSourceParserStream } from "eventsource-parser/stream";
 
-type ChatError = { message: string };
+export type ChatError = { message: string };
 
 type ChatMessage = ChatInput["messages"][number];
 
@@ -36,6 +36,7 @@ export function useChat(opts: UseChatOptions) {
   const completion = useCallback(
     async (message: string | undefined) => {
       setIsLoading(true);
+      setError(undefined);
 
       try {
         if (message != null) {

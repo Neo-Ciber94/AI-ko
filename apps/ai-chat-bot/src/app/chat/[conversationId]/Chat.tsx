@@ -29,7 +29,7 @@ export default function Chat(props: ChatProps) {
   const toast = useToast();
   const [conversation, setConversation] = useState(props.conversation);
   const { conversationId } = useParams<{ conversationId: string }>();
-  const { chat, regenerate, messages, isLoading, isCallingFunction } = useChat({
+  const { chat, regenerate, error, messages, isLoading, isCallingFunction } = useChat({
     conversationId,
     messages: props.messages,
     model: conversation.model,

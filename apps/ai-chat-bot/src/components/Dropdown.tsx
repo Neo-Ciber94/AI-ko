@@ -1,5 +1,6 @@
 "use client";
 
+import { useClickOutside } from "@/client/hooks/use-click-outside";
 import { useMediaQuery } from "@/client/hooks/use-media-query";
 import { breakpoints } from "@/lib/common/constants";
 import React, { useEffect, useMemo, useState } from "react";
@@ -30,19 +31,12 @@ export default function Dropdown({
     return { top: rect.top, left };
   }, [anchor, dropdown]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdown && !dropdown.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdown, onClose]);
+  useClickOutside<HTMLUListElement>({
+    target: dropdown,
+    onClick() {
+      onClose();
+    },
+  });
 
   useEffect(() => {
     const handleExit = (ev: KeyboardEvent) => {

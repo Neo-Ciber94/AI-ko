@@ -5,19 +5,25 @@ import type { Message } from "./ChatMessages";
 import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import RegenerateButton from "./RegenerateButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { ChatError } from "@/client/hooks/use-chat";
+import ChatErrorTooltip from "./ChatErrorTooltip";
+
+type ChatMessageItemProps = {
+  model: AIModel;
+  message: Message;
+  error?: ChatError;
+  isLoading?: boolean;
+  canRegenerate?: boolean;
+};
 
 export default function ChatMessageItem({
   model,
   message,
+  error,
   isLoading,
   canRegenerate,
-}: {
-  model: AIModel;
-  message: Message;
-  isLoading?: boolean;
-  canRegenerate?: boolean;
-}) {
+}: ChatMessageItemProps) {
   const role = message.role;
 
   return (
@@ -35,15 +41,22 @@ export default function ChatMessageItem({
         }`}
       >
         <div className="flex w-full flex-row items-center justify-between">
-          {role === "assistant" ? (
-            <AIModelLabel model={model} />
-          ) : canRegenerate ? (
-            <RegenerateButton />
-          ) : (
-            <div></div>
-          )}
-          {role === "assistant" && <Avatar role={role}>AI</Avatar>}
-          {role === "user" && <Avatar role={role}>Me</Avatar>}
+          <div className="flex flex-row items-center gap-2">
+            {role === "assistant" ? (
+              <AIModelLabel model={model} />
+            ) : canRegenerate ? (
+              <RegenerateButton />
+            ) : (
+              <div></div>
+            )}
+
+            {error && role === "user" && <ChatErrorTooltip error={error} />}
+          </div>
+
+          <div>
+            {role === "assistant" && <Avatar role={role}>AI</Avatar>}
+            {role === "user" && <Avatar role={role}>Me</Avatar>}
+          </div>
         </div>
 
         {isLoading ? <LoadingSpinner /> : <MessageContent message={message} />}
