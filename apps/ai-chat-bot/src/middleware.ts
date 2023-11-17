@@ -3,11 +3,6 @@ import { auth } from "./lib/auth/lucia";
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
-  // if (pathname === "/") {
-  //   return redirectTo(req, "/chat");
-  // }
-
   const authRequest = auth.handleRequest(req as NextRequest);
   const session = await authRequest.validate();
 
