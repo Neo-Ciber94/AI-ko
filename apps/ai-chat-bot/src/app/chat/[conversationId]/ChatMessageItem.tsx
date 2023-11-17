@@ -5,7 +5,7 @@ import type { Message } from "./ChatMessages";
 import Image from "next/image";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import RegenerateButton from "./RegenerateButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ChatMessageItem({
   model,
@@ -22,6 +22,7 @@ export default function ChatMessageItem({
 
   return (
     <div
+      data-conversation-message
       className={
         "flex flex-row items-center gap-4 px-2 text-xs sm:px-4 sm:text-base"
       }
@@ -101,6 +102,7 @@ type ImageContentProps = {
 
 function ImageContent(props: ImageContentProps) {
   const { imagePrompt, imageUrl } = props.content;
+  const [image, setImage] = useState(imageUrl);
   const [showPrompt, setShowPrompt] = useState(false);
 
   return (
@@ -109,12 +111,17 @@ function ImageContent(props: ImageContentProps) {
         width={512}
         height={512}
         alt={imagePrompt}
-        src={imageUrl}
+        src={image}
         className={`overflow-hidden rounded-lg object-cover shadow-md duration-200 ${
           showPrompt ? "scale-95" : "scale-100"
         } `}
         onClick={() => {
           setShowPrompt((show) => !show);
+        }}
+        onError={() => {
+          if (image != "/images/not_found.png") {
+            setImage("/images/not_found.png");
+          }
         }}
       />
 
