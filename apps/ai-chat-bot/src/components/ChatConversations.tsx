@@ -14,7 +14,7 @@ import {
   updateConversationTitle,
   generateConversationTitle,
 } from "@/lib/actions/conversations";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import { useToast } from "@/client/hooks/use-toast";
 import TypeWriter from "./TypeWriter";
@@ -30,13 +30,75 @@ export default function ChatConversations({
 }: {
   conversations: Conversation[];
 }) {
+  const groups = useMemo(() => {
+    const result = groupBy(conversations, (c) => {
+      const now = new Date();
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const opts: Intl.DateTimeFormatOptions = {
+        dateStyle: "medium",
+      };
+      const nowString = now.toLocaleDateString("en", opts);
+      const yesterdayString = yesterday.toLocaleDateString("en", opts);
+      const createdAtString = new Date(c.createdAt).toLocaleDateString(
+        "en",
+        opts,
+      );
+
+      if (createdAtString === nowString) {
+        return "Today";
+      }
+
+      if (createdAtString === yesterdayString) {
+        return "Yesterday";
+      }
+
+      return createdAtString;
+    });
+
+    return result;
+  }, [conversations]);
+
+  return (
+    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
+      {groups.map(([key, conversations]) => {
+        return (
+          <ConversationGroup
+            key={key}
+            groupName={key}
+            conversations={conversations}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+type Editing = {
+  conversationId: string;
+  title: string;
+};
+
+type ConversationGroupProps = {
+  groupName: string;
+  conversations: Conversation[];
+};
+
+function ConversationGroup({
+  groupName,
+  conversations,
+}: ConversationGroupProps) {
   const [editing, setEditing] = useState<{
     conversationId: string;
     title: string;
   }>();
 
   return (
-    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
+    <div className="flex h-full flex-col gap-1 py-2 pr-1">
+      <div className="bg-rainbow-bottom bg-fixed bg-clip-text text-sm font-medium text-transparent contrast-[60%] brightness-150">
+        {groupName}
+      </div>
       {conversations.map((conversation) => {
         return (
           <ChatConversationItem
@@ -50,11 +112,6 @@ export default function ChatConversations({
     </div>
   );
 }
-
-type Editing = {
-  conversationId: string;
-  title: string;
-};
 
 function ChatConversationItem({
   conversation,
@@ -93,7 +150,7 @@ function ChatConversationItem({
       <Link
         title={title}
         href={`/chat/${conversation.id}`}
-        className={`group flex flex-row items-center justify-between gap-2 rounded-md p-4
+        className={`group flex flex-row items-center justify-between gap-2 rounded-md px-4 py-4
         text-left text-sm shadow-white/20 shadow-inset hover:bg-neutral-900
         ${isCurrentConversation ? "bg-neutral-900" : "hover:bg-neutral-900"}`}
         onClick={() => {
@@ -279,4 +336,19 @@ function CancelButton({
       <XMarkIcon className="h-4 w-4 opacity-80" />
     </button>
   );
+}
+
+// Utils
+
+function groupBy<T, TKey>(items: T[], keySelector: (item: T) => TKey) {
+  const groups = new Map<TKey, T[]>();
+
+  for (const item of items) {
+    const key = keySelector(item);
+    const groupItems = groups.get(key) || [];
+    groupItems.push(item);
+    groups.set(key, groupItems);
+  }
+
+  return Array.from(groups.entries());
 }
