@@ -31,19 +31,21 @@ export default function ChatConversations({
   conversations: Conversation[];
 }) {
   const groups = useMemo(() => {
-    const result = groupBy(conversations, (c) => {
-      const now = new Date();
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
+    const dateFormatOpts: Intl.DateTimeFormatOptions = {
+      dateStyle: "medium",
+    };
 
-      const opts: Intl.DateTimeFormatOptions = {
-        dateStyle: "medium",
-      };
-      const nowString = now.toLocaleDateString("en", opts);
-      const yesterdayString = yesterday.toLocaleDateString("en", opts);
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const nowString = now.toLocaleDateString("en", dateFormatOpts);
+    const yesterdayString = yesterday.toLocaleDateString("en", dateFormatOpts);
+
+    const result = groupBy(conversations, (c) => {
       const createdAtString = new Date(c.createdAt).toLocaleDateString(
         "en",
-        opts,
+        dateFormatOpts,
       );
 
       if (createdAtString === nowString) {
@@ -96,7 +98,7 @@ function ConversationGroup({
 
   return (
     <div className="flex h-full flex-col gap-1 py-2 pr-1">
-      <div className="bg-rainbow-bottom bg-fixed bg-clip-text text-sm font-medium text-transparent contrast-[60%] brightness-150">
+      <div className="bg-rainbow-bottom bg-fixed bg-clip-text text-sm font-medium text-transparent brightness-150 contrast-[60%]">
         {groupName}
       </div>
       {conversations.map((conversation) => {
