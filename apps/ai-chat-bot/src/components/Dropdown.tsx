@@ -40,7 +40,7 @@ export default function Dropdown({
 
   useEffect(() => {
     const handleExit = (ev: KeyboardEvent) => {
-      if (ev.key === "Esc") {
+      if (ev.key === "Escape") {
         onClose();
       }
     };
