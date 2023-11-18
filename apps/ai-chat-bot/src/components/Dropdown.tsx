@@ -1,6 +1,7 @@
 "use client";
 
 import { useClickOutside } from "@/client/hooks/use-click-outside";
+import { useKeydown } from "@/client/hooks/use-keydown";
 import { useMediaQuery } from "@/client/hooks/use-media-query";
 import { breakpoints } from "@/lib/common/constants";
 import React, { useEffect, useMemo, useState } from "react";
@@ -38,18 +39,12 @@ export default function Dropdown({
     },
   });
 
-  useEffect(() => {
-    const handleExit = (ev: KeyboardEvent) => {
-      if (ev.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleExit);
-    return () => {
-      window.addEventListener("keydown", handleExit);
-    };
-  }, [onClose]);
+  useKeydown({
+    keys: ["Escape"],
+    onKeydown() {
+      onClose();
+    },
+  });
 
   return (
     <>

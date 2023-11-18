@@ -2,6 +2,7 @@
 
 import { type ChatError } from "@/client/hooks/use-chat";
 import { useClickOutside } from "@/client/hooks/use-click-outside";
+import { useKeydown } from "@/client/hooks/use-keydown";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { useMemo, useRef, useState } from "react";
 
@@ -9,9 +10,17 @@ export default function ChatErrorTooltip({ error }: { error: ChatError }) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
   const [anchor, setAnchor] = useState<HTMLDivElement | null>(null);
+
   useClickOutside({
     target: ref,
     onClick() {
+      setIsOpen(false);
+    },
+  });
+
+  useKeydown({
+    keys: ["Escape"],
+    onKeydown() {
       setIsOpen(false);
     },
   });
