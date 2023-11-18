@@ -63,7 +63,7 @@ export default function ChatConversations({
   }, [conversations]);
 
   return (
-    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1">
+    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1 pb-20">
       {groups.map(([key, conversations]) => {
         return (
           <ConversationGroup
