@@ -42,6 +42,7 @@ export default function Sidebar({
 
       <nav className="relative z-20 h-full">
         <div
+          suppressHydrationWarning
           className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
             isOpen ? "w-10/12 border-r sm:w-[300px]" : "w-0"
           }`}

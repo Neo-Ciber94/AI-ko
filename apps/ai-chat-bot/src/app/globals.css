@@ -49,3 +49,28 @@
     padding-left: 10px;
   }
 }
+
+@layer components {
+  .animate-hide-screen {
+    animation: hideScreenAnimation 1000ms ease-in-out forwards;
+    transform-origin: 0 0;
+  }
+
+  @keyframes hideScreenAnimation {
+    0% {
+      @apply max-h-full;
+    }
+
+    60% {
+      @apply max-h-16;
+    }
+
+    70% {
+      @apply max-h-16 opacity-100;
+    }
+
+    100% {
+      @apply max-h-16 opacity-0;
+    }
+  }
+}
