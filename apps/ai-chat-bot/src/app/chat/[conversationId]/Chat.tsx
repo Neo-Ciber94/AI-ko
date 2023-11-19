@@ -141,22 +141,6 @@ export default function Chat(props: ChatProps) {
       <div className={`absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2`}>
         <ChatInput onSend={handleChat} isLoading={isLoading} />
       </div>
-
-      <ScrollToBottomOnMobile />
     </>
   );
-}
-
-function ScrollToBottomOnMobile() {
-  const isSmallScreen = useMediaQuery(`(max-width: ${breakpoints.sm})`);
-  const hasScrolledRef = useRef(false);
-
-  useEffect(() => {
-    if (isSmallScreen && !hasScrolledRef.current) {
-      window.scrollTo({ top: document.body.scrollHeight });
-      hasScrolledRef.current = true;
-    }
-  }, [isSmallScreen]);
-
-  return <></>;
 }
