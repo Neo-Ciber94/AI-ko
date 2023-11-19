@@ -97,7 +97,7 @@ function ConversationGroup({
   }>();
 
   return (
-    <div className="flex h-full flex-col gap-1 py-2 pr-1">
+    <div className="flex flex-col gap-1 py-2 pr-1">
       <div className="bg-rainbow-bottom bg-fixed bg-clip-text text-sm font-medium text-transparent brightness-150 contrast-[60%]">
         {groupName}
       </div>
