@@ -25,7 +25,7 @@ export default function ChatInput({ isLoading, onSend }: ChatInputProps) {
     if (textAreaRef.current) {
       textAreaRef.current.focus();
     }
-  });
+  }, []);
 
   const handleSend = () => {
     if (text.trim().length === 0) {
