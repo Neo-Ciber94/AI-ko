@@ -1,24 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-type ScreenLoadingProps = {
+type ChatSplashScreenProps = {
   delayMs: number;
+  children: React.ReactNode;
 };
 
-export default function ScreenLoading({ delayMs }: ScreenLoadingProps) {
+export default function ChatSplashScreen({
+  delayMs,
+  children,
+}: ChatSplashScreenProps) {
+  return (
+    <>
+      <Suspense fallback={<Splash />}>
+        <Splash unmountDelayMs={delayMs} />
+        {children}
+      </Suspense>
+    </>
+  );
+}
+
+function Splash({ unmountDelayMs }: { unmountDelayMs?: number }) {
   const [show, setShow] = useState(true);
   const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
+    if (unmountDelayMs == null) {
+      return;
+    }
+
     const timeout = setTimeout(() => {
       setShow(false);
-    }, delayMs);
+    }, unmountDelayMs);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [delayMs]);
+  }, [unmountDelayMs]);
 
   if (!mounted) {
     return null;

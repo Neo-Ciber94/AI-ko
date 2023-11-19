@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import ScreenLoading from "@/components/ScreenLoading";
+import ChatSplashScreen from "@/app/chat/ChatSplashScreen";
 import Sidebar from "@/components/Sidebar";
 import { getConversations } from "@/lib/actions/conversations";
 import { type Metadata } from "next";
@@ -17,12 +17,11 @@ export default async function PageLayout({
 
   return (
     <>
-      <ScreenLoading delayMs={500} />
       <main className="flex h-screen flex-row overflow-hidden">
         <Sidebar conversations={conversations} />
         <div className="relative flex flex-grow flex-col">
           <Header showSidebarControls />
-          {children}
+          <ChatSplashScreen delayMs={500}>{children}</ChatSplashScreen>
         </div>
       </main>
     </>
