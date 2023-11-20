@@ -23,8 +23,8 @@ export default function ModelSelector({
       model,
     });
 
-    if (result.type === "error") {
-      toast.error(result.error);
+    if (!result.success) {
+      toast.error(result.error.message || "Something went wrong");
     } else {
       onChange?.(model);
       router.refresh();

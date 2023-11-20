@@ -263,9 +263,11 @@ function ChatConversationItem({
               conversationId: conversation.id,
             });
 
-            if (result) {
-              setTitle(result.title);
-              checkIsSmallScreen();
+            if (result.success === true) {
+              if (result.data) {
+                setTitle(result.data.title);
+                checkIsSmallScreen();
+              }
             } else {
               toast.error("Failed to generate conversation title");
             }

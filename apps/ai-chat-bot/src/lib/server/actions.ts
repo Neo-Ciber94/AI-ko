@@ -1,3 +1,4 @@
+import { isNotFoundError } from "next/dist/client/components/not-found";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { headers } from "next/headers";
 import { type ZodType } from "zod";
@@ -38,7 +39,7 @@ export function createServerActionProvider<TContext = void>(
         try {
           ctx = await Promise.resolve(beforeExecute());
         } catch (err) {
-          if (isRedirectError(err)) {
+          if (isRedirectError(err) || isNotFoundError(err)) {
             throw err;
           }
 
@@ -76,7 +77,7 @@ export function createServerActionProvider<TContext = void>(
 
         return { data: result, success: true };
       } catch (err) {
-        if (isRedirectError(err)) {
+        if (isRedirectError(err) || isNotFoundError(err)) {
           throw err;
         }
 
