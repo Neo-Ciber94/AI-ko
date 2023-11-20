@@ -38,7 +38,7 @@ export default function ChatConversations({
     const now = new Date();
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     const nowString = now.toLocaleDateString("en", dateFormatOpts);
     const yesterdayString = yesterday.toLocaleDateString("en", dateFormatOpts);
 
@@ -63,7 +63,7 @@ export default function ChatConversations({
   }, [conversations]);
 
   return (
-    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pr-1 pb-20">
+    <div className="conversations-scrollbar flex h-full flex-col gap-2 overflow-y-auto py-2 pb-20 pr-1">
       {groups.map(([key, conversations]) => {
         return (
           <ConversationGroup
@@ -134,6 +134,7 @@ function ChatConversationItem({
   eventListener.conversationTitleChanged.useSubscription((event) => {
     if (conversation.id === event.conversationId) {
       setTitle(event.newTitle);
+      document.title = event.newTitle;
     }
   });
 
