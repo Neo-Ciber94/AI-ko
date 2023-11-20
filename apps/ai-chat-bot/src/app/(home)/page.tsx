@@ -8,7 +8,7 @@ export default function HomePage() {
       <Clouds />
       <div
         className={`container relative mx-auto flex h-full w-full max-w-4xl flex-col items-center justify-center gap-4 overflow-auto px-4 py-4
-      sm:px-10 md:max-w-6xl md:px-10`}
+      sm:px-10 md:max-w-6xl md:px-10 select-none sm:select-auto`}
       >
         <h1 className="text-3xl font-bold sm:text-4xl lg:text-6xl">
           Unleash Your Imagination with our{" "}
