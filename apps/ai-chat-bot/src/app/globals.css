@@ -48,6 +48,18 @@
   .message li > * {
     padding-left: 10px;
   }
+
+  .message table,
+  .message thead,
+  .message th,
+  .message tr,
+  .message td,
+  .message tbody,
+  .message tfoot {
+    border-collapse: collapse;
+    border-width: 0.25px;
+    padding: 5px;
+  }
 }
 
 @layer components {
