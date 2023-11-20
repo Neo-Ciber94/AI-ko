@@ -11,9 +11,13 @@ import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
 import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
 import { useEffect, useMemo, useRef } from "react";
-import { COOKIE_CONVERSATION_CREATED } from "@/lib/common/constants";
+import {
+  COOKIE_CONVERSATION_CREATED,
+  breakpoints,
+} from "@/lib/common/constants";
 import { getCookie, removeCookie } from "@/client/utils/functions";
 import { useScreenSize } from "@/client/hooks/use-screen-size";
+import { useMediaQuery } from "@/client/hooks/use-media-query";
 
 export default function Sidebar({
   conversations,
@@ -24,10 +28,11 @@ export default function Sidebar({
   const isMobileScreen = useIsMobileScreen();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
   const sidebarCheckForMobileScreen = useRef(false);
+  const isSmallScreen = useMediaQuery(`(max-width: ${breakpoints.sm})`);
   const screenSize = useScreenSize();
   const sidebarWidth = useMemo(() => {
-    return isMobileScreen ? "300px" : `${screenSize.width * (11 / 12)}px`;
-  }, [isMobileScreen, screenSize.width]);
+    return isSmallScreen ? `${screenSize.width * (10 / 12)}px` : "300px";
+  }, [isSmallScreen, screenSize.width]);
 
   useEffect(() => {
     if (isMobileScreen && !sidebarCheckForMobileScreen.current) {
