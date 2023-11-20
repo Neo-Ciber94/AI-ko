@@ -85,7 +85,7 @@ export function createServerActionProvider<TContext = void>(
       }
     }
 
-    serverActionFunction.action = async function (formData: FormData) {
+    serverActionFunction.formAction = async function (formData: FormData) {
       const input = Object.fromEntries(formData);
       const result = await serverActionFunction(input as any);
 

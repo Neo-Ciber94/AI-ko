@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/database";
 import { getRequiredSession } from "@/lib/auth/utils";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import {
   conversationMessages,
   conversations,
@@ -18,6 +18,7 @@ import {
 import { type Result } from "../types";
 import { type AIModel } from "../database/types";
 import { cookies } from "next/headers";
+import { action } from "./action";
 
 export async function getConversations() {
   const session = await getRequiredSession();
@@ -29,7 +30,7 @@ export async function getConversations() {
   return result;
 }
 
-export async function createConversation() {
+export const createConversation = action(undefined, async () => {
   const session = await getRequiredSession();
   const result = await db
     .insert(conversations)
@@ -44,7 +45,7 @@ export async function createConversation() {
   cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
   revalidatePath("/chat", "layout");
   redirect(`/chat/${conversation.id}`);
-}
+});
 
 export async function updateConversationTitle({
   conversationId,
