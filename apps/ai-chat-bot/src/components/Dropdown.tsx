@@ -51,7 +51,7 @@ export default function Dropdown({
       {open && (
         <>
           {isSmallScreen && (
-            <div className="fixed left-0 top-0 z-10 h-full w-screen bg-black/70 backdrop-blur-sm"></div>
+            <div className="fixed left-0 top-0 z-10 h-full w-screen bg-black/60 backdrop-blur-[1px]"></div>
           )}
           <div
             className="fixed z-10"
