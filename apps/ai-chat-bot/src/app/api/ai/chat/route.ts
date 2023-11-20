@@ -3,6 +3,7 @@ import { moderateInput } from "@/lib/ai/moderateInput";
 import { getSession } from "@/lib/auth/utils";
 import { AIModel } from "@/lib/database/types";
 import { json } from "@/lib/server/functions";
+import { ratelimit } from "@/lib/server/rateLimiter";
 import { type NextRequest } from "next/server";
 import z from "zod";
 
@@ -44,6 +45,15 @@ export async function POST(req: NextRequest) {
 
   if (session == null || !session.user.isAuthorized) {
     return json({ message: "Forbidden" }, { status: 403 });
+  }
+
+  const rateLimiterResult = await ratelimit.limit(session.user.userId, req);
+  if (!rateLimiterResult.success) {
+    console.warn({
+      userId: session.user.userId,
+      rateLimited: rateLimiterResult,
+    });
+    return json({ message: "Too many requests" }, { status: 429 });
   }
 
   const result = inputSchema.safeParse(await req.json());
