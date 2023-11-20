@@ -6,6 +6,10 @@ export default async function middleware(req: NextRequest) {
   const authRequest = auth.handleRequest(req as NextRequest);
   const session = await authRequest.validate();
 
+  if (pathname.startsWith("/api") && !session?.user.isAuthorized) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   if (!session) {
     if (pathname === "/") {
       return NextResponse.next();
@@ -35,12 +39,11 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest.json|.*\\..*).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|.*\\..*).*)",
   ],
 };
 

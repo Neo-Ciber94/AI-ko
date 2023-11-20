@@ -1,5 +1,6 @@
 import { chatCompletion } from "@/lib/ai/chatCompletion";
 import { isSafeInput } from "@/lib/ai/isSafeInput";
+import { getSession } from "@/lib/auth/utils";
 import { AIModel } from "@/lib/database/types";
 import { json } from "@/lib/server/functions";
 import { type NextRequest } from "next/server";
@@ -39,6 +40,12 @@ const inputSchema = z.object({
 export type ChatInput = z.infer<typeof inputSchema>;
 
 export async function POST(req: NextRequest) {
+  const session = await getSession();
+
+  if (session == null || !session.user.isAuthorized) {
+    return json({ message: "Forbidden" }, { status: 403 });
+  }
+
   const result = inputSchema.safeParse(await req.json());
 
   if (result.success) {
