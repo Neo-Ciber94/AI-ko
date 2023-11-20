@@ -10,9 +10,10 @@ import { useFormStatus } from "react-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import type { Conversation } from "@/lib/database/types";
 import { useIsMobileScreen } from "@/client/hooks/use-is-small-screen";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { COOKIE_CONVERSATION_CREATED } from "@/lib/common/constants";
 import { getCookie, removeCookie } from "@/client/utils/functions";
+import { useScreenSize } from "@/client/hooks/use-screen-size";
 
 export default function Sidebar({
   conversations,
@@ -23,6 +24,10 @@ export default function Sidebar({
   const isMobileScreen = useIsMobileScreen();
   const [isOpen, setIsOpen] = isomorphicClient.isSidebarOpen.useValue();
   const sidebarCheckForMobileScreen = useRef(false);
+  const screenSize = useScreenSize();
+  const sidebarWidth = useMemo(() => {
+    return isMobileScreen ? "300px" : `${screenSize.width * (11 / 12)}px`;
+  }, [isMobileScreen, screenSize.width]);
 
   useEffect(() => {
     if (isMobileScreen && !sidebarCheckForMobileScreen.current) {
@@ -44,12 +49,18 @@ export default function Sidebar({
         <div
           suppressHydrationWarning
           className={`border-rainbow-bottom fixed h-full overflow-hidden transition-all duration-300 sm:static ${
-            isOpen ? "w-10/12 border-r sm:w-[300px]" : "w-0"
+            isOpen ? "border-r" : ""
           }`}
+          style={{
+            width: isOpen ? sidebarWidth : "0px",
+          }}
         >
           <div
-            className={`z-20 h-full w-full overflow-hidden whitespace-nowrap bg-black
-         text-white shadow-xl shadow-black/50 sm:w-[300px] `}
+            className={`z-20 h-full  overflow-hidden whitespace-nowrap bg-black
+         text-white shadow-xl shadow-black/50 `}
+            style={{
+              width: sidebarWidth,
+            }}
           >
             <div className="relative flex h-full flex-col px-2 py-4">
               <div className="flex w-full flex-row border-b border-b-red-500">
