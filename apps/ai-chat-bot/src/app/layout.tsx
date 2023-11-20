@@ -40,6 +40,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${store.state.isDark ? "dark" : ""}`}>
+      <head>
+        <meta name="theme-color" content="#0f172a" />
+      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
           <IsomorphicStoreProvider store={store}>

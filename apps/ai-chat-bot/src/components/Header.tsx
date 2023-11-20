@@ -10,6 +10,7 @@ import { isomorphicClient } from "@/lib/utils/isomorphic.client";
 import { logOut } from "./providers/SessionProvider";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import InstallPWAButton from "./InstallPWAButton";
 
 type HeaderProps = {
   showSidebarControls?: boolean;
@@ -36,6 +37,7 @@ export default function Header({
       <div className="border-rainbow-right flex h-16 w-full flex-row items-center border-b bg-black px-2">
         <Logo />
         <div className="ml-auto flex flex-row items-center gap-2">
+          <InstallPWAButton />
           {showLogout && (
             <button
               onClick={logOut}

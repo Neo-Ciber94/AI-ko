@@ -11,7 +11,8 @@
         {
             "src": "/icons/aichatbot-48x48.png",
             "sizes": "48x48",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "/icons/aichatbot-72x72.png",
