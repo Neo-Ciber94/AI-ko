@@ -1,5 +1,5 @@
 import { chatCompletion } from "@/lib/ai/chatCompletion";
-import { isSafeInput } from "@/lib/ai/isSafeInput";
+import { moderateInput } from "@/lib/ai/moderateInput";
 import { getSession } from "@/lib/auth/utils";
 import { AIModel } from "@/lib/database/types";
 import { json } from "@/lib/server/functions";
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     const { data: input } = result;
 
     if (input.newMessage) {
-      if (await isSafeInput(input.newMessage.content)) {
+      if (!(await moderateInput(input.newMessage.content))) {
         return json(
           { message: "The user message violates the usage policy" },
           { status: 400 },
