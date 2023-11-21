@@ -19,6 +19,7 @@ import { type AIModel } from "../database/types";
 import { cookies } from "next/headers";
 import { createAction } from "./action";
 import { z } from "zod";
+import { ratelimit } from "../server/rateLimiter";
 
 export async function getConversations() {
   const session = await getRequiredSession();
@@ -30,24 +31,31 @@ export async function getConversations() {
   return result;
 }
 
-export const createConversation = createAction({
-  async action() {
-    const session = await getRequiredSession();
-    const result = await db
-      .insert(conversations)
-      .values({
-        title: DEFAULT_CONVERSATION_TITLE,
-        userId: session.user.userId,
-        model: "gpt-3.5-turbo",
-      })
-      .returning();
+export async function createConversation() {
+  const session = await getRequiredSession();
+  const rateLimiterResult = await ratelimit.limit(session.user.userId);
 
-    const conversation = result[0]!;
-    cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
-    revalidatePath("/chat", "layout");
-    redirect(`/chat/${conversation.id}`);
-  },
-});
+  if (!rateLimiterResult.success) {
+    console.warn("Too many requests to create a conversation", {
+      rateLimiterResult,
+    });
+    return;
+  }
+
+  const result = await db
+    .insert(conversations)
+    .values({
+      title: DEFAULT_CONVERSATION_TITLE,
+      userId: session.user.userId,
+      model: "gpt-3.5-turbo",
+    })
+    .returning();
+
+  const conversation = result[0]!;
+  cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
+  revalidatePath("/chat", "layout");
+  redirect(`/chat/${conversation.id}`);
+}
 
 export const updateConversationTitle = createAction({
   input: z.object({

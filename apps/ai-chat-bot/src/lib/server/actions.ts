@@ -100,6 +100,7 @@ export function createServerActionProvider<TContext = void>(
         return { data: result, success: true };
       } catch (err) {
         if (isRedirectError(err) || isNotFoundError(err)) {
+          console.log({ err });
           throw err;
         }
 
@@ -119,6 +120,7 @@ export function createServerActionProvider<TContext = void>(
       const input = Object.fromEntries(formData);
       const result = await serverActionFunction(input as any);
 
+      console.log(input);
       if (!result.success) {
         const { isValidationError, message } = result.error;
         headers().set("Server-Action-Error-Message", message);

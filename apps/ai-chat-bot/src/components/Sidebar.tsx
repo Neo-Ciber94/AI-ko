@@ -69,7 +69,7 @@ export default function Sidebar({
           >
             <div className="relative flex h-full flex-col px-2 py-4">
               <div className="flex w-full flex-row border-b border-b-red-500">
-                <form action={createConversation.formAction} className="w-full">
+                <form action={createConversation} className="w-full">
                   <CreateConversationButton />
                 </form>
               </div>
