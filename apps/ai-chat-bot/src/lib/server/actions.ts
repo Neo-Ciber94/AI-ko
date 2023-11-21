@@ -112,22 +112,6 @@ export function createServerActionProvider<TContext = void>(
       }
     }
 
-    /**
-     * A function to use in a `<form>` as action.
-     * @param formData The input form data.
-     */
-    serverActionFunction.formAction = async function (formData: FormData) {
-      const input = Object.fromEntries(formData);
-      const result = await serverActionFunction(input as any);
-
-      console.log(input);
-      if (!result.success) {
-        const { isValidationError, message } = result.error;
-        headers().set("Server-Action-Error-Message", message);
-        headers().set("Server-Action-Validator-Error", isValidationError);
-      }
-    };
-
     return serverActionFunction;
   };
 }
