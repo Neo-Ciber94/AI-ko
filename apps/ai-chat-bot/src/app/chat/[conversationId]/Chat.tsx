@@ -85,8 +85,8 @@ export default function Chat(props: ChatProps) {
         conversationId,
       });
 
-      if (result) {
-        const newTitle = result.title;
+      if (result.success && result.data) {
+        const newTitle = result.data.title;
         eventEmitter.conversationTitleChanged({
           conversationId,
           newTitle,

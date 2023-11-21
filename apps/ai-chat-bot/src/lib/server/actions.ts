@@ -35,41 +35,29 @@ export function createServerActionProvider<TContext = void>(
       let input: TInput | undefined = undefined;
       let ctx: TContext | undefined = undefined;
 
-      if (beforeExecute) {
-        try {
+      try {
+        if (beforeExecute) {
           ctx = await Promise.resolve(beforeExecute());
-        } catch (err) {
-          if (isRedirectError(err) || isNotFoundError(err)) {
-            throw err;
+        }
+
+        if (validator) {
+          const validationResult = validator.safeParse(args[0]);
+
+          if (!validationResult.success) {
+            const message = validationResult.error.issues.join("\n");
+
+            return {
+              success: false,
+              error: {
+                isValidationError: true,
+                message,
+              },
+            };
           }
 
-          const message = err instanceof Error ? err.message : undefined;
-          return {
-            success: false,
-            error: { isValidationError: false, message },
-          };
-        }
-      }
-
-      if (validator) {
-        const validationResult = validator.safeParse(args[0]);
-
-        if (!validationResult.success) {
-          const message = validationResult.error.issues.join("\n");
-
-          return {
-            success: false,
-            error: {
-              isValidationError: true,
-              message,
-            },
-          };
+          input = validationResult.data;
         }
 
-        input = validationResult.data;
-      }
-
-      try {
         const result = await serverAction({
           input: input as TInput,
           ctx: ctx as TContext,
@@ -82,7 +70,10 @@ export function createServerActionProvider<TContext = void>(
         }
 
         const message = err instanceof Error ? err.message : undefined;
-        return { success: false, error: { isValidationError: false, message } };
+        return {
+          success: false,
+          error: { isValidationError: false, message },
+        };
       }
     }
 
