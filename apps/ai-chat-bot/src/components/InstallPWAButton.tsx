@@ -22,6 +22,7 @@ export default function InstallPWAButton() {
 
   return (
     <button
+      title="Install as PWA"
       className="flex flex-row items-center gap-2 rounded-3xl border border-white/10 px-6 py-3 text-sm text-white"
       style={{
         boxShadow: "inset 0 -2px 3px rgba(255, 255, 255, 0.3)",
