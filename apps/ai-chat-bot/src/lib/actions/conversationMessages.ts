@@ -12,14 +12,12 @@ import { and, eq, asc, desc } from "drizzle-orm";
 import type { AIModel, Role } from "../database/types";
 
 type MessageImage = {
-  //id: string;
   type: "image";
   imagePrompt: string;
   imageUrl: string;
 };
 
 type MessageText = {
-  //id: string;
   type: "text";
   text: string;
 };
@@ -44,27 +42,6 @@ export type ConversationMessageWithContents =
 
 export async function getConversationWithMessages(conversationId: string) {
   const session = await getRequiredSession();
-  // const conversation = await db.query.conversations.findFirst({
-  //   where: and(
-  //     eq(conversations.id, conversationId),
-  //     eq(conversations.userId, session.user.userId),
-  //   ),
-  //   with: {
-  //     conversationMessages: {
-  //       orderBy: [asc(conversationMessages.createdAt)],
-  //       with: {
-  //         contents: {
-  //           columns: {
-  //             type: true,
-  //             data: true,
-  //           },
-  //           orderBy: [asc(conversationMessages.createdAt)],
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
-
   const rows = await db
     .select()
     .from(conversations)
