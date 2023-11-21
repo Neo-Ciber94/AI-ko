@@ -17,6 +17,9 @@ const config: Config = {
         "rainbow-right":
           "linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff)",
       },
+      height: {
+        screen: ['100vh', '100svh']
+      },
       screens: {
         xs: "475px",
         ...defaultTheme.screens,
