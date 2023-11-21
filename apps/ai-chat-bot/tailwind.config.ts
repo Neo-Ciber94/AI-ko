@@ -18,7 +18,7 @@ const config: Config = {
           "linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff)",
       },
       height: {
-        screen: ["100vh", "100svh"] as any, // this property should accept string[]
+        screen: ["100vh", "100svh"] as any // this should accept string[]
       },
       screens: {
         xs: "475px",
