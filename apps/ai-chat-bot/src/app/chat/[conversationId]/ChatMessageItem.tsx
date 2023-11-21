@@ -78,7 +78,7 @@ function MessageContent({ message }: { message: Message }) {
           <pre
             suppressHydrationWarning
             className={
-              "message w-full max-w-4xl whitespace-pre-wrap break-all p-2 text-white"
+              "message w-full max-w-4xl whitespace-pre-wrap break-all p-2"
             }
           >
             {text}
@@ -89,7 +89,7 @@ function MessageContent({ message }: { message: Message }) {
           <pre
             suppressHydrationWarning
             className={
-              "message w-full max-w-4xl break-before-all whitespace-pre-wrap p-2 text-white"
+              "message w-full max-w-4xl break-before-all whitespace-pre-wrap p-2"
             }
             dangerouslySetInnerHTML={{
               __html: text,
