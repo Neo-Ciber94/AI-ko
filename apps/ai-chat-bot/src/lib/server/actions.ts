@@ -4,27 +4,58 @@ import { headers } from "next/headers";
 import { type ZodType } from "zod";
 
 type ServerActionProviderOptions<TContext> = {
+  /**
+   * A function to execute before running each action.
+   * @returns Returns a context to use in the actions.
+   */
   beforeExecute?: () => Promise<TContext> | TContext;
 };
 
+/**
+ * Represents an error that ocurred while executing a server action.
+ */
 type ServerError = {
+  /**
+   * Whether if is a validation error.
+   */
   isValidationError: boolean;
+
+  /**
+   * The error message.
+   */
   message?: string;
+};
+
+/**
+ * Params to pass to a server action.
+ */
+type ServerActionParams<TResult, TContext, TInput> = {
+  /**
+   * The input validator.
+   */
+  input?: ZodType<TInput> | undefined;
+
+  /**
+   * The action to execute.
+   * @param params The params of the action with the context and input.
+   */
+  action: (params: { input: TInput; ctx: TContext }) => Promise<TResult>;
 };
 
 type ServerActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: ServerError };
 
+/**
+ * Create a function to create server actions.
+ * @param opts Options for the server action provider.
+ * @returns Returns a function to create server actions.
+ */
 export function createServerActionProvider<TContext = void>(
   opts?: ServerActionProviderOptions<TContext>,
 ) {
   return <TResult, TInput = void>(
-    validator: ZodType<TInput> | undefined,
-    serverAction: (actionInput: {
-      input: TInput;
-      ctx: TContext;
-    }) => Promise<TResult>,
+    params: ServerActionParams<TResult, TContext, TInput>,
   ) => {
     type TArgs = undefined extends TInput ? [input?: TInput] : [input: TInput];
     const { beforeExecute } = opts || {};
@@ -34,6 +65,7 @@ export function createServerActionProvider<TContext = void>(
     ): Promise<ServerActionResult<TResult>> {
       let input: TInput | undefined = undefined;
       let ctx: TContext | undefined = undefined;
+      const { input: validator, action } = params;
 
       try {
         if (beforeExecute) {
@@ -44,7 +76,9 @@ export function createServerActionProvider<TContext = void>(
           const validationResult = validator.safeParse(args[0]);
 
           if (!validationResult.success) {
-            const message = validationResult.error.issues.join("\n");
+            const message = validationResult.error.issues
+              .map((x) => x.message)
+              .join("\n");
 
             return {
               success: false,
@@ -58,7 +92,7 @@ export function createServerActionProvider<TContext = void>(
           input = validationResult.data;
         }
 
-        const result = await serverAction({
+        const result = await action({
           input: input as TInput,
           ctx: ctx as TContext,
         });
@@ -77,6 +111,10 @@ export function createServerActionProvider<TContext = void>(
       }
     }
 
+    /**
+     * A function to use in a `<form>` as action.
+     * @param formData The input form data.
+     */
     serverActionFunction.formAction = async function (formData: FormData) {
       const input = Object.fromEntries(formData);
       const result = await serverActionFunction(input as any);

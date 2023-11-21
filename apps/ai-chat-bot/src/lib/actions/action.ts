@@ -2,7 +2,7 @@ import { getSession } from "../auth/utils";
 import { createServerActionProvider } from "../server/actions";
 import { ratelimit } from "../server/rateLimiter";
 
-export const action = createServerActionProvider({
+export const createAction = createServerActionProvider({
   async beforeExecute() {
     const session = await getSession();
 

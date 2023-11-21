@@ -15,10 +15,9 @@ import {
   COOKIE_CONVERSATION_CREATED,
   DEFAULT_CONVERSATION_TITLE,
 } from "../common/constants";
-import { type Result } from "../types";
 import { type AIModel } from "../database/types";
 import { cookies } from "next/headers";
-import { action } from "./action";
+import { createAction } from "./action";
 import { z } from "zod";
 
 export async function getConversations() {
@@ -31,26 +30,31 @@ export async function getConversations() {
   return result;
 }
 
-export const createConversation = action(undefined, async () => {
-  const session = await getRequiredSession();
-  const result = await db
-    .insert(conversations)
-    .values({
-      title: DEFAULT_CONVERSATION_TITLE,
-      userId: session.user.userId,
-      model: "gpt-3.5-turbo",
-    })
-    .returning();
+export const createConversation = createAction({
+  async action() {
+    const session = await getRequiredSession();
+    const result = await db
+      .insert(conversations)
+      .values({
+        title: DEFAULT_CONVERSATION_TITLE,
+        userId: session.user.userId,
+        model: "gpt-3.5-turbo",
+      })
+      .returning();
 
-  const conversation = result[0]!;
-  cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
-  revalidatePath("/chat", "layout");
-  redirect(`/chat/${conversation.id}`);
+    const conversation = result[0]!;
+    cookies().set(COOKIE_CONVERSATION_CREATED, "1", { maxAge: 1 });
+    revalidatePath("/chat", "layout");
+    redirect(`/chat/${conversation.id}`);
+  },
 });
 
-export const updateConversationTitle = action(
-  z.object({ conversationId: z.string(), title: z.string().trim().min(1) }),
-  async ({ input: { title, conversationId } }) => {
+export const updateConversationTitle = createAction({
+  input: z.object({
+    conversationId: z.string(),
+    title: z.string().trim().min(1),
+  }),
+  async action({ input: { title, conversationId } }) {
     const session = await getRequiredSession();
 
     await db
@@ -65,11 +69,11 @@ export const updateConversationTitle = action(
 
     revalidatePath("/chat", "layout");
   },
-);
+});
 
-export const deleteConversation = action(
-  z.object({ conversationId: z.string() }),
-  async ({ input: { conversationId } }) => {
+export const deleteConversation = createAction({
+  input: z.object({ conversationId: z.string() }),
+  async action({ input: { conversationId } }) {
     const session = await getRequiredSession();
 
     await db
@@ -83,11 +87,11 @@ export const deleteConversation = action(
 
     revalidatePath("/chat", "layout");
   },
-);
+});
 
-export const generateConversationTitle = action(
-  z.object({ conversationId: z.string() }),
-  async ({ input: { conversationId } }) => {
+export const generateConversationTitle = createAction({
+  input: z.object({ conversationId: z.string() }),
+  async action({ input: { conversationId } }) {
     const session = await getRequiredSession();
     const messages = await db
       .select({
@@ -155,14 +159,14 @@ export const generateConversationTitle = action(
 
     return { title: newTitle };
   },
-);
+});
 
-export const updateConversationModel = action(
-  z.object({
+export const updateConversationModel = createAction({
+  input: z.object({
     conversationId: z.string(),
     model: z.enum(["gpt-3.5-turbo", "gpt-4"]),
   }),
-  async ({ input: { conversationId, model } }) => {
+  async action({ input: { conversationId, model } }) {
     const session = await getRequiredSession();
     const conversationModel: AIModel =
       model === "gpt-4" ? "gpt-4" : "gpt-3.5-turbo";
@@ -200,7 +204,7 @@ export const updateConversationModel = action(
 
     return { type: "success" };
   },
-);
+});
 
 function removeQuotesFromString(input: string) {
   return input.replace(/^['"]|['"]$/g, "");
