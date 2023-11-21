@@ -1,10 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "./lib/auth/lucia";
 
+const PUBLIC_ROUTES = ["/", "/api/auth"];
+
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const authRequest = auth.handleRequest(req as NextRequest);
   const session = await authRequest.validate();
+
+  if (PUBLIC_ROUTES.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
 
   if (pathname.startsWith("/api") && !session?.user.isAuthorized) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
